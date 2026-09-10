@@ -57,7 +57,7 @@ minuti di prova osservata valgono più di mille questionari.
 dei fondali e di Nima, front-end (la demo è vanilla, la versione vera è modulare per capitoli),
 riprese e montaggio del lessico.
 
-Apri una issue, o scrivi a **`INDIRIZZO@DA-INSERIRE`**.
+Apri una issue, o scrivi a **`info.pirini.filippo@gmail.com`**.
 
 ## 📁 Struttura
 
