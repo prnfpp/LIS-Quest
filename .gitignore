@@ -1,0 +1,10 @@
+.DS_Store
+Thumbs.db
+node_modules/
+.vscode/
+.idea/
+*.log
+# file di lavoro delle riprese: pesanti, non vanno nel repo
+riprese-grezze/
+*.mov
+*.MOV
