@@ -1,0 +1,1246 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Demo giocabile del capitolo 1 di LIS Quest: un'avventura per avvicinare i bambini alla Lingua dei Segni Italiana.">
+  <meta name="theme-color" content="#0A1E2C">
+  <meta property="og:title" content="L'isola di Nima — LIS Quest">
+  <meta property="og:description" content="Demo giocabile del capitolo 1 di LIS Quest: un'avventura per avvicinare i bambini alla Lingua dei Segni Italiana.">
+  <meta property="og:type" content="website">
+  <style>
+    /* reset minimo: replica il comportamento dell'ambiente in cui la pagina e' nata */
+    *{box-sizing:border-box}
+    html{color-scheme:light dark}
+    body{margin:0}
+    img{max-width:100%}
+    [hidden]{display:none!important}
+  </style>
+<title>L'isola di Nima</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --notte:#0A1E2C;
+  --mare:#0F3D4E;
+  --acqua:#1B7285;
+  --sabbia:#E9D6AF;
+  --sabbia-2:#D2B98A;
+  --sabbia-3:#B39A6E;
+  --luce:#FFC15E;
+  --luce-2:#F2A03D;
+  --nima:#7FE0CE;
+  --nima-2:#4BB9A8;
+  --corallo:#EF7361;
+  --ok:#7ED493;
+  --testo:#F4EFE2;
+  --testo-2:#BFCBD1;
+  --testo-3:#8195A0;
+  --pannello:#12303F;
+  --pannello-2:#0D2534;
+  --bordo:#255062;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--notte);
+  color:var(--testo);
+  font-family:"Nunito",system-ui,-apple-system,sans-serif;
+  font-size:16px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+h1,h2,h3,.disp,button{font-family:"Baloo 2","Nunito",system-ui,sans-serif}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace}
+:focus-visible{outline:3px solid var(--luce);outline-offset:3px;border-radius:6px}
+button{font:inherit;color:inherit;cursor:pointer;border:none;background:none}
+[hidden]{display:none!important}
+
+.app{max-width:1000px;margin:0 auto;padding:16px 16px 40px;min-height:100vh;display:flex;flex-direction:column;gap:14px}
+
+/* ---------- badge segnaposto ---------- */
+.badge{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  background:rgba(239,115,97,.13);border:1px solid rgba(239,115,97,.4);
+  border-radius:10px;padding:7px 12px;font-size:12.5px;color:#FFD3CB;
+}
+.badge b{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--corallo)}
+.badge button{text-decoration:underline;color:#FFD3CB;font-family:"Nunito",sans-serif;font-size:12.5px;padding:0}
+
+/* ---------- schermate ---------- */
+.screen{display:flex;flex-direction:column;gap:16px;animation:fadein .35s ease-out}
+@keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.titolo{
+  border-radius:18px;overflow:hidden;position:relative;
+  background:linear-gradient(#0A1E2C 0%,#123A4C 46%,#1B7285 68%,#8FB98F 76%,var(--sabbia-2) 82%,var(--sabbia) 100%);
+  padding:clamp(30px,7vw,64px) clamp(20px,5vw,44px);
+  border:1px solid var(--bordo);
+}
+.titolo h1{
+  font-size:clamp(46px,12vw,104px);font-weight:800;margin:0;line-height:.92;letter-spacing:-.02em;
+  text-shadow:0 4px 0 rgba(0,0,0,.22);
+}
+.titolo h1 em{font-style:normal;color:var(--luce)}
+.titolo .cap{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--nima);margin:0 0 14px}
+.titolo p.sub{max-width:34ch;font-size:clamp(16px,2.2vw,19px);margin:16px 0 0;color:#E5F1F0}
+.titolo .stelle{position:absolute;inset:0;pointer-events:none;opacity:.7}
+
+.btn{
+  display:inline-flex;align-items:center;gap:9px;justify-content:center;
+  background:var(--luce);color:#26170A;font-weight:700;font-size:18px;
+  padding:13px 26px;border-radius:999px;box-shadow:0 4px 0 #B7772A;
+  transition:transform .1s ease, box-shadow .1s ease;
+}
+.btn:hover{transform:translateY(-1px);box-shadow:0 5px 0 #B7772A}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #B7772A}
+.btn.ghost{background:transparent;color:var(--testo);border:2px solid var(--bordo);box-shadow:none;font-size:15px;padding:10px 20px}
+.btn.ghost:hover{border-color:var(--nima);transform:none}
+.btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;box-shadow:0 4px 0 #B7772A}
+.btn-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:22px}
+
+.card{background:var(--pannello);border:1px solid var(--bordo);border-radius:14px;padding:18px}
+.card h2{margin:0 0 8px;font-size:22px}
+.card p{margin:0 0 10px;color:var(--testo-2);font-size:15px}
+.card p:last-child{margin-bottom:0}
+
+/* ---------- nome ---------- */
+.nome-box{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:14px}
+input[type=text]{
+  font:600 24px "Baloo 2",sans-serif;background:var(--pannello-2);color:var(--testo);
+  border:2px solid var(--bordo);border-radius:12px;padding:10px 16px;width:min(280px,100%);
+  letter-spacing:.06em;text-transform:uppercase;
+}
+input[type=text]:focus{border-color:var(--nima);outline:none}
+.hint{font-size:13px;color:var(--testo-3)}
+
+/* ---------- classi ---------- */
+.classi{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.classe{
+  text-align:left;background:var(--pannello);border:2px solid var(--bordo);border-radius:14px;
+  padding:16px;display:flex;flex-direction:column;gap:8px;transition:border-color .15s,background .15s;
+}
+.classe:hover{border-color:var(--nima)}
+.classe[aria-pressed=true]{border-color:var(--luce);background:#1A3E4F}
+.classe .em{width:56px;height:56px}
+.classe h3{margin:0;font-size:19px}
+.classe .k{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--nima)}
+.classe p{margin:0;font-size:13.5px;color:var(--testo-2);line-height:1.45}
+
+/* ---------- HUD ---------- */
+.hud{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px}
+.hud .chip{display:flex;align-items:center;gap:7px;background:var(--pannello);border:1px solid var(--bordo);border-radius:999px;padding:5px 13px}
+.hud .chip b{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--luce)}
+.hud .sp{flex:1}
+.hud button.chip:hover{border-color:var(--nima)}
+
+/* ---------- palcoscenico ---------- */
+.stage{
+  position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--bordo);
+  min-height:430px;display:flex;flex-direction:column;
+  background:linear-gradient(#0A1E2C 0%,#14384A 34%,#1B7285 54%,#3E8F86 62%,var(--sabbia-2) 70%,var(--sabbia) 100%);
+}
+.stage.giorno{background:linear-gradient(#4FA8C8 0%,#8FD3E0 26%,#2FA0A8 48%,#57B49E 60%,var(--sabbia-2) 68%,var(--sabbia) 100%)}
+.scenery{position:absolute;inset:0;pointer-events:none}
+.stage-body{position:relative;flex:1;display:flex;align-items:flex-end;justify-content:center;padding:14px}
+
+/* Nima */
+.nima-wrap{position:relative;width:min(250px,52vw);filter:drop-shadow(0 8px 18px rgba(0,0,0,.35));transition:filter .5s ease}
+.nima-wrap.ombra{filter:brightness(.16) saturate(.2) blur(.6px)}
+.nima-wrap svg{width:100%;height:auto;display:block}
+.gloss{
+  position:absolute;left:14px;top:14px;display:none;align-items:center;gap:8px;
+  background:rgba(10,30,44,.82);border:1px solid var(--bordo);border-radius:999px;
+  padding:5px 14px;font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.14em;color:var(--nima);
+}
+.gloss.on{display:flex}
+.glow{position:absolute;left:50%;top:44%;width:150%;height:150%;transform:translate(-50%,-50%);
+  background:radial-gradient(circle,rgba(255,193,94,.28),transparent 62%);pointer-events:none}
+
+/* dialogo */
+.dialogo{
+  background:linear-gradient(180deg,rgba(10,30,44,.94),rgba(10,30,44,.99));
+  border-top:1px solid var(--bordo);padding:16px 18px 18px;position:relative;
+}
+.dialogo .chi{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--nima);margin-bottom:6px}
+.dialogo p{margin:0;font-size:clamp(16px,2.4vw,19px);line-height:1.5;max-width:56ch}
+.dialogo p.narr{font-style:italic;color:var(--testo-2)}
+.dialogo .avanti{position:absolute;right:16px;bottom:14px}
+.tap-hint{font-size:12px;color:var(--testo-3);margin-top:8px;display:flex;align-items:center;gap:6px}
+.tap-hint i{width:7px;height:7px;border-radius:50%;background:var(--luce);animation:puls 1.4s infinite}
+@keyframes puls{0%,100%{opacity:.35}50%{opacity:1}}
+
+/* ---------- mini-giochi ---------- */
+.gioco{position:absolute;inset:0;background:rgba(6,20,30,.93);display:flex;flex-direction:column;padding:16px;gap:12px;overflow-y:auto}
+.gioco h3{margin:0;font-size:19px}
+.gioco .istr{font-size:14px;color:var(--testo-2);margin:0}
+.barra{height:9px;border-radius:99px;background:var(--pannello-2);border:1px solid var(--bordo);overflow:hidden}
+.barra i{display:block;height:100%;background:linear-gradient(90deg,var(--luce),var(--luce-2));transition:width .12s linear}
+.barra.calda i{background:linear-gradient(90deg,var(--corallo),#C7442F)}
+
+.oggetti{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:10px;flex:1;align-content:center}
+.ogg{background:rgba(233,214,175,.09);border:2px solid var(--bordo);border-radius:14px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:6px;transition:transform .12s,border-color .12s}
+.ogg:hover{transform:translateY(-3px);border-color:var(--nima)}
+.ogg svg{width:100%;max-width:76px;height:auto}
+.ogg span{font-size:12px;color:var(--testo-3)}
+.ogg.giusto{border-color:var(--ok);background:rgba(126,212,147,.16)}
+.ogg.sbagliato{border-color:var(--corallo);animation:shake .32s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* ruota dattilologia */
+.ruota-area{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;align-items:center;flex:1}
+.ruota{position:relative;width:min(290px,80vw);aspect-ratio:1}
+.ruota .centro{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:38%;aspect-ratio:1;border-radius:50%;background:var(--pannello);border:2px dashed var(--bordo);display:flex;align-items:center;justify-content:center;flex-direction:column;font-size:11px;color:var(--testo-3);text-align:center;padding:6px}
+.settore{position:absolute;width:30%;aspect-ratio:1;border-radius:50%;background:var(--pannello);border:2px solid var(--bordo);display:flex;align-items:center;justify-content:center;transition:transform .12s,border-color .12s;padding:4px}
+.settore svg{width:100%;height:100%}
+.settore:hover{transform:scale(1.08);border-color:var(--nima)}
+.settore.ok{border-color:var(--ok);background:rgba(126,212,147,.2)}
+.settore.no{border-color:var(--corallo);animation:shake .3s}
+.parola{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.slot-l{width:52px;height:62px;border-radius:10px;border:2px dashed var(--bordo);background:var(--pannello-2);display:flex;align-items:center;justify-content:center;position:relative}
+.slot-l svg{width:88%;height:88%}
+.slot-l.done{border-style:solid;border-color:var(--ok)}
+.slot-l.att{border-color:var(--luce);box-shadow:0 0 0 3px rgba(255,193,94,.2)}
+.slot-l b{position:absolute;bottom:-19px;left:0;right:0;text-align:center;font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ok)}
+
+/* costruzione sintattica */
+.frase{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;align-items:center;min-height:112px}
+.slot{width:104px;height:112px;border-radius:14px;border:2px dashed var(--bordo);background:var(--pannello-2);display:flex;align-items:center;justify-content:center;position:relative;transition:border-color .12s}
+.slot.att{border-color:var(--luce);box-shadow:0 0 0 3px rgba(255,193,94,.18)}
+.slot .n{position:absolute;top:4px;left:8px;font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--testo-3)}
+.blocchi{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.blocco{width:104px;height:112px;border-radius:14px;border:2px solid var(--bordo);background:var(--pannello);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:transform .12s,border-color .12s;padding:4px}
+.blocco:hover{transform:translateY(-3px);border-color:var(--nima)}
+.blocco[aria-pressed=true]{border-color:var(--luce);transform:translateY(-3px)}
+.blocco.usato{opacity:.22;pointer-events:none}
+.blocco svg,.slot svg{width:86px;height:86px}
+.blocco .gl,.slot .gl{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.08em;color:var(--testo-3)}
+.blocco.faccia svg,.slot.faccia svg{width:78px;height:78px}
+
+.feedback{text-align:center;font-size:15px;min-height:24px;color:var(--luce)}
+.feedback.ok{color:var(--ok)}
+.feedback.no{color:var(--corallo)}
+.gioco-foot{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;align-items:center}
+
+/* ---------- il guscio (dizionario) ---------- */
+dialog{border:1px solid var(--bordo);background:var(--pannello);color:var(--testo);border-radius:16px;padding:0;max-width:min(640px,94vw);width:100%;max-height:88vh}
+dialog::backdrop{background:rgba(4,14,20,.78)}
+.dlg{padding:20px;max-height:88vh;overflow-y:auto}
+.dlg h2{margin:0 0 10px;font-size:22px}
+.dlg p{font-size:14.5px;color:var(--testo-2)}
+.dlg p.nota{font-size:12.5px;color:var(--testo-3);border-top:1px solid var(--bordo);padding-top:10px;margin-top:16px}
+.tabs{display:flex;gap:8px;margin:14px 0 12px;border-bottom:1px solid var(--bordo);padding-bottom:10px;flex-wrap:wrap}
+.tb{font-family:"Baloo 2",sans-serif;font-weight:700;font-size:14px;padding:7px 15px;border-radius:999px;border:2px solid var(--bordo);color:var(--testo-2)}
+.tb:hover{border-color:var(--nima)}
+.tb.on{background:var(--luce);color:#26170A;border-color:var(--luce)}
+.tb b{font-family:"IBM Plex Mono",monospace;font-size:11px}
+
+.alfaGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(66px,1fr));gap:8px}
+.alfaGrid a{
+  background:var(--pannello-2);border:1px solid var(--bordo);border-radius:10px;padding:5px 4px 3px;
+  text-align:center;text-decoration:none;display:block;transition:border-color .12s,transform .12s;
+}
+.alfaGrid a:hover{border-color:var(--nima);transform:translateY(-2px)}
+.alfaGrid svg{width:100%;height:auto;max-height:52px}
+.alfaGrid b{display:block;font-family:"IBM Plex Mono",monospace;font-size:14px;color:var(--luce);letter-spacing:.08em}
+.alfaGrid.spenta a{opacity:.34}
+.alfaGrid.spenta a.vista{opacity:1;border-color:var(--nima-2)}
+
+.voce{display:grid;grid-template-columns:82px 1fr;gap:14px;align-items:center;padding:12px 0;border-bottom:1px solid var(--bordo)}
+.voce:last-child{border-bottom:none}
+.voce .art{background:var(--pannello-2);border:1px solid var(--bordo);border-radius:10px;padding:4px}
+.voce .art svg{width:100%;height:auto;display:block}
+.voce h4{margin:0 0 3px;font-family:"IBM Plex Mono",monospace;font-size:14px;letter-spacing:.1em;color:var(--nima)}
+.voce p{margin:0 0 7px;font-size:13.5px;line-height:1.45}
+.sts{
+  display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;
+  color:#0A1E2C;background:var(--nima);border-radius:999px;padding:4px 12px;text-decoration:none;
+}
+.sts:hover{background:#A5EFE2}
+.vuoto{color:var(--testo-3);font-size:14px;padding:18px 0;text-align:center}
+
+/* ---------- finale ---------- */
+.finale h2{font-size:clamp(26px,5vw,38px);margin:0 0 6px}
+.aiuto{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.aiuto .card{border-left:4px solid var(--nima)}
+.aiuto .card:nth-child(2){border-left-color:var(--luce)}
+.aiuto .card:nth-child(3){border-left-color:var(--corallo)}
+.aiuto h3{margin:0 0 6px;font-size:17px}
+.aiuto ul{margin:8px 0 0;padding-left:18px;font-size:14px;color:var(--testo-2)}
+.aiuto li{margin-bottom:5px}
+.stat{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}
+.stat div{background:var(--pannello);border:1px solid var(--bordo);border-radius:12px;padding:10px 16px;min-width:104px}
+.stat dt{font-size:11.5px;color:var(--testo-3);font-family:"IBM Plex Mono",monospace;letter-spacing:.1em;text-transform:uppercase}
+.stat dd{margin:2px 0 0;font-family:"Baloo 2",sans-serif;font-weight:800;font-size:25px;color:var(--luce)}
+
+footer{color:var(--testo-3);font-size:12.5px;text-align:center;padding-top:6px}
+footer a{color:var(--testo-2)}
+
+@media (max-width:620px){
+  .stage{min-height:0}
+  .nima-wrap{width:min(210px,60vw)}
+  .slot,.blocco{width:88px;height:96px}
+  .blocco svg,.slot svg{width:72px;height:72px}
+}
+/* i segni non si fermano mai: sono contenuto, non decorazione */
+@media (prefers-reduced-motion:reduce){
+  .screen{animation:none}
+  .ogg,.blocco,.settore,.btn{transition:none}
+}
+</style>
+</head>
+<body>
+
+
+<div class="app">
+
+  <div class="badge">
+    <b>Demo</b>
+    <span>I segni che vedi sono <strong>segnaposto animati</strong>, non LIS reale.</span>
+    <button id="spiegaBadge">Perché?</button>
+  </div>
+
+  <!-- ============ TITOLO ============ -->
+  <section class="screen" id="scr-titolo">
+    <div class="titolo">
+      <svg class="stelle" viewBox="0 0 400 200" preserveAspectRatio="none" aria-hidden="true">
+        <circle cx="34" cy="26" r="1.6" fill="#fff" opacity=".8"/><circle cx="88" cy="14" r="1.1" fill="#fff" opacity=".55"/>
+        <circle cx="150" cy="34" r="1.4" fill="#fff" opacity=".7"/><circle cx="228" cy="18" r="1" fill="#fff" opacity=".5"/>
+        <circle cx="296" cy="40" r="1.7" fill="#fff" opacity=".75"/><circle cx="352" cy="22" r="1.2" fill="#fff" opacity=".6"/>
+        <circle cx="376" cy="58" r="1" fill="#fff" opacity=".45"/><circle cx="60" cy="62" r="1.1" fill="#fff" opacity=".4"/>
+      </svg>
+      <p class="cap">Capitolo 1 · demo giocabile</p>
+      <h1>L'isola<br>di <em>Nima</em></h1>
+      <p class="sub">Una fata ti trova su una spiaggia. Parla la Lingua dei Segni Italiana, e non ha nessuna intenzione di cambiare lingua per te.</p>
+      <div class="btn-row">
+        <button class="btn" id="vai">Comincia ▸</button>
+        <button class="btn ghost" id="riprendi" hidden>Riprendi</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Cos'è questa demo</h2>
+      <p>Sono le prime due scene del capitolo 1: circa otto minuti di gioco, con tutti e tre i mini-giochi previsti — riconoscere un segno, comporre una frase, compitare con l'alfabeto manuale. Serve a far vedere <em>come si gioca</em>, non a insegnare la LIS.</p>
+      <p>Il lessico vero sarà girato con segnanti sordi madrelingua. Fino ad allora ogni segno è un'animazione stilizzata che mostra dove sta la mano, com'è fatta, come si muove e cosa fa la faccia: la struttura è quella giusta, il contenuto no.</p>
+    </div>
+  </section>
+
+  <!-- ============ NOME ============ -->
+  <section class="screen" id="scr-nome" hidden>
+    <div class="card">
+      <h2>Prima di partire</h2>
+      <p>Nima ti chiederà come ti chiami, e il primo lucchetto dell'isola si apre con il tuo nome compitato lettera per lettera. Scrivilo qui.</p>
+      <div class="nome-box">
+        <label for="inNome" class="hint" style="width:100%">Il tuo nome (massimo 6 lettere)</label>
+        <input type="text" id="inNome" maxlength="6" autocomplete="off" spellcheck="false" placeholder="ELIA">
+        <button class="btn" id="okNome">Avanti ▸</button>
+      </div>
+      <p class="hint" style="margin-top:10px">Solo lettere. Se il tuo nome è lungo, usa il diminutivo — nella versione completa il lucchetto si adatta.</p>
+    </div>
+  </section>
+
+  <!-- ============ CLASSE ============ -->
+  <section class="screen" id="scr-classe" hidden>
+    <div class="card">
+      <h2>Che tipo di viaggiatore sei?</h2>
+      <p>La classe non rende le risposte più facili e non toglie lingua da capire: cambia solo l'aiuto che hai a disposizione. Si può cambiare alla fine di ogni capitolo.</p>
+    </div>
+    <div class="classi" id="classi"></div>
+    <div class="btn-row"><button class="btn" id="okClasse" disabled>Sbarca sull'isola ▸</button></div>
+  </section>
+
+  <!-- ============ GIOCO ============ -->
+  <section class="screen" id="scr-gioco" hidden>
+    <div class="hud">
+      <span class="chip" id="hudNome">—</span>
+      <span class="chip">XP <b id="hudXp">0</b></span>
+      <button class="chip" id="apriTacc">🐚 Il Guscio <b id="hudTacc">0</b></button>
+      <span class="sp"></span>
+      <span class="chip mono" id="hudScena">Scena 1</span>
+    </div>
+    <div class="stage" id="stage">
+      <div class="scenery" id="scenery"></div>
+      <div class="stage-body">
+        <div class="gloss" id="gloss"></div>
+        <div class="nima-wrap" id="nimaWrap"><div class="glow"></div></div>
+      </div>
+      <div class="dialogo">
+        <div class="chi" id="chi">Nima</div>
+        <p id="testo">…</p>
+        <div class="tap-hint" id="tapHint"><i></i> tocca per continuare</div>
+        <button class="btn ghost avanti" id="avanti" hidden>Continua ▸</button>
+      </div>
+      <div class="gioco" id="gioco" hidden></div>
+    </div>
+  </section>
+
+  <!-- ============ FINALE ============ -->
+  <section class="screen finale" id="scr-finale" hidden>
+    <div class="card">
+      <h2>Fine della demo</h2>
+      <p id="finTesto">Hai passato una notte e una mattina sull'isola.</p>
+      <dl class="stat" id="finStat"></dl>
+      <p>Nel capitolo 1 completo ci sono altre quattro scene: i colori della marea, il sonno, il faro spento e la domanda di Nima. Il capitolo 2 comincia quando sali sulla nave.</p>
+      <div class="btn-row">
+        <button class="btn ghost" id="rivedi">Rivedi i segni imparati</button>
+        <button class="btn ghost" id="ricomincia">Ricomincia da capo</button>
+      </div>
+    </div>
+
+    <div class="card" style="border-left:4px solid var(--corallo)">
+      <h2>Una cosa detta chiaramente</h2>
+      <p>Questi non sono segni della LIS. Sono disegni animati che rispettano la <em>struttura</em> di un segno — configurazione della mano, luogo, movimento, espressione del viso — perché su quella struttura si costruiscono i mini-giochi. Il lessico reale va girato con persone sorde segnanti e validato da loro, prima di finire in mano a un bambino.</p>
+      <p>Un gioco sulla LIS fatto senza persone sorde nel gruppo di lavoro non è un gioco sulla LIS. Questa demo esiste per trovare quelle persone, non per fare a meno di loro.</p>
+    </div>
+
+    <div class="aiuto">
+      <div class="card">
+        <h3>Sei sordo o sorda, o interprete LIS?</h3>
+        <p>È di te che il progetto ha bisogno per primo.</p>
+        <ul>
+          <li>Guardare il lessico delle prime due scene e dire cosa non va</li>
+          <li>Segnare davanti a una camera, o indicare chi potrebbe farlo</li>
+          <li>Validare le frasi: quali ordini sono naturali, quali suonano storti, quali sono sbagliati</li>
+          <li>Dirci dove il tono della storia scivola nel paternalismo</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Sei un genitore, o una famiglia CODA?</h3>
+        <p>Serve sapere se un bambino ci gioca davvero.</p>
+        <ul>
+          <li>Farlo provare a tuo figlio e raccontarci dove si annoia o si blocca</li>
+          <li>Dirci quali parole gli servirebbero <em>oggi</em>, in casa</li>
+          <li>Dieci minuti di prova osservata valgono più di mille questionari</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Disegni, animi, sviluppi?</h3>
+        <p>La struttura c'è, il mestiere manca.</p>
+        <ul>
+          <li>Illustrazione e animazione dei fondali e di Nima</li>
+          <li>Front-end: la demo è vanilla, la versione vera è modulare per capitoli</li>
+          <li>Riprese e montaggio del lessico in video</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <p style="margin:0"><strong>Il progetto è e resta gratuito.</strong> Nasce a Bologna da un'idea di due persone, una delle quali è interprete LIS. Non c'è un ente dietro, non c'è un modello di business: c'è una lingua che merita di essere incontrata prima dai bambini che dai manuali.</p>
+    </div>
+  </section>
+
+  <footer>LIS Quest · demo del capitolo 1 · settembre 2026 — non è un corso di LIS. Per imparare davvero, cerca i corsi riconosciuti e l'<a href="https://www.ens.it/">Ente Nazionale Sordi</a>.</footer>
+</div>
+
+<dialog id="dlgTacc"><div class="dlg">
+  <h2>🐚 Il Guscio</h2>
+  <p>La conchiglia che Nima ti ha messo in mano. Tiene dentro tutto quello che ti ha mostrato, e l'alfabeto per intero: puoi aprirla quando vuoi, anche nel mezzo di una prova.</p>
+  <div class="tabs">
+    <button class="tb on" data-tab="alfa" type="button">Alfabeto manuale</button>
+    <button class="tb" data-tab="parole" type="button">Parole <b id="nParole">0</b></button>
+  </div>
+  <div id="tabAlfa">
+    <p style="font-size:13px;margin-bottom:10px">Le 21 lettere italiane, sempre tutte disponibili. Quelle che hai già usato sono accese. <strong>Tocca una lettera</strong> per cercarla su Spread the Sign.</p>
+    <div class="alfaGrid spenta" id="alfaGrid"></div>
+    <p style="font-size:12.5px;color:var(--testo-3);margin-top:10px">J, K, W, X e Y servono per i nomi e le parole straniere: arrivano più avanti nel capitolo.</p>
+  </div>
+  <div id="tabParole" hidden></div>
+  <p class="nota"><strong>I disegni animati qui dentro sono segnaposto.</strong> Il pulsante accanto a ogni voce apre <a href="https://www.spreadthesign.com/it.it/search/" target="_blank" rel="noopener">Spread the Sign</a>, il dizionario multilingue del European Sign Language Centre, dove il segno vero c'è in video.</p>
+  <div class="btn-row"><button class="btn ghost" onclick="document.getElementById('dlgTacc').close()">Chiudi</button></div>
+</div></dialog>
+
+<dialog id="dlgBadge"><div class="dlg">
+  <h2>Perché i segni sono finti</h2>
+  <p>Insegnare un segno sbagliato è peggio che non insegnarne nessuno: resta addosso e va poi disimparato. Finché il lessico non è girato con segnanti sordi madrelingua e validato, questa demo non mostra LIS reale.</p>
+  <p>Quello che mostra è la <strong>struttura</strong> di un segno, che è ciò su cui si reggono i mini-giochi:</p>
+  <ul style="font-size:14.5px;color:var(--testo-2)">
+    <li><strong>Configurazione</strong> — la forma della mano</li>
+    <li><strong>Luogo</strong> — dove sta rispetto al corpo</li>
+    <li><strong>Movimento</strong> — cosa fa</li>
+    <li><strong>Espressione</strong> — la faccia, che in LIS è grammatica e non emozione</li>
+  </ul>
+  <p>Nel gioco vero, ognuna di queste animazioni è una clip video. Il codice ha già lo spazio per riceverla: si cambia la sorgente, non il gioco.</p>
+  <div class="btn-row"><button class="btn ghost" onclick="document.getElementById('dlgBadge').close()">Ho capito</button></div>
+</div></dialog>
+
+<script>
+(function(){
+"use strict";
+
+/* ================= SEGNI: sistema parametrico =================
+   Ogni segno è descritto dai quattro parametri formazionali.
+   Nel prodotto finale questo oggetto porta anche `video:"...webm"`,
+   e renderSign() mostra la clip invece del disegno. */
+
+const LOC = {
+  fronte:[126,30], occhio:[124,46], guancia:[132,58], bocca:[112,68], mento:[110,80],
+  collo:[106,90], petto:[110,110], spalla:[132,98], neutro:[122,122],
+  neutroAlto:[126,102], neutroBasso:[118,140], lato:[156,116]
+};
+
+const HAND = {
+  piatta:{f:[1,1,1,1,1],sp:0}, cinque:{f:[1,1,1,1,1],sp:1}, pugno:{f:[0,0,0,0,0],sp:0},
+  indice:{f:[0,1,0,0,0],sp:0}, v:{f:[0,1,1,0,0],sp:1}, u:{f:[0,1,1,0,0],sp:0},
+  tre:{f:[1,1,1,0,0],sp:1}, pinza:{f:[2,2,0,0,0],sp:0}, artiglio:{f:[2,2,2,2,2],sp:1},
+  pollice:{f:[1,0,0,0,0],sp:0}, elle:{f:[1,1,0,0,0],sp:1}, mignolo:{f:[0,0,0,0,1],sp:0},
+  becco:{f:[2,2,2,2,2],sp:0}, ci:{f:[2,2,2,2,2],sp:0,arc:1}, o:{f:[0,0,0,0,0],sp:0,ring:1},
+  w:{f:[0,1,1,1,0],sp:1}, corna:{f:[0,1,0,0,1],sp:1}, quattro:{f:[0,1,1,1,1],sp:1}
+};
+
+/* lessico delle scene 1-2 */
+const SIGNS = {
+  ciao:      {g:'CIAO',      h:'piatta', l:'spalla',    m:'oscilla',   r:-12, nm:'sorriso'},
+  io:        {g:'IO',        h:'indice', l:'petto',     m:'tap',       r:168, nm:'neutro'},
+  tu:        {g:'TU',        h:'indice', l:'neutro',    m:'avanti',    r:-8,  nm:'neutro'},
+  nome:      {g:'NOME',      h:'u',      l:'fronte',    m:'doppioTap', r:-24, nm:'neutro'},
+  fame:      {g:'FAME',      h:'artiglio',l:'petto',    m:'giu',       r:0,   nm:'intenso'},
+  mangiare:  {g:'MANGIARE',  h:'becco',  l:'bocca',     m:'doppioTap', r:-14, nm:'neutro'},
+  mela:      {g:'MELA',      h:'pinza',  l:'guancia',   m:'ruota',     r:-20, nm:'neutro'},
+  pesce:     {g:'PESCE',     h:'piatta', l:'neutro',    m:'nuota',     r:-70, nm:'neutro'},
+  acqua:     {g:'ACQUA',     h:'w',      l:'mento',     m:'doppioTap', r:-10, nm:'neutro'},
+  bere:      {g:'BERE',      h:'ci',     l:'bocca',     m:'ruota',     r:-30, nm:'neutro'},
+  si:        {g:'SÌ',        h:'pugno',  l:'neutroAlto',m:'giu',       r:0,   nm:'affermativo'},
+  no:        {g:'NO',        h:'u',      l:'neutroAlto',m:'oscilla',   r:-6,  nm:'nega'},
+  conchiglia:{g:'CONCHIGLIA',h:'artiglio',l:'neutro',   m:'chiudi',    r:-40, nm:'neutro'},
+  /* volti per lo slot non manuale */
+  vNeutro:   {g:'VISO NEUTRO', faceOnly:1, nm:'neutro'},
+  vDomanda:  {g:'DOMANDA',     faceOnly:1, nm:'domanda'},
+  vNega:     {g:'NEGAZIONE',   faceOnly:1, nm:'nega'}
+};
+
+/* significato in italiano + parola da cercare sul dizionario reale */
+const USO = {
+  ciao:      ['Ciao',      'Il saluto. Il primo segno che Nima ti ha fatto, prima ancora di sapere chi eri.'],
+  io:        ['Io',        'Se stessi. Si indica il proprio petto: in LIS lo spazio davanti al corpo dice chi fa cosa.'],
+  tu:        ['Tu',        'La persona con cui stai parlando. Nima lo usa ogni volta che ti fa una domanda.'],
+  nome:      ['Nome',      'Il nome di qualcuno. Dopo questo segno di solito arriva la compitazione lettera per lettera.'],
+  fame:      ['Fame',      'Avere fame. Nima lo ha fatto con una faccia che non lasciava molti dubbi.'],
+  mangiare:  ['Mangiare',  'L\'azione di mangiare. Nella frase può stare prima o dopo la cosa che si mangia.'],
+  mela:      ['Mela',      'Il frutto. La prima cosa che hai trovato sulla spiaggia e che le è piaciuta.'],
+  pesce:     ['Pesce',     'L\'animale, e anche quello che finisce nel piatto. Nima lo ha preso tra gli scogli.'],
+  acqua:     ['Acqua',     'Da bere, o quella del mare. Sull\'isola serve spesso.'],
+  bere:      ['Bere',      'L\'azione di bere. Va insieme ad acqua, ma non è la stessa cosa.'],
+  si:        ['Sì',        'Affermare. La testa conta quanto la mano: senza il movimento del capo non è un sì.'],
+  no:        ['No',        'Negare. Anche qui la faccia e la testa fanno metà del lavoro grammaticale.'],
+  conchiglia:['Conchiglia','Quello che si trova sulla battigia. L\'hai notata solo perché guardi bene.']
+};
+function stsLink(parola){ return 'https://www.spreadthesign.com/it.it/search/?q=' + encodeURIComponent(parola); }
+
+/* alfabeto manuale — segnaposto visivamente distinti */
+const ALFA = {
+  A:['pugno',12], B:['piatta',0], C:['ci',0], D:['elle',-84], E:['artiglio',-28],
+  F:['pinza',-18], G:['elle',84], H:['u',84], I:['mignolo',0], K:['tre',4],
+  L:['elle',0], M:['tre',172], N:['u',176], O:['o',0], P:['tre',146],
+  Q:['elle',150], R:['v',8], S:['pugno',-32], T:['pugno',34], U:['u',0],
+  V:['v',0], Z:['indice',-52], J:['mignolo',24], W:['w',0], X:['corna',0], Y:['quattro',0]
+};
+
+/* ---------- disegno ---------- */
+function fingers(cfg){
+  let s='';
+  const spread = cfg.sp ? 13 : 4;
+  if(cfg.ring){ s+='<circle cx="0" cy="-13" r="9" fill="none" stroke="#F0D8B0" stroke-width="5"/>'; }
+  else if(cfg.arc){ s+='<path d="M -9 -18 A 12 12 0 0 1 -9 -2" fill="none" stroke="#F0D8B0" stroke-width="6" stroke-linecap="round"/>'; }
+  else{
+    for(let i=1;i<5;i++){
+      const st=cfg.f[i];
+      const len = st===1?15 : st===2?9 : 4;
+      const x = -6.6 + (i-1)*4.4;
+      const rot = (i-2.5)*spread*0.5;
+      s+='<g transform="translate('+x+',-9) rotate('+rot+')">'+
+         '<rect x="-1.7" y="'+(-len)+'" width="3.4" height="'+len+'" rx="1.7" fill="#F0D8B0"/></g>';
+    }
+  }
+  const th=cfg.f[0];
+  const thL = th===1?12 : th===2?8 : 5;
+  const thR = th===1?-52 : -18;
+  s+='<g transform="translate(-8.5,-1) rotate('+thR+')"><rect x="-1.9" y="'+(-thL)+'" width="3.8" height="'+thL+'" rx="1.9" fill="#EBD0A4"/></g>';
+  return s;
+}
+function handSVG(handName, rot, moveClass, id){
+  const cfg = HAND[handName] || HAND.piatta;
+  return '<g class="mv '+(moveClass||'')+'">'+
+    '<g transform="rotate('+(rot||0)+')">'+
+      '<rect x="-9" y="-10" width="18" height="21" rx="7" fill="#F5DFBB"/>'+
+      fingers(cfg)+
+    '</g></g>';
+}
+function faceSVG(nm){
+  let brow, mouth, tilt=0;
+  switch(nm){
+    case 'domanda': brow='<path d="M84 40 q7 -6 15 -2" /><path d="M117 38 q7 -4 15 2"/>'; mouth='<path d="M96 68 q10 5 20 0" fill="none"/>'; tilt=-3; break;
+    case 'nega':    brow='<path d="M84 44 q7 3 15 1"/><path d="M117 45 q7 -2 15 -1"/>'; mouth='<path d="M96 70 q10 -4 20 0" fill="none"/>'; tilt=6; break;
+    case 'affermativo': brow='<path d="M85 42 h14"/><path d="M117 42 h14"/>'; mouth='<path d="M95 66 q11 8 22 0" fill="none"/>'; break;
+    case 'intenso': brow='<path d="M84 46 q8 -5 15 0"/><path d="M117 46 q7 -5 15 0"/>'; mouth='<ellipse cx="106" cy="69" rx="8" ry="5" fill="#7A3B36" stroke="none"/>'; break;
+    case 'sorriso': brow='<path d="M85 41 q7 -3 14 0"/><path d="M117 41 q7 -3 14 0"/>'; mouth='<path d="M94 65 q12 11 24 0" fill="none"/>'; break;
+    default:        brow='<path d="M85 43 h14"/><path d="M117 43 h14"/>'; mouth='<path d="M97 68 h18" fill="none"/>';
+  }
+  return '<g class="testa" transform="rotate('+tilt+' 107 52)">'+
+    '<ellipse cx="107" cy="52" rx="30" ry="32" fill="#F5DFBB"/>'+
+    '<path d="M77 44 q6 -26 30 -26 q24 0 30 26 q-12 -10 -30 -10 q-18 0 -30 10z" fill="#3E7F8C"/>'+
+    '<circle cx="95" cy="53" r="3.6" fill="#23343B"/><circle cx="121" cy="53" r="3.6" fill="#23343B"/>'+
+    '<g stroke="#23343B" stroke-width="2.6" stroke-linecap="round" fill="none">'+brow+mouth+'</g>'+
+    '</g>';
+}
+/* rende un segno: figura intera o solo volto */
+function renderSign(sign, size){
+  size = size || 200;
+  const nm = sign.nm || 'neutro';
+  let body='';
+  if(!sign.faceOnly){
+    const p = LOC[sign.l] || LOC.neutro;
+    const px = p[0], py = p[1];
+    body =
+      '<path d="M96 84 q11 -5 22 0 l14 60 q-25 9 -50 0z" fill="#2E6E7C"/>'+
+      '<path d="M132 96 L'+px+' '+py+'" stroke="#F0D8B0" stroke-width="9" stroke-linecap="round"/>'+
+      '<g class="hand" style="transform:translate('+px+'px,'+py+'px)">'+handSVG(sign.h, sign.r, 'mv-'+(sign.m||'tap'))+'</g>';
+  }else{
+    body = '<path d="M96 84 q11 -5 22 0 l14 60 q-25 9 -50 0z" fill="#2E6E7C"/>';
+  }
+  return '<svg viewBox="'+(sign.faceOnly?'62 12 92 92':'40 8 180 168')+'" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="segno segnaposto: '+(sign.g||'')+'">'+
+    '<g class="ali"><ellipse cx="72" cy="86" rx="20" ry="34" fill="#8FE3D4" opacity=".28" transform="rotate(-22 72 86)"/>'+
+    '<ellipse cx="142" cy="86" rx="20" ry="34" fill="#8FE3D4" opacity=".28" transform="rotate(22 142 86)"/></g>'+
+    body + faceSVG(nm) + '</svg>';
+}
+/* glifo compatto di una lettera, per ruota e slot */
+function letterGlyph(L){
+  const a = ALFA[L] || ALFA.A;
+  return '<svg viewBox="-34 -36 68 70" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="lettera segnaposto '+L+'">'+
+    '<g transform="translate(0,2)">'+handSVG(a[0], a[1], '')+'</g></svg>';
+}
+
+/* animazioni di movimento */
+const MOVE_CSS = document.createElement('style');
+MOVE_CSS.textContent = `
+.hand{transform-box:view-box;transform-origin:0 0}
+.mv{transform-box:fill-box;transform-origin:50% 60%}
+.mv-tap{animation:mTap 1.5s ease-in-out infinite}
+.mv-doppioTap{animation:mDT 1.8s ease-in-out infinite}
+.mv-giu{animation:mGiu 1.6s ease-in-out infinite}
+.mv-su{animation:mSu 1.6s ease-in-out infinite}
+.mv-avanti{animation:mAv 1.5s ease-in-out infinite}
+.mv-oscilla{animation:mOsc 1.1s ease-in-out infinite}
+.mv-ruota{animation:mRot 1.9s ease-in-out infinite}
+.mv-cerchio{animation:mCer 2s linear infinite}
+.mv-nuota{animation:mNuo 1.9s ease-in-out infinite}
+.mv-chiudi{animation:mChi 1.8s ease-in-out infinite}
+@keyframes mTap{0%,100%{transform:translate(0,0)}45%{transform:translate(-7px,2px)}}
+@keyframes mDT{0%,100%{transform:translate(0,0)}20%{transform:translate(-6px,1px)}40%{transform:translate(0,0)}60%{transform:translate(-6px,1px)}80%{transform:translate(0,0)}}
+@keyframes mGiu{0%{transform:translate(0,-11px)}55%{transform:translate(0,10px)}100%{transform:translate(0,-11px)}}
+@keyframes mSu{0%{transform:translate(0,11px)}55%{transform:translate(0,-10px)}100%{transform:translate(0,11px)}}
+@keyframes mAv{0%,100%{transform:scale(1)}50%{transform:scale(1.2) translate(4px,0)}}
+@keyframes mOsc{0%,100%{transform:rotate(-15deg)}50%{transform:rotate(15deg)}}
+@keyframes mRot{0%,100%{transform:rotate(0)}50%{transform:rotate(78deg)}}
+@keyframes mCer{0%{transform:translate(8px,0)}25%{transform:translate(0,8px)}50%{transform:translate(-8px,0)}75%{transform:translate(0,-8px)}100%{transform:translate(8px,0)}}
+@keyframes mNuo{0%,100%{transform:translate(-9px,3px) rotate(-6deg)}50%{transform:translate(11px,-3px) rotate(8deg)}}
+@keyframes mChi{0%,100%{transform:scale(1.14)}50%{transform:scale(.86)}}
+.ali{animation:ali 2.6s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 60%}
+@keyframes ali{0%,100%{transform:scaleX(1)}50%{transform:scaleX(.86)}}
+`;
+document.head.appendChild(MOVE_CSS);
+
+/* ================= OGGETTI DI SCENA ================= */
+const OGG = {
+  mela:'<svg viewBox="0 0 80 80"><path d="M40 22c-14-9-30 2-28 18 2 17 14 30 22 30 3 0 4-2 6-2s3 2 6 2c8 0 20-13 22-30 2-16-14-27-28-18z" fill="#D64C42"/><path d="M40 24c0-8 5-13 12-14-1 8-5 13-12 14z" fill="#5FA05A"/><rect x="38" y="12" width="4" height="12" rx="2" fill="#7A5230"/></svg>',
+  pesce:'<svg viewBox="0 0 80 80"><path d="M14 40c10-16 34-20 46-8 4 4 6 8 6 8s-2 4-6 8c-12 12-36 8-46-8z" fill="#4FA8C8"/><path d="M66 40l12-10v20z" fill="#3B87A4"/><circle cx="26" cy="36" r="3.4" fill="#0E2A33"/><path d="M40 28q6 12 0 24" stroke="#8FD3E0" stroke-width="3" fill="none"/></svg>',
+  acqua:'<svg viewBox="0 0 80 80"><path d="M40 12c12 16 20 24 20 34a20 20 0 1 1-40 0c0-10 8-18 20-34z" fill="#4FC0D8"/><path d="M32 46c0 8 4 12 10 13" stroke="#DFF6FB" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>',
+  conchiglia:'<svg viewBox="0 0 80 80"><path d="M40 66C20 58 12 40 18 26c12-10 32-10 44 0 6 14-2 32-22 40z" fill="#F0C9B8"/><g stroke="#C99A86" stroke-width="2.4" fill="none"><path d="M40 66V22"/><path d="M40 66L24 28"/><path d="M40 66l16-38"/><path d="M40 66L15 38"/><path d="M40 66l25-28"/></g></svg>',
+  granchio:'<svg viewBox="0 0 80 80"><ellipse cx="40" cy="46" rx="22" ry="15" fill="#E0713F"/><circle cx="32" cy="40" r="3" fill="#2B1408"/><circle cx="48" cy="40" r="3" fill="#2B1408"/><path d="M18 44 4 34l6-8" stroke="#E0713F" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M62 44l14-10-6-8" stroke="#E0713F" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M24 60l-8 8M40 62v10M56 60l8 8" stroke="#C25A2C" stroke-width="4" stroke-linecap="round"/></svg>',
+  legno:'<svg viewBox="0 0 80 80"><path d="M10 46c14-10 30-4 42-12 8-5 18-2 18 6s-10 12-20 12-24 6-32 2-10-6-8-8z" fill="#A5825A"/><g stroke="#7C6042" stroke-width="2" fill="none"><path d="M22 44q12 4 26-2"/><path d="M30 52q14 2 26-6"/></g></svg>'
+};
+function oggSVG(k){ return OGG[k] || OGG.legno; }
+
+/* ================= CLASSI ================= */
+const CLASSI = [
+  {id:'lince', k:'Occhio di Lince', nome:'Osservatrice / Osservatore',
+   d:'Vedi i dettagli che sfuggono. Più tempo negli enigmi visivi, e una volta per sfida puoi rivedere il segno al rallentatore.',
+   em:'<svg viewBox="0 0 64 64"><ellipse cx="32" cy="32" rx="26" ry="16" fill="#12303F" stroke="#7FE0CE" stroke-width="2.5"/><circle cx="32" cy="32" r="9" fill="#7FE0CE"/><circle cx="32" cy="32" r="4" fill="#0A1E2C"/></svg>'},
+  {id:'canta', k:'Voce di Mano', nome:'Cantastorie',
+   d:'Metti le parole al loro posto. Nelle frasi puoi chiedere a Nima quale blocco va per primo — solo quello.',
+   em:'<svg viewBox="0 0 64 64"><path d="M14 44V16h22l14 12v16z" fill="#12303F" stroke="#FFC15E" stroke-width="2.5"/><path d="M20 26h20M20 34h14" stroke="#FFC15E" stroke-width="3" stroke-linecap="round"/></svg>'},
+  {id:'dita', k:'Dita Rapide', nome:'Scassinatrice / Scassinatore',
+   d:'Le mani vanno più veloci della testa. Più tempo per lettera, e ogni lucchetto ti perdona un errore.',
+   em:'<svg viewBox="0 0 64 64"><rect x="16" y="28" width="32" height="24" rx="5" fill="#12303F" stroke="#EF7361" stroke-width="2.5"/><path d="M23 28v-6a9 9 0 0 1 18 0v6" fill="none" stroke="#EF7361" stroke-width="2.5"/><circle cx="32" cy="39" r="4" fill="#EF7361"/></svg>'},
+  {id:'passo', k:'Passo Curioso', nome:'Esploratrice / Esploratore',
+   d:'Nessun aiuto nei mini-giochi: in cambio vedi le cose nascoste nelle scene, e ogni scoperta vale segni e XP in più.',
+   em:'<svg viewBox="0 0 64 64"><path d="M32 8l6 14 15 2-11 10 3 15-13-7-13 7 3-15-11-10 15-2z" fill="#12303F" stroke="#7FE0CE" stroke-width="2.5"/></svg>'}
+];
+
+/* ================= STATO ================= */
+const S = {nome:'ELIA', cls:'lince', xp:0, tacc:[], letters:[], scena:0, beat:0, finito:false};
+const KEY='lisquest-demo-v1';
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+function load(){ try{ const r=localStorage.getItem(KEY); return r?JSON.parse(r):null; }catch(e){ return null; } }
+
+const $ = s => document.querySelector(s);
+const el = {
+  scrs:{titolo:$('#scr-titolo'),nome:$('#scr-nome'),classe:$('#scr-classe'),gioco:$('#scr-gioco'),finale:$('#scr-finale')},
+  nima:$('#nimaWrap'), testo:$('#testo'), chi:$('#chi'), tap:$('#tapHint'), avanti:$('#avanti'),
+  gioco:$('#gioco'), stage:$('#stage'), scenery:$('#scenery'),
+  hudNome:$('#hudNome'), hudXp:$('#hudXp'), hudTacc:$('#hudTacc'), hudScena:$('#hudScena'), gloss:$('#gloss')
+};
+function show(name){ Object.keys(el.scrs).forEach(k=> el.scrs[k].hidden = (k!==name)); window.scrollTo({top:0,behavior:'smooth'}); }
+function addXp(n){ S.xp+=n; el.hudXp.textContent=S.xp; save(); }
+function impara(id){ if(SIGNS[id] && S.tacc.indexOf(id)<0){ S.tacc.push(id); } el.hudTacc.textContent=S.tacc.length+S.letters.length; save(); }
+function imparaLettera(L){ if(S.letters.indexOf(L)<0) S.letters.push(L); el.hudTacc.textContent=S.tacc.length+S.letters.length; save(); }
+
+/* ================= SCENOGRAFIA ================= */
+function scenery(notte){
+  el.stage.classList.toggle('giorno', !notte);
+  el.scenery.innerHTML =
+   '<svg viewBox="0 0 400 300" preserveAspectRatio="none" style="width:100%;height:100%">'+
+   (notte
+     ? '<circle cx="332" cy="46" r="16" fill="#F3ECD6" opacity=".93"/><circle cx="338" cy="41" r="4" fill="#D9D2BD" opacity=".55"/><circle cx="327" cy="52" r="2.6" fill="#D9D2BD" opacity=".5"/>'
+     : '<circle cx="336" cy="44" r="22" fill="#FFE9A8" opacity=".9"/>')+
+   '<path d="M0 176 q40 -7 80 0 t80 0 t80 0 t80 0 t80 0 V300 H0z" fill="rgba(255,255,255,.07)"/>'+
+   '<path d="M0 206 q50 -9 100 0 t100 0 t100 0 t100 0 V300 H0z" fill="rgba(255,255,255,.09)"/>'+
+   '<g opacity=".55"><path d="M40 300 q-4 -46 6 -76" stroke="#2A4A33" stroke-width="7" fill="none"/>'+
+   '<path d="M46 224 q-26 -14 -38 -4 q18 -16 40 -4 q-8 -22 8 -30 q-2 20 4 32 q16 -14 34 -6 q-20 0 -34 14z" fill="#2F6B47"/></g>'+
+   '</svg>';
+}
+
+/* ================= MOTORE DELLE SCENE ================= */
+let beats=[], bi=0, waiting=false;
+
+function say(sign, text, chi){ return {t:'sign', sign:sign, text:text, chi:chi||'Nima'}; }
+function narr(text){ return {t:'narr', text:text}; }
+
+function buildScena(n){
+  const NOME = S.nome;
+  if(n===0){
+    scenery(true);
+    el.hudScena.textContent='Scena 1 · Il primo sguardo';
+    return [
+      narr('Ti svegli con la sabbia in bocca. Non ricordi come sei arrivato qui, e la barca non c\'è più.'),
+      narr('Tra le foglie, qualcosa di piccolo si muove. E ti sta guardando.'),
+      say('ciao','Nima ti saluta. Non dice niente: lo fa con la mano.'),
+      narr('Apri la bocca per rispondere. Lei ti guarda le mani, non la faccia. Qui le parole non servono a nulla.'),
+      {t:'act', label:'Salutala anche tu', sign:'ciao', text:'Provi a copiarla. Viene male, ma lei ride.', xp:20, learn:['ciao']},
+      say('io','Si indica. Questo vuol dire: io.'),
+      say('nome','Poi porta due dita alla fronte. Nome.'),
+      {t:'spell', word:'NIMA', mostra:true, text:'E compita il suo nome, lettera per lettera, con la mano. N, I, M, A. Nima.'},
+      narr('Ti accorgi che non stai stando dietro. Lei se ne accorge prima di te: si toglie una conchiglia dalla cintura e te la mette in mano.'),
+      {t:'guscio', text:'Dentro la conchiglia ci sono tutte le lettere, ferme, che puoi guardare quanto vuoi. Da adesso è nella barra in alto: aprila quando ti serve, anche durante una prova.'},
+      say('tu','Adesso indica te.', 'Nima'),
+      say('nome','E rifà il segno di prima. Vuole sapere come ti chiami.'),
+      narr('Dietro di lei, mezza sepolta nella sabbia, c\'è una capanna. Sulla porta un sigillo di conchiglie, chiuso.'),
+      {t:'game', game:'spell', word:NOME, senzaTempo:true, testo:'Il sigillo si apre solo con il tuo nome. Nessuna fretta: qui il tempo non corre.'},
+      {t:'reward', xp:60, learn:['ciao','io','tu','nome'],
+       text:'Il sigillo si illumina e la porta cede. Dentro c\'è una branda, una lanterna, e la prima notte tranquilla da quando sei qui.'}
+    ];
+  }
+  if(n===1){
+    scenery(false);
+    el.hudScena.textContent='Scena 2 · Fame';
+    return [
+      narr('Mattina. La luce entra dalle fessure della capanna e Nima è seduta sul tuo petto, che ti fissa.'),
+      say('fame','Si passa la mano sulla pancia, con la faccia di chi non scherza.'),
+      say('mangiare','Poi porta le dita alla bocca, due volte.'),
+      narr('Fuori, la marea della notte ha lasciato delle cose sulla spiaggia.'),
+      say('mela','Nima ti mostra una cosa sola, e aspetta che tu capisca quale.'),
+      {t:'game', game:'riddle', target:'mela', opts:['mela','conchiglia','granchio','pesce','legno'],
+       testo:'Guarda il segno e tocca la cosa giusta sulla spiaggia.'},
+      {t:'reward', xp:40, learn:['fame','mangiare','mela'], text:'Le porti la mela. Sparisce in quattro morsi: non sembrava così piccola, prima.'},
+      say('si','Fa segno di sì con tutta la testa.'),
+      narr('Poi ti guarda. Tocca a te: adesso è lei a chiederti cosa vuoi mangiare.'),
+      say('pesce','Indica il mare, e fa il segno di quello che ci nuota dentro.'),
+      {t:'game', game:'syntax', testo:'Dille che vuoi mangiare il pesce. Componi la frase con i suoi segni, nell\'ordine che ha senso in LIS.'},
+      {t:'reward', xp:70, learn:['pesce','si','io'],
+       text:'Nima capisce, alza gli occhi al cielo come per dire "e va bene", e vola verso gli scogli. Torna con un pesce più grande di lei.'},
+      narr('Mangiate insieme, seduti sulla sabbia. Da qualche parte oltre gli scogli, una campana suona due volte.')
+    ];
+  }
+  return [];
+}
+
+function runBeat(){
+  const b = beats[bi];
+  if(!b){ finisci(); return; }
+  el.gioco.hidden = true; el.gioco.innerHTML='';
+  el.avanti.hidden = true; el.tap.hidden = true;
+  if(b.t!=='narr') el.nima.classList.remove('ombra');
+
+  if(b.t==='narr'){
+    el.chi.textContent='L\'isola';
+    el.testo.className='narr'; el.testo.textContent=b.text;
+    const nascosta = (S.scena===0 && bi<2);
+    el.nima.classList.toggle('ombra', nascosta);
+    mostraSegno(IDLE, nascosta ? '' : '…');
+    el.tap.hidden=false; waiting=true;
+  }
+  else if(b.t==='sign'){
+    el.nima.classList.remove('ombra');
+    el.chi.textContent=b.chi||'Nima';
+    el.testo.className=''; el.testo.textContent=b.text;
+    mostraSegno(SIGNS[b.sign]);
+    if(b.sign && SIGNS[b.sign]) impara(b.sign);
+    el.tap.hidden=false; waiting=true;
+  }
+  else if(b.t==='act'){
+    el.chi.textContent='Tu'; el.testo.className=''; el.testo.textContent=b.text||'';
+    mostraSegno(SIGNS[b.sign]);
+    el.avanti.hidden=false; el.avanti.textContent=b.label+' ▸';
+    waiting=false;
+    el.avanti.onclick=()=>{ if(b.xp) addXp(b.xp); (b.learn||[]).forEach(impara); next(); };
+    return;
+  }
+  else if(b.t==='spell'){
+    el.chi.textContent='Nima'; el.testo.className=''; el.testo.textContent=b.text;
+    mostraCompitato(b.word);
+    b.word.split('').forEach(imparaLettera);
+    el.tap.hidden=false; waiting=true;
+  }
+  else if(b.t==='guscio'){
+    el.chi.textContent='Il Guscio'; el.testo.className=''; el.testo.textContent=b.text;
+    el.nima.innerHTML='<div class="glow"></div>'+
+      '<div style="width:62%;margin:0 auto">'+OGG.conchiglia+'</div>';
+    setGloss('IL GUSCIO');
+    el.avanti.hidden=false; el.avanti.textContent='Aprila ▸';
+    waiting=false;
+    el.avanti.onclick=()=>{ apriTaccuino(); el.avanti.textContent='Continua ▸'; el.avanti.onclick=next; };
+    return;
+  }
+  else if(b.t==='game'){
+    el.chi.textContent='Prova'; el.testo.className=''; el.testo.textContent=b.testo;
+    waiting=false;
+    if(b.game==='spell') giocoSpell(b.word, b.senzaTempo);
+    else if(b.game==='riddle') giocoRiddle(b);
+    else giocoSyntax();
+    return;
+  }
+  else if(b.t==='reward'){
+    el.chi.textContent='…'; el.testo.className=''; el.testo.textContent=b.text;
+    addXp(b.xp||0); (b.learn||[]).forEach(impara);
+    mostraSegno(SIGNS[(b.learn||['ciao'])[0]] || SIGNS.ciao);
+    el.tap.hidden=false; waiting=true;
+  }
+  save();
+}
+function next(){ bi++; S.beat=bi; save(); runBeat(); }
+
+const IDLE = {g:'', h:'piatta', l:'neutroBasso', m:'oscilla', r:4, nm:'neutro'};
+function setGloss(txt){
+  el.gloss.textContent = txt || '';
+  el.gloss.classList.toggle('on', !!txt);
+}
+function mostraSegno(sign, gloss){
+  if(!sign) return;
+  el.nima.innerHTML = '<div class="glow"></div>' + renderSign(sign);
+  setGloss(gloss!==undefined ? gloss : (sign.g||''));
+}
+function mostraCompitato(word){
+  const L = word.split('');
+  let i=0;
+  el.nima.innerHTML='<div class="glow"></div><div id="spellBox" style="width:64%;margin:0 auto"></div>';
+  const box = document.getElementById('spellBox');
+  function tick(){
+    if(!document.body.contains(box)) return;
+    box.innerHTML = letterGlyph(L[i]);
+    setGloss(word + ' · ' + L[i]);
+    i=(i+1)%L.length;
+  }
+  tick(); const t=setInterval(()=>{ if(!document.body.contains(box)){clearInterval(t);return;} tick(); }, 1900);
+}
+
+el.stage.addEventListener('click', (e)=>{
+  if(!waiting) return;
+  if(e.target.closest('button')) return;
+  next();
+});
+
+/* ================= MINI-GIOCO 1 · DATTILOLOGIA ================= */
+function giocoSpell(word, senzaTempo){
+  const L = word.split('');
+  const perLetter = S.cls==='dita' ? 4200 : 3200;
+  let assorbe = S.cls==='dita' ? 1 : 0;
+  const set = costruisciSet(L);
+  let idx=0, tempo=L.length*perLetter, tot=tempo, timer=null, fase='guarda';
+  const guardaMs = 1500;
+
+  el.gioco.hidden=false;
+  el.gioco.innerHTML =
+    '<h3>Il sigillo delle conchiglie</h3>'+
+    '<p class="istr" id="istr">Guarda con calma: il tuo nome, lettera per lettera.</p>'+
+    '<div class="barra" id="barra" hidden><i style="width:100%"></i></div>'+
+    '<div class="parola" id="parola"></div>'+
+    '<div class="ruota-area"><div class="ruota" id="ruota"><div class="centro">tocca la forma<br>della mano</div></div></div>'+
+    '<p class="feedback" id="fb"></p>'+
+    '<div class="gioco-foot" id="foot">'+
+      '<button class="btn ghost" type="button" id="rivediL">🔁 Rivedi le lettere</button>'+
+      '<button class="btn ghost" type="button" id="apriGuscio2">🐚 Apri il Guscio</button>'+
+    '</div>';
+  document.getElementById('apriGuscio2').onclick = apriTaccuino;
+
+  const parola=document.getElementById('parola'), ruota=document.getElementById('ruota'),
+        fb=document.getElementById('fb'), barra=document.getElementById('barra'), istr=document.getElementById('istr');
+
+  function disegnaSlot(){
+    parola.innerHTML = L.map((L1,i)=>{
+      const fatta = i<idx;
+      return '<div class="slot-l '+(fatta?'done':'')+(i===idx&&fase==='gioca'?' att':'')+'">'+
+        (fase==='guarda'||fatta ? letterGlyph(L1) : '<span style="color:#43606E;font-size:22px">?</span>')+
+        (fatta?'<b>'+L1+'</b>':'')+'</div>';
+    }).join('');
+  }
+  function disegnaRuota(){
+    const n=set.length, R=34;
+    ruota.querySelectorAll('.settore').forEach(s=>s.remove());
+    set.forEach((L1,i)=>{
+      const ang = (i/n)*Math.PI*2 - Math.PI/2;
+      const b=document.createElement('button');
+      b.className='settore'; b.type='button';
+      b.style.left = (50 + Math.cos(ang)*R - 15)+'%';
+      b.style.top  = (50 + Math.sin(ang)*R - 15)+'%';
+      b.innerHTML = letterGlyph(L1);
+      b.setAttribute('aria-label','forma della mano numero '+(i+1));
+      b.onclick=()=>scegli(L1,b);
+      ruota.appendChild(b);
+    });
+  }
+  function scegli(L1,b){
+    if(fase!=='gioca') return;
+    if(L1===L[idx]){
+      b.classList.add('ok'); setTimeout(()=>b.classList.remove('ok'),320);
+      imparaLettera(L1); idx++; disegnaSlot();
+      if(idx>=L.length){ clearInterval(timer); vinto(); }
+    }else{
+      b.classList.add('no'); setTimeout(()=>b.classList.remove('no'),320);
+      if(assorbe>0){ assorbe--; fb.className='feedback'; fb.textContent='Dita Rapide: il sigillo ti perdona questa. Ne resta '+assorbe+'.'; }
+      else{ fb.className='feedback no'; fb.textContent='Non è quella. Guarda dove stanno le dita.'; }
+    }
+  }
+  function vinto(){
+    fase='fatto'; fb.className='feedback ok'; fb.textContent='Il sigillo si apre.';
+    barra.hidden=true; addXp(40);
+    document.getElementById('foot').innerHTML='';
+    const b=document.createElement('button'); b.className='btn'; b.textContent='Entra ▸';
+    b.onclick=next; document.getElementById('foot').appendChild(b);
+  }
+  function riparti(quanto){
+    clearInterval(timer);
+    fase='guarda';
+    if(quanto!=='soloRivedi') idx=0;
+    istr.textContent='Riguarda con calma. Il tempo qui non ti fa perdere niente.';
+    disegnaSlot(); barra.hidden=true;
+    animaGuarda();
+    setTimeout(iniziaGioco, 900 + L.length*guardaMs);
+  }
+  let ag=null;
+  function animaGuarda(){
+    let i=0; clearInterval(ag);
+    ag=setInterval(()=>{
+      const slots=parola.querySelectorAll('.slot-l');
+      slots.forEach(s=>s.classList.remove('att'));
+      if(slots[i]) slots[i].classList.add('att');
+      i=(i+1)%L.length;
+    }, guardaMs);
+  }
+  function iniziaGioco(){
+    clearInterval(ag);
+    if(fase==='fatto') return;
+    fase='gioca'; tempo=tot;
+    istr.textContent = senzaTempo
+      ? 'Adesso tocca a te: le stesse forme, nello stesso ordine. Prenditi il tempo che vuoi.'
+      : 'Adesso tocca a te: le stesse forme, nello stesso ordine.';
+    disegnaSlot();
+    clearInterval(timer);
+    if(senzaTempo){ barra.hidden=true; return; }
+    barra.hidden=false;
+    timer=setInterval(()=>{
+      tempo-=100;
+      const p=Math.max(0,tempo/tot);
+      barra.querySelector('i').style.width=(p*100)+'%';
+      barra.classList.toggle('calda', p<.3);
+      if(tempo<=0){ clearInterval(timer); fb.className='feedback'; fb.textContent='Tempo finito — non hai perso niente. Si ricomincia più piano.'; riparti(); }
+    },100);
+  }
+  document.getElementById('rivediL').onclick=()=>{ if(fase!=='fatto') riparti('soloRivedi'); };
+  disegnaSlot(); disegnaRuota(); animaGuarda();
+  setTimeout(iniziaGioco, 1000 + L.length*guardaMs);
+}
+function costruisciSet(L){
+  const uniche = L.filter((v,i)=>L.indexOf(v)===i);
+  const pool = 'AEIOUMSTLNRV'.split('').filter(x=>uniche.indexOf(x)<0);
+  const set = uniche.slice();
+  while(set.length<8 && pool.length) set.push(pool.splice(Math.floor(Math.random()*pool.length),1)[0]);
+  for(let i=set.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=set[i]; set[i]=set[j]; set[j]=t; }
+  return set;
+}
+
+/* ================= MINI-GIOCO 2 · ENIGMA VISIVO ================= */
+function giocoRiddle(b){
+  const durata = S.cls==='lince' ? 20000 : 14000;
+  let tempo=durata, timer=null, errori=0, rallenta = S.cls==='lince', finito=false;
+  const opts = b.opts.slice();
+  for(let i=opts.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=opts[i]; opts[i]=opts[j]; opts[j]=t; }
+
+  el.gioco.hidden=false;
+  el.gioco.innerHTML =
+    '<h3>Cosa vuole Nima?</h3>'+
+    '<p class="istr">Il segno è lì sopra, in loop. Tocca la cosa giusta prima che la luce si spenga.</p>'+
+    '<div class="barra" id="barra"><i style="width:100%"></i></div>'+
+    '<div style="display:flex;justify-content:center"><div style="width:132px">'+renderSign(SIGNS[b.target])+'</div></div>'+
+    '<div class="oggetti" id="ogg"></div>'+
+    '<p class="feedback" id="fb"></p>'+
+    '<div class="gioco-foot" id="foot"></div>';
+
+  const cont=document.getElementById('ogg'), fb=document.getElementById('fb'),
+        barra=document.getElementById('barra'), foot=document.getElementById('foot');
+
+  opts.forEach(k=>{
+    const btn=document.createElement('button');
+    btn.className='ogg'; btn.type='button'; btn.innerHTML=oggSVG(k);
+    btn.setAttribute('aria-label','oggetto '+(opts.indexOf(k)+1));
+    btn.onclick=()=>{
+      if(finito) return;
+      if(k===b.target){
+        finito=true; clearInterval(timer); btn.classList.add('giusto');
+        btn.innerHTML += '<span>giusto</span>';
+        fb.className='feedback ok'; fb.textContent='Sì. È quella.';
+        addXp(errori? 25:40);
+        foot.innerHTML=''; const c=document.createElement('button');
+        c.className='btn'; c.textContent='Continua ▸'; c.onclick=next; foot.appendChild(c);
+      }else{
+        errori++; btn.classList.add('sbagliato');
+        setTimeout(()=>btn.classList.remove('sbagliato'),340);
+        fb.className='feedback no';
+        fb.textContent = errori>=2
+          ? 'Guarda dove sta la mano, non solo come è fatta: è quello che cambia.'
+          : 'No. Riguarda il segno.';
+        if(errori>=3){
+          finito=true; clearInterval(timer);
+          fb.className='feedback'; fb.textContent='Te la mostro io. Poi riproviamo insieme.';
+          [].forEach.call(cont.children,(c2,i)=>{ if(opts[i]===b.target) c2.classList.add('giusto'); });
+          foot.innerHTML=''; const c=document.createElement('button');
+          c.className='btn'; c.textContent='Ho capito ▸'; c.onclick=()=>{ addXp(15); next(); }; foot.appendChild(c);
+        }
+      }
+    };
+    cont.appendChild(btn);
+  });
+
+  const guscioBtn=document.createElement('button');
+  guscioBtn.className='btn ghost'; guscioBtn.type='button'; guscioBtn.textContent='🐚 Apri il Guscio';
+  guscioBtn.onclick=apriTaccuino; foot.appendChild(guscioBtn);
+
+  if(rallenta){
+    const r=document.createElement('button');
+    r.className='btn ghost'; r.type='button'; r.textContent='🔍 Fermo immagine (Occhio di Lince)';
+    r.onclick=()=>{
+      const g=el.gioco.querySelector('.hand .mv');
+      if(g){ g.style.animationDuration='4.2s'; }
+      r.disabled=true; r.textContent='Rallentato';
+    };
+    foot.appendChild(r);
+  }
+  timer=setInterval(()=>{
+    tempo-=100; const p=Math.max(0,tempo/durata);
+    barra.querySelector('i').style.width=(p*100)+'%';
+    barra.classList.toggle('calda',p<.3);
+    if(tempo<=0){
+      clearInterval(timer);
+      fb.className='feedback'; fb.textContent='La luce si è spenta — non succede niente. Nima ripete più piano.';
+      const g=el.gioco.querySelector('.hand .mv'); if(g) g.style.animationDuration='3.4s';
+      barra.hidden=true;
+    }
+  },100);
+}
+
+/* ================= MINI-GIOCO 3 · COSTRUZIONE SINTATTICA ================= */
+function giocoSyntax(){
+  const blocchi = ['io','pesce','mangiare'];
+  const ordini = [['io','pesce','mangiare'],['io','mangiare','pesce']];
+  const naturale = 'io,pesce,mangiare';
+  const slots=[null,null,null];
+  let sel=null, aiuto = S.cls==='canta';
+
+  const mix = blocchi.slice();
+  for(let i=mix.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=mix[i]; mix[i]=mix[j]; mix[j]=t; }
+
+  el.gioco.hidden=false;
+  el.gioco.innerHTML =
+    '<h3>Dillo a Nima</h3>'+
+    '<p class="istr">Tocca un segno, poi tocca la casella dove va. Puoi anche trascinarlo. Nessun tempo: pensaci.</p>'+
+    '<div class="frase" id="frase"></div>'+
+    '<div class="blocchi" id="blocchi"></div>'+
+    '<p class="feedback" id="fb"></p>'+
+    '<div class="gioco-foot" id="foot"></div>';
+
+  const frase=document.getElementById('frase'), pool=document.getElementById('blocchi'),
+        fb=document.getElementById('fb'), foot=document.getElementById('foot');
+
+  function render(){
+    frase.innerHTML='';
+    slots.forEach((v,i)=>{
+      const b=document.createElement('button');
+      b.className='slot'+(sel!==null?' att':''); b.type='button';
+      b.innerHTML='<span class="n">'+(i+1)+'</span>'+(v? renderSign(SIGNS[v])+'<span class="gl">'+SIGNS[v].g+'</span>' : '');
+      b.setAttribute('aria-label','casella '+(i+1)+(v?': '+SIGNS[v].g:' vuota'));
+      b.onclick=()=>{
+        if(sel!==null){ if(slots.indexOf(sel)>=0) slots[slots.indexOf(sel)]=null; slots[i]=sel; sel=null; render(); controlla(); }
+        else if(v){ slots[i]=null; render(); }
+      };
+      b.ondragover=e=>e.preventDefault();
+      b.ondrop=e=>{ e.preventDefault(); const id=e.dataTransfer.getData('text'); if(!id)return;
+        if(slots.indexOf(id)>=0) slots[slots.indexOf(id)]=null; slots[i]=id; sel=null; render(); controlla(); };
+      frase.appendChild(b);
+    });
+    pool.innerHTML='';
+    mix.forEach(id=>{
+      const usato = slots.indexOf(id)>=0;
+      const b=document.createElement('button');
+      b.className='blocco'+(usato?' usato':''); b.type='button'; b.draggable=true;
+      b.setAttribute('aria-pressed', sel===id?'true':'false');
+      b.innerHTML=renderSign(SIGNS[id])+'<span class="gl">'+SIGNS[id].g+'</span>';
+      b.onclick=()=>{ sel = sel===id?null:id; render(); };
+      b.ondragstart=e=>{ e.dataTransfer.setData('text',id); sel=id; };
+      pool.appendChild(b);
+    });
+  }
+  function controlla(){
+    if(slots.indexOf(null)>=0){ fb.className='feedback'; fb.textContent=''; return; }
+    const s=slots.join(',');
+    const valido = ordini.some(o=>o.join(',')===s);
+    foot.innerHTML='';
+    if(valido && s===naturale){
+      fb.className='feedback ok'; fb.textContent='Nima capisce subito. È l\'ordine che userebbe lei.';
+      addXp(70); avantiBtn('Guarda cosa fa ▸');
+    }else if(valido){
+      fb.className='feedback ok'; fb.textContent='Va bene: si capisce. Nima però lo direbbe mettendo il pesce prima del verbo.';
+      addXp(50); avantiBtn('Guarda cosa fa ▸');
+    }else{
+      fb.className='feedback no'; fb.textContent='Nima inclina la testa: così non le arriva. Prova a spostare qualcosa.';
+      if(aiuto) aiutoBtn();
+    }
+  }
+  function avantiBtn(t){
+    const b=document.createElement('button'); b.className='btn'; b.textContent=t;
+    b.onclick=next; foot.appendChild(b);
+  }
+  function aiutoBtn(){
+    const b=document.createElement('button'); b.className='btn ghost';
+    b.textContent='Chiedi a Nima (Voce di Mano)';
+    b.onclick=()=>{ fb.className='feedback'; fb.textContent='Nima ti indica: chi fa l\'azione va per primo.'; b.disabled=true; };
+    foot.appendChild(b);
+  }
+  const gb=document.createElement('button');
+  gb.className='btn ghost'; gb.type='button'; gb.textContent='🐚 Apri il Guscio';
+  gb.onclick=apriTaccuino; foot.appendChild(gb);
+  render();
+  if(aiuto) aiutoBtn();
+}
+
+/* ================= FINALE ================= */
+function finisci(){
+  if(S.scena===0){ S.scena=1; bi=0; S.beat=0; beats=buildScena(1); save(); runBeat(); return; }
+  S.finito=true; save();
+  document.getElementById('finTesto').textContent =
+    'Hai passato una notte e una mattina sull\'isola, e Nima non ha detto una parola in italiano. '+
+    (S.tacc.length+S.letters.length)+' segni dopo, vi capite lo stesso.';
+  const st=document.getElementById('finStat');
+  st.innerHTML =
+    '<div><dt>XP</dt><dd>'+S.xp+'</dd></div>'+
+    '<div><dt>Segni</dt><dd>'+S.tacc.length+'</dd></div>'+
+    '<div><dt>Lettere</dt><dd>'+S.letters.length+'</dd></div>'+
+    '<div><dt>Classe</dt><dd style="font-size:17px">'+(CLASSI.find(c=>c.id===S.cls)||{}).k+'</dd></div>';
+  show('finale');
+}
+
+/* ================= IL GUSCIO (dizionario) ================= */
+const ALFA_IT = 'ABCDEFGHILMNOPQRSTUVZ'.split('');
+function disegnaAlfabeto(){
+  document.getElementById('alfaGrid').innerHTML = ALFA_IT.map(L=>
+    '<a href="'+stsLink(L)+'" target="_blank" rel="noopener" class="'+(S.letters.indexOf(L)>=0?'vista':'')+'" '+
+    'title="cerca la lettera '+L+' su Spread the Sign">'+letterGlyph(L)+'<b>'+L+'</b></a>'
+  ).join('');
+}
+function disegnaParole(){
+  const c=document.getElementById('tabParole');
+  document.getElementById('nParole').textContent = S.tacc.length;
+  if(!S.tacc.length){ c.innerHTML='<p class="vuoto">Ancora niente. Nima non ti ha mostrato nessuna parola.</p>'; return; }
+  c.innerHTML = S.tacc.map(id=>{
+    const s=SIGNS[id], u=USO[id]||[s.g,''];
+    return '<div class="voce">'+
+      '<div class="art">'+renderSign(s)+'</div>'+
+      '<div><h4>'+s.g+'</h4><p>'+u[1]+'</p>'+
+      '<a class="sts" href="'+stsLink(u[0])+'" target="_blank" rel="noopener">▶ il segno vero su Spread the Sign</a></div>'+
+    '</div>';
+  }).join('');
+}
+function apriTaccuino(){
+  disegnaAlfabeto(); disegnaParole();
+  document.getElementById('dlgTacc').showModal();
+}
+document.querySelectorAll('.tb').forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll('.tb').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    const p = b.dataset.tab==='parole';
+    document.getElementById('tabAlfa').hidden = p;
+    document.getElementById('tabParole').hidden = !p;
+  };
+});
+document.getElementById('apriTacc').onclick=apriTaccuino;
+document.getElementById('rivedi').onclick=apriTaccuino;
+document.getElementById('spiegaBadge').onclick=()=>document.getElementById('dlgBadge').showModal();
+
+/* ================= NAVIGAZIONE ================= */
+document.getElementById('vai').onclick=()=>show('nome');
+document.getElementById('okNome').onclick=()=>{
+  const raw=document.getElementById('inNome').value || 'ELIA';
+  const pulito = raw.toUpperCase().normalize('NFD').replace(/[^A-Z]/g,'').slice(0,6) || 'ELIA';
+  S.nome=pulito; save(); show('classe');
+};
+document.getElementById('inNome').addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('okNome').click(); });
+
+const contClassi=document.getElementById('classi');
+CLASSI.forEach(c=>{
+  const b=document.createElement('button');
+  b.className='classe'; b.type='button'; b.setAttribute('aria-pressed','false');
+  b.innerHTML='<div class="em">'+c.em+'</div><div class="k">'+c.k+'</div><h3>'+c.nome+'</h3><p>'+c.d+'</p>';
+  b.onclick=()=>{
+    S.cls=c.id;
+    contClassi.querySelectorAll('.classe').forEach(x=>x.setAttribute('aria-pressed','false'));
+    b.setAttribute('aria-pressed','true');
+    document.getElementById('okClasse').disabled=false;
+  };
+  contClassi.appendChild(b);
+});
+document.getElementById('okClasse').onclick=()=>{ save(); avvia(0,0); };
+document.getElementById('ricomincia').onclick=()=>{
+  S.xp=0;S.tacc=[];S.letters=[];S.scena=0;S.beat=0;S.finito=false;save();show('titolo');
+};
+
+function avvia(scena,beat){
+  S.scena=scena; bi=beat||0; S.beat=bi;
+  el.hudNome.textContent='🧭 '+S.nome;
+  el.hudXp.textContent=S.xp; el.hudTacc.textContent=S.tacc.length+S.letters.length;
+  beats=buildScena(scena);
+  show('gioco'); runBeat();
+}
+
+/* ripresa da localStorage */
+function boot(hot){
+  const salvato = load();
+  if(salvato && (salvato.xp>0 || salvato.scena>0)){
+    Object.assign(S, salvato);
+    const r=document.getElementById('riprendi');
+    r.hidden=false;
+    r.textContent = S.finito ? 'Rivedi il finale' : 'Riprendi ('+S.nome+', '+S.xp+' XP)';
+    r.onclick=()=>{ if(S.finito) finisci(); else avvia(S.scena, S.beat); };
+  }
+  if(hot && hot.scena!==undefined){ Object.assign(S,hot); if(hot.inGioco) avvia(S.scena,S.beat); }
+}
+try{
+  if(window.claude && window.claude.hot && window.claude.hot.snapshot){
+    window.claude.hot.snapshot(()=>Object.assign({}, S, {inGioco: !el.scrs.gioco.hidden}));
+  }
+  if(window.claude && window.claude.hot && window.claude.hot.ready) window.claude.hot.ready(boot);
+  else boot((window.claude && window.claude.hot && window.claude.hot.data) || {});
+}catch(e){ boot({}); }
+
+})();
+</script>
+
+</body>
+</html>
