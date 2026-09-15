@@ -266,7 +266,6 @@ footer a{color:var(--text-2)}
     <dl class="factstrip">
       <div class="fact"><dt>Genere</dt><dd>Visual novel RPG con mini-giochi didattici</dd></div>
       <div class="fact"><dt>Piattaforma</dt><dd>Web app responsive (PWA), tablet-first</dd></div>
-      <div class="fact"><dt>Target</dt><dd>8–14 anni, udenti e sordi segnanti</dd></div>
       <div class="fact"><dt>Sessione</dt><dd>10–14 minuti, interrompibile</dd></div>
       <div class="fact"><dt>Vincolo MVP</dt><dd>Nessuna webcam, nessuna computer vision</dd></div>
       <div class="fact"><dt>Slice</dt><dd>Capitolo 1 — L'isola di Nima, 6 scene</dd></div>
@@ -280,7 +279,6 @@ footer a{color:var(--text-2)}
     <ol>
       <li><a href="#s1"><span>01</span> Visione e pilastri</a></li>
       <li><a href="#s2"><span>02</span> Contesto e posizionamento</a></li>
-      <li><a href="#s3"><span>03</span> Il giocatore</a></li>
       <li><a href="#s4"><span>04</span> Core loop</a></li>
       <li><a href="#s5"><span>05</span> Classi</a></li>
       <li><a href="#s6"><span>06</span> Skill tree LIS</a></li>
@@ -291,7 +289,6 @@ footer a{color:var(--text-2)}
       <li><a href="#s11"><span>11</span> UX e accessibilità</a></li>
       <li><a href="#s12"><span>12</span> Architettura modulare</a></li>
       <li><a href="#s13"><span>13</span> Analytics e KPI</a></li>
-      <li><a href="#s14"><span>14</span> Roadmap e rischi</a></li>
     </ol>
   </nav>
 
@@ -323,28 +320,9 @@ footer a{color:var(--text-2)}
   </div>
   <p>Dal maggio 2021 la Repubblica <strong>riconosce, promuove e tutela la LIS e la LIS tattile</strong> (art. 34-<i>ter</i> del cosiddetto decreto Sostegni, convertito in legge il 19 maggio 2021), con il riconoscimento della figura professionale dell'interprete e la previsione di campagne pubbliche di diffusione. Questo apre due canali che l'MVP dovrebbe tenere aperti fin dall'architettura: il consumer familiare e il canale scolastico/istituzionale.</p>
   <p>L'offerta digitale italiana esistente si divide tra <strong>dizionari video</strong> (MeLISegno e simili: ottimi come archivio, passivi come esperienza) e <strong>materiali cartacei o da tavolo</strong> per la scuola primaria (le raccolte di giochi didattici sul modello Erickson). Nessuno dei due presidia il terreno di mezzo: una progressione narrativa lunga, con difficoltà bilanciata sui dati, che tenga un bambino di dieci anni per sei sessioni consecutive. È lì che sta LIS Quest.</p>
-  <div class="note"><span class="lab">Rischio reputazionale — da presidiare dal giorno uno</span>
-    <p>Un prodotto sulla LIS realizzato senza persone sorde nel team di contenuto viene letto dalla comunità come appropriazione, e la comunità sorda italiana è piccola e connessa: un giudizio negativo circola in giorni. La consulenza di segnanti sordi madrelingua non è una voce di budget da rimandare alla fase di QA — è un requisito di fase F0.</p>
-    <p>Ha anche una conseguenza narrativa: la fata Nima non deve funzionare come "creatura magica che non può parlare". Segna perché segnare è la sua lingua, non perché le manca qualcosa. La differenza è tutta nel copy, e la comunità la nota.</p>
-  </div>
+
 </section>
 
-<section id="s3">
-  <div class="sec-head"><span class="sec-num">03</span><h2>Il giocatore</h2>
-    <p>Un target 8–14 non è un target: sono due. Il documento assume un design center a 10–11 anni, con due leve di calibrazione.</p>
-  </div>
-  <div class="tbl-wrap"><table>
-    <thead><tr><th>Segmento</th><th>Contesto d'uso</th><th>Motivazione</th><th>Conseguenza di design</th></tr></thead>
-    <tbody>
-      <tr><td><strong>Bambino udente 8–10</strong></td><td>Tablet a casa, con un adulto nei paraggi</td><td>Curiosità, la storia</td><td>Testo scritto ridotto al minimo, icone prima delle parole, scene brevi (2–3 min)</td></tr>
-      <tr><td><strong>Ragazzo udente 11–14</strong></td><td>Telefono o desktop, in autonomia</td><td>Competenza, punteggi, progressione</td><td>Skill tree visibile, stelle, sfide opzionali più dure</td></tr>
-      <tr><td><strong>Compagno o fratello di un bambino sordo</strong></td><td>Casa o scuola, spesso spinto da un adulto</td><td>Comunicare davvero con qualcuno</td><td>Lessico funzionale utile subito, "porta un segno a casa" a fine sessione</td></tr>
-      <tr><td><strong>Bambino sordo segnante</strong></td><td>Casa o istituto</td><td>Vedere la propria lingua in un gioco</td><td>Modalità Esperto che salta la semina; mai trattarlo come un principiante udente</td></tr>
-      <tr><td><strong>Insegnante / educatore</strong></td><td>LIM in classe, gruppo</td><td>Attività strutturata, misurabile</td><td>Modalità classe: scene proiettabili, nessun login personale, report di gruppo</td></tr>
-    </tbody>
-  </table></div>
-  <p>Il quarto segmento è quello che tutti dimenticano ed è quello che dà legittimità al prodotto. Un gioco sulla LIS che un bambino sordo non può giocare alla pari è una contraddizione in termini.</p>
-</section>
 
 <section id="s4">
   <div class="sec-head"><span class="sec-num">04</span><h2>Core loop</h2>
@@ -589,7 +567,6 @@ footer a{color:var(--text-2)}
   <div class="tbl-wrap"><table>
     <thead><tr><th>Requisito</th><th>Specifica</th><th>Perché</th></tr></thead>
     <tbody>
-      <tr><td>Interprete</td><td>Segnanti sordi madrelingua, non interpreti udenti</td><td>Naturalezza dei non manuali e legittimità presso la comunità</td></tr>
       <tr><td>Inquadratura</td><td>Dal bacino a ~20 cm sopra il capo, 4:5</td><td>Lo spazio segnico va tutto dentro il quadro</td></tr>
       <tr><td>Frame rate</td><td>50 fps in ripresa, 30 fps in consegna</td><td>I movimenti rapidi delle dita non devono impastarsi</td></tr>
       <tr><td>Otturatore</td><td>Tempi brevi, niente motion blur sulle mani</td><td>La configurazione va letta a fotogramma fermo (0,5×)</td></tr>
@@ -702,34 +679,9 @@ footer a{color:var(--text-2)}
     <li><strong>Primo tentativo corretto &gt; 90%</strong> e tempo mediano &lt; metà del timer → si irrigidisce di uno scalino, ma non prima di 500 istanze.</li>
   </ul>
   <p>L'asimmetria è voluta: <strong>si facilita in fretta e si indurisce piano.</strong> Il costo di una sfida troppo facile è la noia di qualche sessione; il costo di una sfida troppo difficile è un bambino che si convince di non essere capace di imparare la LIS, ed è un danno che nessuna metrica recupera.</p>
-  <div class="note"><span class="lab">Minori e dati — vincolo, non nota a piè di pagina</span>
-    <p>Il target è composto da minori, in Italia sotto la soglia di consenso digitale autonomo. Conseguenze operative: identificativi pseudonimi generati sul dispositivo, nessun dato personale nel payload degli eventi, nessun SDK pubblicitario o di terze parti, ingestione su infrastruttura europea, consenso del genitore raccolto in chiaro e revocabile, ed esportazione/cancellazione dei dati a richiesta. In modalità classe non esiste nessun identificativo individuale: solo aggregati di gruppo.</p>
   </div>
 </section>
 
-<section id="s14">
-  <div class="sec-head"><span class="sec-num">14</span><h2>Roadmap e rischi</h2>
-    <p>Cinque fasi fino al soft launch. La prima non produce software.</p>
-  </div>
-  <div class="phase"><div class="ph">F0<small>2 settimane</small></div><div><h4>Prototipo di carta e consulenza</h4><p>Lessico del capitolo 1 congelato, tre mini-giochi testati su carta con 5 bambini, consulente LIS sordo a bordo, frasi validate una per una. Nessuna riga di codice. È la fase che si salta sempre ed è quella che salva il budget di produzione video.</p></div></div>
-  <div class="phase"><div class="ph">F1<small>4 settimane</small></div><div><h4>Vertical slice — scene 1 e 2</h4><p>Motore di scena, i tre mini-giochi funzionanti, ~30 clip girate. Obiettivo: una persona esterna gioca 12 minuti senza istruzioni e capisce quattro segni.</p></div></div>
-  <div class="phase"><div class="ph">F2<small>6 settimane</small></div><div><h4>Capitolo 1 completo</h4><p>Sei scene, classi, skill tree, Taccuino, analytics, PWA offline. Feature freeze prima dei test.</p></div></div>
-  <div class="phase"><div class="ph">F3<small>3 settimane</small></div><div><h4>Test sul campo</h4><p>Due classi di primaria, un gruppo famiglie, sessioni osservate. Il primo taglio di parametri arriva da qui, non dai dati aggregati: i numeri dicono <i>dove</i>, l'osservazione dice <i>perché</i>.</p></div></div>
-  <div class="phase"><div class="ph">F4<small>4 settimane</small></div><div><h4>Soft launch</h4><p>Rilascio pubblico gratuito del capitolo 1, misurazione a 30 giorni contro i KPI. La decisione sul capitolo 2 e sul modello di sostegno si prende con quei dati in mano.</p></div></div>
-
-  <h3>Registro dei rischi</h3>
-  <div class="tbl-wrap"><table>
-    <thead><tr><th>Rischio</th><th>Grav.</th><th>Mitigazione</th></tr></thead>
-    <tbody>
-      <tr><td>Contenuto linguisticamente scorretto o percepito come appropriazione</td><td><span class="pill p-crit">alta</span></td><td>Consulenza sorda in F0, cast sordo, credito visibile in home, canale di segnalazione aperto</td></tr>
-      <tr><td>Il giocatore vince senza capire (pattern matching sulle posizioni)</td><td><span class="pill p-crit">alta</span></td><td>Layout randomizzato a ogni istanza, distrattori parametrici, richiami a distanza, <em class="term">confusion_type</em> monitorato</td></tr>
-      <tr><td>Costo e tempi della produzione video</td><td><span class="pill p-warn">media</span></td><td>Lessico congelato prima dello studio, riprese in blocco, riuso del database lessicale tra capitoli</td></tr>
-      <tr><td>Timer + bambini = ansia da prestazione</td><td><span class="pill p-warn">media</span></td><td>Nessun timer punitivo, modalità Tempo Libero, stelle solo come bonus</td></tr>
-      <tr><td>Drag &amp; drop su schermi piccoli</td><td><span class="pill p-warn">media</span></td><td>Alternativa tocca-tocca sempre presente, layout a colonna sotto 600 px</td></tr>
-      <tr><td>Il gioco viene scambiato per un corso certificante</td><td><span class="pill p-good">bassa</span></td><td>Copy esplicito a fine capitolo, rimando a corsi ed enti riconosciuti</td></tr>
-    </tbody>
-  </table></div>
-</section>
 
 
   </main>
