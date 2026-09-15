@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="description" content="Game Design Document di LIS Quest: pillars, core loop, mini-giochi, capitolo 1, accessibilita e analytics.">
   <meta name="theme-color" content="#E9EDE7">
   <meta property="og:title" content="LIS Quest — LIS Quest">
@@ -88,7 +88,8 @@ body{
   line-height:1.66;
   -webkit-font-smoothing:antialiased;
 }
-.wrap{max-width:var(--maxw);margin:0 auto;padding:0 20px}
+.wrap{max-width:var(--maxw);margin:0 auto;
+  padding-inline:calc(20px + env(safe-area-inset-left,0px)) calc(20px + env(safe-area-inset-right,0px))}
 
 h1,h2,h3,h4,.disp{font-family:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;text-wrap:balance;line-height:1.08;letter-spacing:-.015em}
 .mono,code,kbd{font-family:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace}
@@ -247,7 +248,7 @@ footer a{color:var(--text-2)}
 :focus-visible{outline:2px solid var(--sea);outline-offset:2px;border-radius:2px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 @media (max-width:860px){
-  .shell{grid-template-columns:1fr;gap:26px}
+  .shell{grid-template-columns:minmax(0,1fr);gap:26px}
   nav.toc{position:static;max-height:none;border:1px solid var(--rule);background:var(--panel);border-radius:3px;padding:14px 15px}
   nav.toc ol{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1px 10px}
   .sb-line{grid-template-columns:1fr}
