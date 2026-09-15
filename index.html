@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="description" content="Demo giocabile del capitolo 1 di LIS Quest: un'avventura per avvicinare i bambini alla Lingua dei Segni Italiana.">
   <meta name="theme-color" content="#0A1E2C">
   <meta property="og:title" content="L'isola di Nima — LIS Quest">
@@ -58,7 +58,13 @@ h1,h2,h3,.disp,button{font-family:"Baloo 2","Nunito",system-ui,sans-serif}
 button{font:inherit;color:inherit;cursor:pointer;border:none;background:none}
 [hidden]{display:none!important}
 
-.app{max-width:1000px;margin:0 auto;padding:16px 16px 40px;min-height:100vh;display:flex;flex-direction:column;gap:14px}
+.app{
+  max-width:1000px;margin:0 auto;
+  padding:calc(16px + env(safe-area-inset-top,0px)) calc(16px + env(safe-area-inset-right,0px))
+          calc(40px + env(safe-area-inset-bottom,0px)) calc(16px + env(safe-area-inset-left,0px));
+  min-height:100vh;min-height:100dvh;
+  display:flex;flex-direction:column;gap:14px;
+}
 
 /* ---------- badge segnaposto ---------- */
 .badge{
@@ -67,7 +73,8 @@ button{font:inherit;color:inherit;cursor:pointer;border:none;background:none}
   border-radius:10px;padding:7px 12px;font-size:12.5px;color:#FFD3CB;
 }
 .badge b{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--corallo)}
-.badge button{text-decoration:underline;color:#FFD3CB;font-family:"Nunito",sans-serif;font-size:12.5px;padding:0}
+.badge button{text-decoration:underline;color:#FFD3CB;font-family:"Nunito",sans-serif;font-size:12.5px;
+  padding:0 6px;min-height:44px;display:inline-flex;align-items:center}
 
 /* ---------- schermate ---------- */
 .screen{display:flex;flex-direction:column;gap:16px;animation:fadein .35s ease-out}
@@ -131,7 +138,8 @@ input[type=text]:focus{border-color:var(--nima);outline:none}
 
 /* ---------- HUD ---------- */
 .hud{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px}
-.hud .chip{display:flex;align-items:center;gap:7px;background:var(--pannello);border:1px solid var(--bordo);border-radius:999px;padding:5px 13px}
+.hud .chip{display:flex;align-items:center;gap:7px;background:var(--pannello);border:1px solid var(--bordo);
+  border-radius:999px;padding:5px 15px;min-height:44px}
 .hud .chip b{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--luce)}
 .hud .sp{flex:1}
 .hud button.chip:hover{border-color:var(--nima)}
@@ -173,7 +181,15 @@ input[type=text]:focus{border-color:var(--nima);outline:none}
 @keyframes puls{0%,100%{opacity:.35}50%{opacity:1}}
 
 /* ---------- mini-giochi ---------- */
-.gioco{position:absolute;inset:0;background:rgba(6,20,30,.93);display:flex;flex-direction:column;padding:16px;gap:12px;overflow-y:auto}
+/* Il mini-gioco sta nel flusso del palco, non sopra: cosi' il palco cresce con
+   quello che contiene invece di ritagliarlo. La scena resta nascosta mentre si gioca. */
+.gioco{
+  position:relative;z-index:1;
+  flex:1;display:flex;flex-direction:column;padding:16px;gap:12px;
+  background:var(--pannello-2);
+}
+.stage.in-gioco .stage-body,
+.stage.in-gioco .dialogo{display:none}
 .gioco h3{margin:0;font-size:19px}
 .gioco .istr{font-size:14px;color:var(--testo-2);margin:0}
 .barra{height:9px;border-radius:99px;background:var(--pannello-2);border:1px solid var(--bordo);overflow:hidden}
@@ -190,7 +206,7 @@ input[type=text]:focus{border-color:var(--nima);outline:none}
 @keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 
 /* ruota dattilologia */
-.ruota-area{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;align-items:center;flex:1}
+.ruota-area{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;align-items:center;flex:1;margin-top:14px}
 .ruota{position:relative;width:min(290px,80vw);aspect-ratio:1}
 .ruota .centro{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:38%;aspect-ratio:1;border-radius:50%;background:var(--pannello);border:2px dashed var(--bordo);display:flex;align-items:center;justify-content:center;flex-direction:column;font-size:11px;color:var(--testo-3);text-align:center;padding:6px}
 .settore{position:absolute;width:30%;aspect-ratio:1;border-radius:50%;background:var(--pannello);border:2px solid var(--bordo);display:flex;align-items:center;justify-content:center;transition:transform .12s,border-color .12s;padding:4px}
@@ -198,7 +214,7 @@ input[type=text]:focus{border-color:var(--nima);outline:none}
 .settore:hover{transform:scale(1.08);border-color:var(--nima)}
 .settore.ok{border-color:var(--ok);background:rgba(126,212,147,.2)}
 .settore.no{border-color:var(--corallo);animation:shake .3s}
-.parola{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.parola{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:20px}
 .slot-l{width:52px;height:62px;border-radius:10px;border:2px dashed var(--bordo);background:var(--pannello-2);display:flex;align-items:center;justify-content:center;position:relative}
 .slot-l svg{width:88%;height:88%}
 .slot-l.done{border-style:solid;border-color:var(--ok)}
@@ -219,20 +235,32 @@ input[type=text]:focus{border-color:var(--nima);outline:none}
 .blocco .gl,.slot .gl{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.08em;color:var(--testo-3)}
 .blocco.faccia svg,.slot.faccia svg{width:78px;height:78px}
 
+/* ---------- trascinamento (mouse, dito, penna) ---------- */
+.trascinabile{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.trascinabile.in-mano{opacity:.3}
+.bersaglio-caldo{border-color:var(--luce)!important;box-shadow:0 0 0 3px rgba(255,193,94,.32)}
+.fantasma{
+  position:fixed;left:0;top:0;z-index:70;pointer-events:none;
+  opacity:.94;filter:drop-shadow(0 10px 18px rgba(0,0,0,.5));
+  will-change:transform;
+}
+
 .feedback{text-align:center;font-size:15px;min-height:24px;color:var(--luce)}
 .feedback.ok{color:var(--ok)}
 .feedback.no{color:var(--corallo)}
 .gioco-foot{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;align-items:center}
 
 /* ---------- il guscio (dizionario) ---------- */
-dialog{border:1px solid var(--bordo);background:var(--pannello);color:var(--testo);border-radius:16px;padding:0;max-width:min(640px,94vw);width:100%;max-height:88vh}
+dialog{border:1px solid var(--bordo);background:var(--pannello);color:var(--testo);border-radius:16px;
+  padding:0;max-width:min(640px,94vw);width:100%;max-height:88vh;max-height:88dvh}
 dialog::backdrop{background:rgba(4,14,20,.78)}
-.dlg{padding:20px;max-height:88vh;overflow-y:auto}
+.dlg{padding:20px;max-height:88vh;max-height:88dvh;overflow-y:auto;overscroll-behavior:contain}
 .dlg h2{margin:0 0 10px;font-size:22px}
 .dlg p{font-size:14.5px;color:var(--testo-2)}
 .dlg p.nota{font-size:12.5px;color:var(--testo-3);border-top:1px solid var(--bordo);padding-top:10px;margin-top:16px}
 .tabs{display:flex;gap:8px;margin:14px 0 12px;border-bottom:1px solid var(--bordo);padding-bottom:10px;flex-wrap:wrap}
-.tb{font-family:"Baloo 2",sans-serif;font-weight:700;font-size:14px;padding:7px 15px;border-radius:999px;border:2px solid var(--bordo);color:var(--testo-2)}
+.tb{font-family:"Baloo 2",sans-serif;font-weight:700;font-size:14px;padding:7px 17px;border-radius:999px;
+  border:2px solid var(--bordo);color:var(--testo-2);min-height:44px;display:inline-flex;align-items:center}
 .tb:hover{border-color:var(--nima)}
 .tb.on{background:var(--luce);color:#26170A;border-color:var(--luce)}
 .tb b{font-family:"IBM Plex Mono",monospace;font-size:11px}
@@ -256,7 +284,8 @@ dialog::backdrop{background:rgba(4,14,20,.78)}
 .voce p{margin:0 0 7px;font-size:13.5px;line-height:1.45}
 .sts{
   display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;
-  color:#0A1E2C;background:var(--nima);border-radius:999px;padding:4px 12px;text-decoration:none;
+  color:#0A1E2C;background:var(--nima);border-radius:999px;padding:4px 14px;text-decoration:none;
+  min-height:44px;
 }
 .sts:hover{background:#A5EFE2}
 .vuoto{color:var(--testo-3);font-size:14px;padding:18px 0;text-align:center}
@@ -283,11 +312,14 @@ footer a{color:var(--testo-2)}
   .nima-wrap{width:min(210px,60vw)}
   .slot,.blocco{width:88px;height:96px}
   .blocco svg,.slot svg{width:72px;height:72px}
+  .gioco{padding:14px 12px}
+  .slot-l{width:46px;height:56px}
 }
 /* i segni non si fermano mai: sono contenuto, non decorazione */
 @media (prefers-reduced-motion:reduce){
   .screen{animation:none}
   .ogg,.blocco,.settore,.btn{transition:none}
+  .fantasma{filter:none}
 }
 </style>
 </head>
@@ -756,7 +788,7 @@ function buildScena(n){
 function runBeat(){
   const b = beats[bi];
   if(!b){ finisci(); return; }
-  el.gioco.hidden = true; el.gioco.innerHTML='';
+  mostraGioco(false); el.gioco.innerHTML='';
   el.avanti.hidden = true; el.tap.hidden = true;
   if(b.t!=='narr') el.nima.classList.remove('ombra');
 
@@ -818,6 +850,20 @@ function runBeat(){
 }
 function next(){ bi++; S.beat=bi; save(); runBeat(); }
 
+/* Il palco sa se dentro c'e' una prova: da li' dipende se mostrare la scena o il gioco. */
+function mostraGioco(acceso){
+  annullaTrascinamento();
+  el.gioco.hidden = !acceso;
+  el.stage.classList.toggle('in-gioco', acceso);
+  if(acceso) portaInVista(el.stage);
+}
+function portaInVista(nodo){
+  const r = nodo.getBoundingClientRect();
+  if(r.top >= 0 && r.bottom <= window.innerHeight) return;
+  const dolce = !window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  window.scrollTo({top: window.scrollY + r.top - 12, behavior: dolce ? 'smooth' : 'auto'});
+}
+
 const IDLE = {g:'', h:'piatta', l:'neutroBasso', m:'oscilla', r:4, nm:'neutro'};
 function setGloss(txt){
   el.gloss.textContent = txt || '';
@@ -848,6 +894,109 @@ el.stage.addEventListener('click', (e)=>{
   next();
 });
 
+/* ================= TRASCINAMENTO =================
+   Un solo motore per mouse, dito e penna. Il drag-and-drop HTML5 non esiste sul
+   touch, e i mini-giochi si giocano soprattutto li': i Pointer Events coprono
+   tutti e tre gli ingressi con lo stesso codice.
+   Il tocco semplice resta sempre valido: trascinare e' un'alternativa, non un obbligo. */
+const TRASCINA = {presa:null};
+const SOGLIA = 8; /* px da percorrere prima che un tocco diventi un trascinamento */
+
+function rendiTrascinabile(nodo, id){
+  nodo.classList.add('trascinabile');
+  nodo.dataset.trascina = id;
+  nodo.addEventListener('pointerdown', iniziaPresa);
+}
+function rendiBersaglio(nodo, accetta){
+  nodo.dataset.bersaglio = '1';
+  nodo._accetta = accetta;
+}
+
+function iniziaPresa(e){
+  if(e.button > 0) return;
+  const nodo = e.currentTarget;
+  if(nodo.disabled || nodo.classList.contains('usato')) return;
+  annullaTrascinamento();
+  const r = nodo.getBoundingClientRect();
+  TRASCINA.presa = {
+    nodo, id:nodo.dataset.trascina, pid:e.pointerId,
+    x0:e.clientX, y0:e.clientY,
+    dx:e.clientX - r.left, dy:e.clientY - r.top,
+    w:r.width, h:r.height,
+    partito:false, fantasma:null, caldo:null
+  };
+  try{ nodo.setPointerCapture(e.pointerId); }catch(err){}
+  nodo.addEventListener('pointermove', muoviPresa);
+  nodo.addEventListener('pointerup', lasciaPresa);
+  nodo.addEventListener('pointercancel', annullaTrascinamento);
+}
+
+function muoviPresa(e){
+  const p = TRASCINA.presa;
+  if(!p || e.pointerId !== p.pid) return;
+  if(!p.partito){
+    if(Math.abs(e.clientX-p.x0) < SOGLIA && Math.abs(e.clientY-p.y0) < SOGLIA) return;
+    p.partito = true;
+    p.fantasma = creaFantasma(p);
+    p.nodo.classList.add('in-mano');
+  }
+  e.preventDefault();
+  p.fantasma.style.transform =
+    'translate('+(e.clientX-p.dx)+'px,'+(e.clientY-p.dy)+'px) scale(1.06)';
+  scaldaBersaglio(p, bersaglioSotto(e.clientX, e.clientY));
+}
+
+function lasciaPresa(e){
+  const p = TRASCINA.presa;
+  if(!p || e.pointerId !== p.pid) return;
+  const partito = p.partito, caldo = p.caldo, id = p.id, nodo = p.nodo;
+  chiudiPresa(p);
+  if(!partito) return;            /* e' stato un tocco: lascia passare il click */
+  sopprimiClick(nodo);            /* e' stato un trascinamento: il click che segue non conta */
+  if(caldo && typeof caldo._accetta === 'function') caldo._accetta(id);
+}
+
+function annullaTrascinamento(){
+  if(TRASCINA.presa) chiudiPresa(TRASCINA.presa);
+}
+
+function chiudiPresa(p){
+  scaldaBersaglio(p, null);
+  if(p.fantasma) p.fantasma.remove();
+  p.nodo.classList.remove('in-mano');
+  p.nodo.removeEventListener('pointermove', muoviPresa);
+  p.nodo.removeEventListener('pointerup', lasciaPresa);
+  p.nodo.removeEventListener('pointercancel', annullaTrascinamento);
+  try{ p.nodo.releasePointerCapture(p.pid); }catch(err){}
+  TRASCINA.presa = null;
+}
+
+function creaFantasma(p){
+  const f = p.nodo.cloneNode(true);
+  f.classList.add('fantasma');
+  f.classList.remove('in-mano','trascinabile','att');
+  f.removeAttribute('id'); f.removeAttribute('data-trascina');
+  f.style.width = p.w+'px'; f.style.height = p.h+'px'; f.style.margin = '0';
+  document.body.appendChild(f);
+  return f;
+}
+
+function bersaglioSotto(x, y){
+  const sotto = document.elementFromPoint(x, y);
+  return sotto ? sotto.closest('[data-bersaglio]') : null;
+}
+function scaldaBersaglio(p, nuovo){
+  if(nuovo === p.caldo) return;
+  if(p.caldo) p.caldo.classList.remove('bersaglio-caldo');
+  if(nuovo) nuovo.classList.add('bersaglio-caldo');
+  p.caldo = nuovo;
+}
+function sopprimiClick(nodo){
+  const blocca = ev => { ev.stopPropagation(); ev.preventDefault(); };
+  nodo.addEventListener('click', blocca, {capture:true, once:true});
+  setTimeout(()=>nodo.removeEventListener('click', blocca, {capture:true}), 400);
+}
+
 /* ================= MINI-GIOCO 1 · DATTILOLOGIA ================= */
 function giocoSpell(word, senzaTempo){
   const L = word.split('');
@@ -857,13 +1006,13 @@ function giocoSpell(word, senzaTempo){
   let idx=0, tempo=L.length*perLetter, tot=tempo, timer=null, fase='guarda';
   const guardaMs = 1500;
 
-  el.gioco.hidden=false;
+  mostraGioco(true);
   el.gioco.innerHTML =
     '<h3>Il sigillo delle conchiglie</h3>'+
     '<p class="istr" id="istr">Guarda con calma: il tuo nome, lettera per lettera.</p>'+
     '<div class="barra" id="barra" hidden><i style="width:100%"></i></div>'+
     '<div class="parola" id="parola"></div>'+
-    '<div class="ruota-area"><div class="ruota" id="ruota"><div class="centro">tocca la forma<br>della mano</div></div></div>'+
+    '<div class="ruota-area"><div class="ruota" id="ruota"><div class="centro">tocca la forma<br>della mano<br>o trascinala</div></div></div>'+
     '<p class="feedback" id="fb"></p>'+
     '<div class="gioco-foot" id="foot">'+
       '<button class="btn ghost" type="button" id="rivediL">🔁 Rivedi le lettere</button>'+
@@ -881,6 +1030,14 @@ function giocoSpell(word, senzaTempo){
         (fase==='guarda'||fatta ? letterGlyph(L1) : '<span style="color:#43606E;font-size:22px">?</span>')+
         (fatta?'<b>'+L1+'</b>':'')+'</div>';
     }).join('');
+    /* la casella che tocca adesso accetta anche una forma trascinata dalla ruota */
+    if(fase==='gioca'){
+      const attiva = parola.querySelector('.slot-l.att');
+      if(attiva) rendiBersaglio(attiva, lettera => {
+        const b = ruota.querySelector('.settore[data-trascina="'+lettera+'"]');
+        scegli(lettera, b || attiva);
+      });
+    }
   }
   function disegnaRuota(){
     const n=set.length, R=34;
@@ -894,11 +1051,12 @@ function giocoSpell(word, senzaTempo){
       b.innerHTML = letterGlyph(L1);
       b.setAttribute('aria-label','forma della mano numero '+(i+1));
       b.onclick=()=>scegli(L1,b);
+      rendiTrascinabile(b, L1);
       ruota.appendChild(b);
     });
   }
   function scegli(L1,b){
-    if(fase!=='gioca') return;
+    if(fase!=='gioca' || !b) return;
     if(L1===L[idx]){
       b.classList.add('ok'); setTimeout(()=>b.classList.remove('ok'),320);
       imparaLettera(L1); idx++; disegnaSlot();
@@ -974,12 +1132,12 @@ function giocoRiddle(b){
   const opts = b.opts.slice();
   for(let i=opts.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=opts[i]; opts[i]=opts[j]; opts[j]=t; }
 
-  el.gioco.hidden=false;
+  mostraGioco(true);
   el.gioco.innerHTML =
     '<h3>Cosa vuole Nima?</h3>'+
-    '<p class="istr">Il segno è lì sopra, in loop. Tocca la cosa giusta prima che la luce si spenga.</p>'+
+    '<p class="istr">Il segno è lì sopra, in loop. Tocca la cosa giusta — o trascinagliela sopra — prima che la luce si spenga.</p>'+
     '<div class="barra" id="barra"><i style="width:100%"></i></div>'+
-    '<div style="display:flex;justify-content:center"><div style="width:132px">'+renderSign(SIGNS[b.target])+'</div></div>'+
+    '<div style="display:flex;justify-content:center"><div style="width:132px" id="segnoBersaglio">'+renderSign(SIGNS[b.target])+'</div></div>'+
     '<div class="oggetti" id="ogg"></div>'+
     '<p class="feedback" id="fb"></p>'+
     '<div class="gioco-foot" id="foot"></div>';
@@ -987,36 +1145,46 @@ function giocoRiddle(b){
   const cont=document.getElementById('ogg'), fb=document.getElementById('fb'),
         barra=document.getElementById('barra'), foot=document.getElementById('foot');
 
+  /* una sola risposta, due modi di darla: toccare la cosa o portarla sul segno */
+  function rispondi(k, btn){
+    if(finito) return;
+    if(k===b.target){
+      finito=true; clearInterval(timer); btn.classList.add('giusto');
+      btn.innerHTML += '<span>giusto</span>';
+      fb.className='feedback ok'; fb.textContent='Sì. È quella.';
+      addXp(errori? 25:40);
+      foot.innerHTML=''; const c=document.createElement('button');
+      c.className='btn'; c.textContent='Continua ▸'; c.onclick=next; foot.appendChild(c);
+    }else{
+      errori++; btn.classList.add('sbagliato');
+      setTimeout(()=>btn.classList.remove('sbagliato'),340);
+      fb.className='feedback no';
+      fb.textContent = errori>=2
+        ? 'Guarda dove sta la mano, non solo come è fatta: è quello che cambia.'
+        : 'No. Riguarda il segno.';
+      if(errori>=3){
+        finito=true; clearInterval(timer);
+        fb.className='feedback'; fb.textContent='Te la mostro io. Poi riproviamo insieme.';
+        [].forEach.call(cont.children,(c2,i)=>{ if(opts[i]===b.target) c2.classList.add('giusto'); });
+        foot.innerHTML=''; const c=document.createElement('button');
+        c.className='btn'; c.textContent='Ho capito ▸'; c.onclick=()=>{ addXp(15); next(); }; foot.appendChild(c);
+      }
+    }
+  }
+
   opts.forEach(k=>{
     const btn=document.createElement('button');
     btn.className='ogg'; btn.type='button'; btn.innerHTML=oggSVG(k);
     btn.setAttribute('aria-label','oggetto '+(opts.indexOf(k)+1));
-    btn.onclick=()=>{
-      if(finito) return;
-      if(k===b.target){
-        finito=true; clearInterval(timer); btn.classList.add('giusto');
-        btn.innerHTML += '<span>giusto</span>';
-        fb.className='feedback ok'; fb.textContent='Sì. È quella.';
-        addXp(errori? 25:40);
-        foot.innerHTML=''; const c=document.createElement('button');
-        c.className='btn'; c.textContent='Continua ▸'; c.onclick=next; foot.appendChild(c);
-      }else{
-        errori++; btn.classList.add('sbagliato');
-        setTimeout(()=>btn.classList.remove('sbagliato'),340);
-        fb.className='feedback no';
-        fb.textContent = errori>=2
-          ? 'Guarda dove sta la mano, non solo come è fatta: è quello che cambia.'
-          : 'No. Riguarda il segno.';
-        if(errori>=3){
-          finito=true; clearInterval(timer);
-          fb.className='feedback'; fb.textContent='Te la mostro io. Poi riproviamo insieme.';
-          [].forEach.call(cont.children,(c2,i)=>{ if(opts[i]===b.target) c2.classList.add('giusto'); });
-          foot.innerHTML=''; const c=document.createElement('button');
-          c.className='btn'; c.textContent='Ho capito ▸'; c.onclick=()=>{ addXp(15); next(); }; foot.appendChild(c);
-        }
-      }
-    };
+    rendiTrascinabile(btn, k);
+    btn.onclick=()=>rispondi(k, btn);
     cont.appendChild(btn);
+  });
+
+  /* portare la cosa sul segno vale come toccarla */
+  rendiBersaglio(document.getElementById('segnoBersaglio'), chiave => {
+    const i = opts.indexOf(chiave);
+    if(i>=0) rispondi(chiave, cont.children[i]);
   });
 
   const guscioBtn=document.createElement('button');
@@ -1057,10 +1225,10 @@ function giocoSyntax(){
   const mix = blocchi.slice();
   for(let i=mix.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=mix[i]; mix[i]=mix[j]; mix[j]=t; }
 
-  el.gioco.hidden=false;
+  mostraGioco(true);
   el.gioco.innerHTML =
     '<h3>Dillo a Nima</h3>'+
-    '<p class="istr">Tocca un segno, poi tocca la casella dove va. Puoi anche trascinarlo. Nessun tempo: pensaci.</p>'+
+    '<p class="istr">Tocca un segno, poi tocca la casella dove va — oppure trascinalo con il dito. Nessun tempo: pensaci.</p>'+
     '<div class="frase" id="frase"></div>'+
     '<div class="blocchi" id="blocchi"></div>'+
     '<p class="feedback" id="fb"></p>'+
@@ -1068,6 +1236,18 @@ function giocoSyntax(){
 
   const frase=document.getElementById('frase'), pool=document.getElementById('blocchi'),
         fb=document.getElementById('fb'), foot=document.getElementById('foot');
+
+  /* un solo punto in cui un segno finisce in una casella, usato dal tocco e dal trascinamento */
+  function piazza(i, id){
+    const gia = slots.indexOf(id);
+    if(gia>=0) slots[gia]=null;
+    slots[i]=id; sel=null; render(); controlla();
+  }
+  function togli(id){
+    const gia = slots.indexOf(id);
+    if(gia<0) return;
+    slots[gia]=null; sel=null; render(); controlla();
+  }
 
   function render(){
     frase.innerHTML='';
@@ -1077,23 +1257,23 @@ function giocoSyntax(){
       b.innerHTML='<span class="n">'+(i+1)+'</span>'+(v? renderSign(SIGNS[v])+'<span class="gl">'+SIGNS[v].g+'</span>' : '');
       b.setAttribute('aria-label','casella '+(i+1)+(v?': '+SIGNS[v].g:' vuota'));
       b.onclick=()=>{
-        if(sel!==null){ if(slots.indexOf(sel)>=0) slots[slots.indexOf(sel)]=null; slots[i]=sel; sel=null; render(); controlla(); }
+        if(sel!==null) piazza(i, sel);
         else if(v){ slots[i]=null; render(); }
       };
-      b.ondragover=e=>e.preventDefault();
-      b.ondrop=e=>{ e.preventDefault(); const id=e.dataTransfer.getData('text'); if(!id)return;
-        if(slots.indexOf(id)>=0) slots[slots.indexOf(id)]=null; slots[i]=id; sel=null; render(); controlla(); };
+      rendiBersaglio(b, id => piazza(i, id));
+      /* una casella piena si puo' anche svuotare tirandone fuori il segno */
+      if(v) rendiTrascinabile(b, v);
       frase.appendChild(b);
     });
     pool.innerHTML='';
     mix.forEach(id=>{
       const usato = slots.indexOf(id)>=0;
       const b=document.createElement('button');
-      b.className='blocco'+(usato?' usato':''); b.type='button'; b.draggable=true;
+      b.className='blocco'+(usato?' usato':''); b.type='button';
       b.setAttribute('aria-pressed', sel===id?'true':'false');
       b.innerHTML=renderSign(SIGNS[id])+'<span class="gl">'+SIGNS[id].g+'</span>';
       b.onclick=()=>{ sel = sel===id?null:id; render(); };
-      b.ondragstart=e=>{ e.dataTransfer.setData('text',id); sel=id; };
+      if(!usato) rendiTrascinabile(b, id);
       pool.appendChild(b);
     });
   }
@@ -1126,6 +1306,7 @@ function giocoSyntax(){
   const gb=document.createElement('button');
   gb.className='btn ghost'; gb.type='button'; gb.textContent='🐚 Apri il Guscio';
   gb.onclick=apriTaccuino; foot.appendChild(gb);
+  rendiBersaglio(pool, togli);
   render();
   if(aiuto) aiutoBtn();
 }
