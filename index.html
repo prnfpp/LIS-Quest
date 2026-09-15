@@ -175,7 +175,7 @@ input[type=text]:focus{border-color:var(--nima);outline:none}
 .dialogo .chi{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--nima);margin-bottom:6px}
 .dialogo p{margin:0;font-size:clamp(16px,2.4vw,19px);line-height:1.5;max-width:56ch}
 .dialogo p.narr{font-style:italic;color:var(--testo-2)}
-.dialogo .avanti{position:absolute;right:16px;bottom:14px}
+.dialogo .avanti{margin:12px 0 0 auto;display:flex;width:fit-content}
 .tap-hint{font-size:12px;color:var(--testo-3);margin-top:8px;display:flex;align-items:center;gap:6px}
 .tap-hint i{width:7px;height:7px;border-radius:50%;background:var(--luce);animation:puls 1.4s infinite}
 @keyframes puls{0%,100%{opacity:.35}50%{opacity:1}}
@@ -235,6 +235,23 @@ input[type=text]:focus{border-color:var(--nima);outline:none}
 .blocco .gl,.slot .gl{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.08em;color:var(--testo-3)}
 .blocco.faccia svg,.slot.faccia svg{width:78px;height:78px}
 
+/* dove il movimento fa parte della lettera, la lettera si muove */
+.lm{transform-box:fill-box;transform-origin:50% 85%}
+.lm-gancio{animation:lmGancio 2.4s ease-in-out infinite}
+@keyframes lmGancio{0%,20%{transform:translate(0,0) rotate(0deg)}55%{transform:translate(4px,7px) rotate(14deg)}90%,100%{transform:translate(0,0) rotate(0deg)}}
+.lm-scatto{animation:lmScatto 1.8s ease-in-out infinite}
+@keyframes lmScatto{0%,62%,100%{transform:translate(0,0)}74%{transform:translate(0,5px)}84%{transform:translate(0,1px)}}
+.lm-secco{animation:lmSecco 1.6s ease-in-out infinite}
+@keyframes lmSecco{0%,70%,100%{transform:translate(0,0)}78%{transform:translate(0,6px)}86%{transform:translate(0,1px)}}
+.lm-onda{animation:lmOnda 1.9s ease-in-out infinite}
+@keyframes lmOnda{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+.tratto-j{stroke-dasharray:72;stroke-dashoffset:72;animation:tracciaJ 2.4s ease-in-out infinite}
+@keyframes tracciaJ{0%,18%{stroke-dashoffset:72;opacity:.9}58%,86%{stroke-dashoffset:0;opacity:.9}100%{stroke-dashoffset:0;opacity:0}}
+
+/* la Z si disegna nell'aria: il tratto fa parte della lettera */
+.tratto-z{stroke-dasharray:90;stroke-dashoffset:90;animation:tracciaZ 2.4s ease-in-out infinite}
+@keyframes tracciaZ{0%{stroke-dashoffset:90;opacity:.9}55%,84%{stroke-dashoffset:0;opacity:.9}100%{stroke-dashoffset:0;opacity:0}}
+
 /* ---------- trascinamento (mouse, dito, penna) ---------- */
 .trascinabile{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .trascinabile.in-mano{opacity:.3}
@@ -260,7 +277,7 @@ dialog::backdrop{background:rgba(4,14,20,.78)}
 .dlg p.nota{font-size:12.5px;color:var(--testo-3);border-top:1px solid var(--bordo);padding-top:10px;margin-top:16px}
 .tabs{display:flex;gap:8px;margin:14px 0 12px;border-bottom:1px solid var(--bordo);padding-bottom:10px;flex-wrap:wrap}
 .tb{font-family:"Baloo 2",sans-serif;font-weight:700;font-size:14px;padding:7px 17px;border-radius:999px;
-  border:2px solid var(--bordo);color:var(--testo-2);min-height:44px;display:inline-flex;align-items:center}
+  border:2px solid var(--bordo);color:var(--testo-2);min-height:44px;display:inline-flex;align-items:center;gap:6px}
 .tb:hover{border-color:var(--nima)}
 .tb.on{background:var(--luce);color:#26170A;border-color:var(--luce)}
 .tb b{font-family:"IBM Plex Mono",monospace;font-size:11px}
@@ -330,7 +347,7 @@ footer a{color:var(--testo-2)}
 
   <div class="badge">
     <b>Demo</b>
-    <span>I segni che vedi sono <strong>segnaposto animati</strong>, non LIS reale.</span>
+    <span>L'alfabeto segue le descrizioni della dattilologia italiana ed è <strong>da validare</strong>. I segni delle parole sono ancora <strong>segnaposto</strong>.</span>
     <button id="spiegaBadge">Perché?</button>
   </div>
 
@@ -369,6 +386,7 @@ footer a{color:var(--testo-2)}
         <button class="btn" id="okNome">Avanti ▸</button>
       </div>
       <p class="hint" style="margin-top:10px">Solo lettere. Se il tuo nome è lungo, usa il diminutivo — nella versione completa il lucchetto si adatta.</p>
+      <p class="hint" id="nomeAvviso" hidden style="margin-top:10px;color:var(--corallo)"></p>
     </div>
   </section>
 
@@ -422,7 +440,8 @@ footer a{color:var(--testo-2)}
 
     <div class="card" style="border-left:4px solid var(--corallo)">
       <h2>Una cosa detta chiaramente</h2>
-      <p>Questi non sono segni della LIS. Sono disegni animati che rispettano la <em>struttura</em> di un segno — configurazione della mano, luogo, movimento, espressione del viso — perché su quella struttura si costruiscono i mini-giochi. Il lessico reale va girato con persone sorde segnanti e validato da loro, prima di finire in mano a un bambino.</p>
+      <p>L'alfabeto manuale che hai usato è costruito sulle descrizioni della dattilologia italiana, ma nessuna persona sorda l'ha ancora guardato e detto se è giusto. Finché non succede, consideralo <em>quasi</em> corretto: la differenza fra quasi e corretto, in una lingua, è tutta.</p>
+      <p>I segni delle parole non sono LIS. Sono disegni animati che rispettano la <em>struttura</em> di un segno — configurazione della mano, luogo, movimento, espressione del viso — perché su quella struttura si costruiscono i mini-giochi. Il lessico reale va girato con persone sorde segnanti e validato da loro, prima di finire in mano a un bambino.</p>
       <p>Un gioco sulla LIS fatto senza persone sorde nel gruppo di lavoro non è un gioco sulla LIS. Questa demo esiste per trovare quelle persone, non per fare a meno di loro.</p>
     </div>
 
@@ -431,6 +450,7 @@ footer a{color:var(--testo-2)}
         <h3>Sei sordo o sorda, o interprete LIS?</h3>
         <p>È di te che il progetto ha bisogno per primo.</p>
         <ul>
+          <li>Guardare l'alfabeto manuale lettera per lettera e dire quali forme sono sbagliate</li>
           <li>Guardare il lessico delle prime due scene e dire cosa non va</li>
           <li>Segnare davanti a una camera, o indicare chi potrebbe farlo</li>
           <li>Validare le frasi: quali ordini sono naturali, quali suonano storti, quali sono sbagliati</li>
@@ -474,17 +494,20 @@ footer a{color:var(--testo-2)}
   <div id="tabAlfa">
     <p style="font-size:13px;margin-bottom:10px">Le 21 lettere italiane, sempre tutte disponibili. Quelle che hai già usato sono accese. <strong>Tocca una lettera</strong> per cercarla su Spread the Sign.</p>
     <div class="alfaGrid spenta" id="alfaGrid"></div>
-    <p style="font-size:12.5px;color:var(--testo-3);margin-top:10px">J, K, W, X e Y servono per i nomi e le parole straniere: arrivano più avanti nel capitolo.</p>
+    <p style="font-size:12.5px;color:var(--testo-3);margin:14px 0 8px">J, K, W, X e Y non stanno nelle parole italiane, ma servono per i nomi: ci sono anche queste.</p>
+    <div class="alfaGrid spenta" id="alfaGridNomi"></div>
   </div>
   <div id="tabParole" hidden></div>
-  <p class="nota"><strong>I disegni animati qui dentro sono segnaposto.</strong> Il pulsante accanto a ogni voce apre <a href="https://www.spreadthesign.com/it.it/search/" target="_blank" rel="noopener">Spread the Sign</a>, il dizionario multilingue del European Sign Language Centre, dove il segno vero c'è in video.</p>
+  <p class="nota"><strong>Le lettere seguono le descrizioni della dattilologia italiana e vanno ancora validate; i segni delle parole sono segnaposto.</strong> In entrambi i casi il collegamento apre <a href="https://www.spreadthesign.com/it.it/search/" target="_blank" rel="noopener">Spread the Sign</a>, il dizionario multilingue del European Sign Language Centre, dove il segno vero c'è in video.</p>
   <div class="btn-row"><button class="btn ghost" onclick="document.getElementById('dlgTacc').close()">Chiudi</button></div>
 </div></dialog>
 
 <dialog id="dlgBadge"><div class="dlg">
-  <h2>Perché i segni sono finti</h2>
-  <p>Insegnare un segno sbagliato è peggio che non insegnarne nessuno: resta addosso e va poi disimparato. Finché il lessico non è girato con segnanti sordi madrelingua e validato, questa demo non mostra LIS reale.</p>
-  <p>Quello che mostra è la <strong>struttura</strong> di un segno, che è ciò su cui si reggono i mini-giochi:</p>
+  <h2>Cosa è vero e cosa no</h2>
+  <p>Insegnare un segno sbagliato è peggio che non insegnarne nessuno: resta addosso e poi va disimparato. Per questo la demo dice apertamente a che punto sta ogni cosa.</p>
+  <p><strong>L'alfabeto manuale</strong> — le lettere del Guscio, del sigillo e dei nomi — è disegnato sulle descrizioni della dattilologia italiana: configurazione delle dita, posizione del pollice, orientamento del palmo, e il movimento dove il movimento fa parte della lettera. È un'approssimazione ragionata, non una fonte: <strong>va ancora validata da segnanti sordi madrelingua</strong>, perché una descrizione scritta non dice quanto le dita sono ricurve né che angolo prende il pollice, ed è lì che si nascondono gli errori.</p>
+  <p><strong>I segni delle parole</strong> — CIAO, MELA, PESCE — restano <strong>segnaposto</strong>. Quelli sono lessico, e il lessico va girato in video con persone sorde segnanti prima di finire in mano a un bambino.</p>
+  <p>Quello che i segnaposto mostrano è la <strong>struttura</strong> di un segno, che è ciò su cui si reggono i mini-giochi:</p>
   <ul style="font-size:14.5px;color:var(--testo-2)">
     <li><strong>Configurazione</strong> — la forma della mano</li>
     <li><strong>Luogo</strong> — dove sta rispetto al corpo</li>
@@ -558,14 +581,6 @@ const USO = {
 };
 function stsLink(parola){ return 'https://www.spreadthesign.com/it.it/search/?q=' + encodeURIComponent(parola); }
 
-/* alfabeto manuale — segnaposto visivamente distinti */
-const ALFA = {
-  A:['pugno',12], B:['piatta',0], C:['ci',0], D:['elle',-84], E:['artiglio',-28],
-  F:['pinza',-18], G:['elle',84], H:['u',84], I:['mignolo',0], K:['tre',4],
-  L:['elle',0], M:['tre',172], N:['u',176], O:['o',0], P:['tre',146],
-  Q:['elle',150], R:['v',8], S:['pugno',-32], T:['pugno',34], U:['u',0],
-  V:['v',0], Z:['indice',-52], J:['mignolo',24], W:['w',0], X:['corna',0], Y:['quattro',0]
-};
 
 /* ---------- disegno ---------- */
 function fingers(cfg){
@@ -634,11 +649,226 @@ function renderSign(sign, size){
     '<ellipse cx="142" cy="86" rx="20" ry="34" fill="#8FE3D4" opacity=".28" transform="rotate(22 142 86)"/></g>'+
     body + faceSVG(nm) + '</svg>';
 }
-/* glifo compatto di una lettera, per ruota e slot */
+/* ===== alfabeto manuale =====
+   Le configurazioni seguono le descrizioni della dattilologia italiana, non sono
+   piu' segnaposto arbitrari. Restano da validare con segnanti sordi madrelingua,
+   come tutto il resto: una descrizione scritta non sostituisce una persona che segna.
+   Mano destra, vista come la vede chi la esegue: palmo in avanti, pollice a sinistra. */
+
+const PELLE='#F5DFBB', OMBRA='#E7CDA2', BORDO='#B58F58';
+
+/* un dito e' un tratto spesso arrotondato: bordo sotto, pelle sopra,
+   cosi' due dita accostate restano distinguibili anche a 46px */
+function dito(d, w){
+  w = w || 10;
+  return '<path d="'+d+'" fill="none" stroke="'+BORDO+'" stroke-width="'+(w+3)+'" stroke-linecap="round" stroke-linejoin="round"/>'+
+         '<path d="'+d+'" fill="none" stroke="'+PELLE+'" stroke-width="'+w+'" stroke-linecap="round" stroke-linejoin="round"/>';
+}
+function palmo(x,y,w,h,rx){
+  return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="'+(rx||13)+'" fill="'+PELLE+'" stroke="'+BORDO+'" stroke-width="2.5"/>';
+}
+function polso(){
+  return '<path d="M -13 28 L -13 44 q13 5 26 0 L 13 28 z" fill="'+OMBRA+'" stroke="'+BORDO+'" stroke-width="2.5" stroke-linejoin="round"/>';
+}
+function polsoSu(){
+  return '<path d="M -13 -28 L -13 -44 q13 -5 26 0 L 13 -28 z" fill="'+OMBRA+'" stroke="'+BORDO+'" stroke-width="2.5" stroke-linejoin="round"/>';
+}
+/* dita ripiegate sul palmo: si vedono le nocche, non le dita intere */
+function nocche(x0, x1, alto, basso){
+  alto = alto===undefined ? -16 : alto;
+  basso = basso===undefined ? -2 : basso;
+  let s = '<rect x="'+x0+'" y="'+alto+'" width="'+(x1-x0)+'" height="'+(basso-alto)+'" rx="6" fill="'+PELLE+'" stroke="'+BORDO+'" stroke-width="2.5"/>';
+  const n = Math.round((x1-x0)/9);
+  for(let i=1;i<n;i++){
+    const x = x0 + (x1-x0)*i/n;
+    s += '<line x1="'+x+'" y1="'+(alto+3)+'" x2="'+x+'" y2="'+(basso-2)+'" stroke="'+BORDO+'" stroke-width="1.8" stroke-linecap="round"/>';
+  }
+  return s;
+}
+/* anello formato da pollice e polpastrelli che si toccano */
+function anello(cx,cy,r){
+  return '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+BORDO+'" stroke-width="13.5"/>'+
+         '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+PELLE+'" stroke-width="10.5"/>';
+}
+
+/* posizioni di base delle quattro dita */
+const DITA_X = {ind:-13, med:-4.4, anu:4.4, mig:13};
+const DITA_CIMA = {ind:-36, med:-40, anu:-36, mig:-30};
+
+function suUnite(quali){
+  return quali.map(k=>dito('M '+DITA_X[k]+' -4 L '+DITA_X[k]+' '+DITA_CIMA[k])).join('');
+}
+function suAperte(quali, ang){
+  return quali.map((k,i)=>{
+    const a = (i - (quali.length-1)/2) * (ang||16);
+    const rad = a*Math.PI/180, L = -DITA_CIMA[k]-4;
+    return dito('M '+DITA_X[k]+' -4 L '+(DITA_X[k]+Math.sin(rad)*L)+' '+(-4-Math.cos(rad)*L));
+  }).join('');
+}
+
+/* alcune lettere non sono solo una forma: il movimento fa parte della lettera */
+function mov(nome, contenuto){ return '<g class="lm lm-'+nome+'">'+contenuto+'</g>'; }
+
+/* ---- le lettere dell'alfabeto manuale ---- */
+const ALFA_DIS = {
+ /* Pugno, pollice disteso di fianco all'indice. Palmo in avanti. */
+ A: ()=> polso()+palmo(-20,-6,40,34)+nocche(-18,18)+
+         dito('M -21 6 L -21 -17', 11),
+
+ /* Quattro dita tese e unite in alto, pollice piegato sul palmo. */
+ B: ()=> polso()+palmo(-20,-6,40,34)+suUnite(['ind','med','anu','mig'])+
+         dito('M -16 14 L 8 14', 11),
+
+ /* Semicerchio: pollice in basso, quattro dita unite e ricurve in alto. */
+ C: ()=> polso()+
+         '<rect x="-20" y="-14" width="17" height="40" rx="8" fill="'+PELLE+'" stroke="'+BORDO+'" stroke-width="2.5"/>'+
+         dito('M 13 -25 A 21 21 0 0 0 -13 -9', 12)+
+         dito('M 11 15 A 16 16 0 0 1 -11 5', 11),
+
+
+ /* Indice teso in alto; pollice e le altre tre a cerchio alla base. */
+ D: ()=> polso()+palmo(-19,-4,34,32)+
+         anello(3,6,11)+
+         dito('M -13 0 L -13 -38'),
+
+
+ /* Dita ripiegate con le unghie quasi sul palmo, pollice orizzontale sotto. */
+ E: ()=> polso()+palmo(-20,-8,40,36)+
+         nocche(-17,17,-12,6)+
+         dito('M -16 17 L 14 17', 11),
+
+
+
+ /* Indice e pollice a cerchio; medio, anulare e mignolo tesi e staccati. */
+ F: ()=> polso()+palmo(-20,-6,40,34)+
+         suAperte(['med','anu','mig'], 15)+
+         anello(-15,-8,10),
+
+ /* Pugno con indice e pollice distesi in avanti, paralleli e distanziati. */
+ G: ()=> polso()+palmo(-18,-6,34,34)+nocche(-14,16,-14,0)+
+         dito('M -6 -9 L -34 -9')+
+         dito('M -6 7 L -30 7', 11),
+
+ /* Come G, ma indice e medio distesi in avanti uniti; pollice di fianco. */
+ H: ()=> polso()+palmo(-16,-6,32,34)+nocche(4,14,-16,-2)+
+         dito('M -2 -16 L -34 -16')+
+         dito('M -2 -5 L -34 -5')+
+         dito('M -2 9 L -24 9', 11),
+
+
+ /* Pugno, solo il mignolo teso in alto. */
+ I: ()=> polso()+palmo(-20,-6,40,34)+nocche(-18,9)+
+         dito('M 15 -6 L 15 -36', 9)+
+         dito('M -20 9 L -7 4', 11),
+
+
+ /* Indice in alto, pollice di lato: angolo di 90 gradi. */
+ L: ()=> polso()+palmo(-18,-6,36,34)+nocche(-4,16)+
+         dito('M -13 -2 L -13 -38')+
+         dito('M -15 8 L -38 8', 11),
+
+ /* Mano rivolta in basso: indice, medio e anulare distesi uniti verso il pavimento. */
+ M: ()=> polsoSu()+palmo(-20,-30,40,32)+
+         dito('M -12 -2 L -12 32')+dito('M -2 -2 L -2 34')+dito('M 8 -2 L 8 32')+
+         dito('M -21 -12 L -21 0', 10),
+
+
+ /* Come M, ma solo indice e medio distesi in basso. */
+ N: ()=> polsoSu()+palmo(-20,-30,40,32)+
+         dito('M -7 -2 L -7 32')+dito('M 4 -2 L 4 34')+
+         dito('M -21 -12 L -21 0', 10),
+
+
+ /* Tutte le punte unite a quella del pollice: un cerchio. */
+ O: ()=> polso()+palmo(-17,2,34,26,12)+anello(0,-10,15),
+
+ /* Indice in avanti, medio in basso ad angolo retto, pollice sulla falange del medio. */
+ P: ()=> polsoSu()+
+         '<rect x="-8" y="-28" width="26" height="30" rx="11" fill="'+PELLE+'" stroke="'+BORDO+'" stroke-width="2.5"/>'+
+         dito('M 2 -20 L -32 -20')+
+         dito('M 2 -4 L 2 30')+
+         dito('M -14 -2 L 0 4', 10),
+
+
+ /* Indice e pollice distesi e distanziati verso il pavimento. */
+ Q: ()=> polsoSu()+palmo(-19,-30,36,32)+nocche(-2,15,-22,-8)+
+         dito('M -8 -2 L -8 32')+
+         dito('M -16 -4 L -26 16', 11),
+
+
+
+ /* Indice e medio tesi e incrociati fra loro. */
+ R: ()=> polso()+palmo(-20,-6,40,34)+nocche(0,18)+
+         dito('M -14 -2 L -2 -36')+
+         dito('M -2 -2 L -14 -36')+
+         dito('M -19 8 L -7 3', 11),
+
+ /* Pugno stretto, pollice davanti a indice e medio. */
+ S: ()=> polso()+palmo(-20,-6,40,34)+nocche(-18,18,-18,0)+
+         dito('M -17 13 L 4 1', 12),
+
+
+ /* Pugno con il pollice che spunta fra indice e medio. */
+ T: ()=> polso()+palmo(-20,-6,40,34)+nocche(-18,18,-14,4)+
+         dito('M -8 8 L -8 -22', 11),
+
+
+
+ /* Indice e medio tesi in alto e uniti. */
+ U: ()=> polso()+palmo(-20,-6,40,34)+nocche(0,18)+
+         dito('M -13 -2 L -13 -38')+dito('M -3 -2 L -3 -38')+
+         dito('M -19 8 L -7 3', 11),
+
+ /* Indice e medio tesi in alto e aperti a V. */
+ V: ()=> polso()+palmo(-20,-6,40,34)+nocche(0,18)+
+         dito('M -12 -2 L -22 -36')+dito('M -2 -2 L 6 -36')+
+         dito('M -19 8 L -7 3', 11),
+
+ /* Indice teso che disegna una Z nell'aria. */
+ Z: ()=> polso()+palmo(-18,-6,36,34)+nocche(-2,16)+
+         dito('M -13 -2 L -13 -36')+
+         dito('M -19 8 L -7 3', 11)+
+         '<path class="tratto-z" d="M -34 -40 L -8 -40 L -34 -20 L -8 -20" fill="none" '+
+         'stroke="#FFC15E" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" opacity=".85"/>',
+
+ /* --- cinque lettere per i nomi e le parole straniere --- */
+
+ /* Come la I, ma il polso disegna in aria il gancio della J. */
+ J: ()=> mov('gancio', polso()+palmo(-20,-6,40,34)+nocche(-18,9)+
+         dito('M 15 -6 L 15 -36', 9)+
+         dito('M -20 9 L -7 4', 11))+
+         '<path class="tratto-j" d="M 26 -30 L 26 -2 q 0 12 -13 12 q -10 0 -12 -8" fill="none" '+
+         'stroke="#FFC15E" stroke-width="3.2" stroke-linecap="round" opacity=".85"/>',
+
+ /* Indice e medio tesi e aperti, pollice teso in mezzo alle due dita; scatto del polso. */
+ K: ()=> mov('scatto', polso()+palmo(-20,-6,40,34)+nocche(4,18)+
+         dito('M -13 -2 L -21 -36')+
+         dito('M -3 -2 L 4 -36')+
+         dito('M -15 9 L -9 -21', 11)),
+
+ /* Indice, medio e anulare tesi e separati; il pollice blocca il mignolo. Statica. */
+ W: ()=> polso()+palmo(-20,-6,40,34)+nocche(9,18,-13,1)+
+         suAperte(['ind','med','anu'], 17)+
+         dito('M -17 13 L 13 5', 11),
+
+ /* Pugno con il solo indice sollevato e piegato a uncino; scatto secco. */
+ X: ()=> mov('secco', polso()+palmo(-20,-6,40,34)+nocche(-18,18,-14,2)+
+         dito('M -13 -10 L -13 -28 L -3 -25')+
+         dito('M -20 9 L -8 4', 11)),
+
+ /* Pollice e mignolo tesi verso l'esterno, tre dita chiuse; il polso oscilla. */
+ Y: ()=> mov('onda', polso()+palmo(-19,-6,38,34)+nocche(-9,11)+
+         dito('M 15 -4 L 26 -28', 9)+
+         dito('M -15 6 L -33 -6', 11))
+};
+
+/* glifo compatto di una lettera, per ruota, caselle e dizionario */
 function letterGlyph(L){
-  const a = ALFA[L] || ALFA.A;
-  return '<svg viewBox="-34 -36 68 70" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="lettera segnaposto '+L+'">'+
-    '<g transform="translate(0,2)">'+handSVG(a[0], a[1], '')+'</g></svg>';
+  const f = ALFA_DIS[L];
+  if(!f) return '<svg viewBox="-46 -48 92 98" role="img" aria-label="lettera '+L+' non ancora disponibile">'+
+    '<text x="0" y="8" text-anchor="middle" font-size="42" fill="#43606E" font-family="monospace">?</text></svg>';
+  return '<svg viewBox="-46 -48 92 98" xmlns="http://www.w3.org/2000/svg" role="img" '+
+    'aria-label="lettera '+L+' nell\'alfabeto manuale">'+f()+'</svg>';
 }
 
 /* animazioni di movimento */
@@ -1329,11 +1559,13 @@ function finisci(){
 
 /* ================= IL GUSCIO (dizionario) ================= */
 const ALFA_IT = 'ABCDEFGHILMNOPQRSTUVZ'.split('');
+const ALFA_NOMI = 'JKWXY'.split('');
 function disegnaAlfabeto(){
-  document.getElementById('alfaGrid').innerHTML = ALFA_IT.map(L=>
+  const cella = L =>
     '<a href="'+stsLink(L)+'" target="_blank" rel="noopener" class="'+(S.letters.indexOf(L)>=0?'vista':'')+'" '+
-    'title="cerca la lettera '+L+' su Spread the Sign">'+letterGlyph(L)+'<b>'+L+'</b></a>'
-  ).join('');
+    'title="cerca la lettera '+L+' su Spread the Sign">'+letterGlyph(L)+'<b>'+L+'</b></a>';
+  document.getElementById('alfaGrid').innerHTML = ALFA_IT.map(cella).join('');
+  document.getElementById('alfaGridNomi').innerHTML = ALFA_NOMI.map(cella).join('');
 }
 function disegnaParole(){
   const c=document.getElementById('tabParole');
@@ -1370,6 +1602,19 @@ document.getElementById('vai').onclick=()=>show('nome');
 document.getElementById('okNome').onclick=()=>{
   const raw=document.getElementById('inNome').value || 'ELIA';
   const pulito = raw.toUpperCase().normalize('NFD').replace(/[^A-Z]/g,'').slice(0,6) || 'ELIA';
+  const avviso = document.getElementById('nomeAvviso');
+  /* l'alfabeto e' completo, ma se una lettera mancasse meglio dirlo che
+     compitarla con una forma inventata */
+  const fuori = pulito.split('').filter(L=>!ALFA_DIS[L]).filter((v,i,a)=>a.indexOf(v)===i);
+  if(fuori.length){
+    avviso.hidden=false;
+    avviso.textContent = 'Il Guscio non ha ' +
+      (fuori.length===1 ? 'la lettera '+fuori[0] : 'le lettere '+fuori.join(', ')) +
+      '. Prova con un diminutivo o un altro nome.';
+    document.getElementById('inNome').focus();
+    return;
+  }
+  avviso.hidden=true;
   S.nome=pulito; save(); show('classe');
 };
 document.getElementById('inNome').addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('okNome').click(); });

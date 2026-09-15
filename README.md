@@ -20,14 +20,23 @@ e il documento su **https://prnfpp.github.io/LIS-Quest/gdd.html**.
 In locale bastano due click: apri `index.html` in un browser. 
 Non serve nessuna build, nessuna dipendenza, nessun server — è una singola pagina HTML con tutto dentro.
 
-## ⚠️ I segni che vedi non sono LIS
+## ⚠️ Cosa è vero e cosa no
 
-Questa è la cosa più importante di tutto il repository.
+Questa è la cosa più importante di tutto il repository, e va letta prima di far giocare qualcuno.
 
-Le animazioni dei segni nella demo sono **segnaposto**: disegni parametrici che rispettano la
-*struttura* di un segno — configurazione della mano, luogo sul corpo, movimento, espressione del
-viso — perché su quella struttura si reggono i mini-giochi. Il contenuto linguistico, però, è
-inventato.
+**L'alfabeto manuale è quasi corretto, e non ancora validato.** Le 26 lettere sono disegnate sulle
+descrizioni della dattilologia italiana — configurazione delle dita, posizione del pollice,
+orientamento del palmo, e il movimento per J, K, X, Y e Z, dove il movimento fa parte della lettera.
+È un'approssimazione ragionata, non una fonte. Una descrizione scritta non dice quanto le dita sono
+ricurve nella E, che angolo esatto prende il pollice nella T, quanto è ampio il gancio della J: è lì
+che si nascondono gli errori, e servono **occhi sordi madrelingua** per trovarli. Finché non succede,
+l'alfabeto va considerato *quasi* corretto — e in una lingua la differenza fra quasi e corretto è
+tutta.
+
+**I segni delle parole sono segnaposto.** CIAO, MELA, PESCE e gli altri sono disegni parametrici che
+rispettano la *struttura* di un segno — configurazione della mano, luogo sul corpo, movimento,
+espressione del viso — perché su quella struttura si reggono i mini-giochi. Il contenuto linguistico,
+però, è inventato.
 
 Insegnare un segno sbagliato è peggio che non insegnarne nessuno: resta addosso e poi va
 disimparato. Il lessico reale va ancora girato con **segnanti e/o interpreti** e validato da loro prima
@@ -60,7 +69,9 @@ Le clip dei segni andranno in una cartella `segni/` che si creerà quando ci sar
 - [x] Game Design Document del capitolo 1
 - [x] Demo giocabile delle scene 1–2 con i tre mini-giochi
 - [x] *Il Guscio*: dizionario interno con alfabeto sempre consultabile
-- [ ] Lessico girato in video con segnanti sordi (12 segni + 21 lettere per le scene 1–2)
+- [x] Alfabeto manuale disegnato sulle descrizioni della dattilologia (26 lettere, con i movimenti)
+- [ ] **Validazione dell'alfabeto con segnanti sordi madrelingua** — il passo che manca per primo
+- [ ] Lessico girato in video con segnanti sordi (12 segni + 26 lettere)
 - [ ] Validazione linguistica delle frasi dei mini-giochi
 - [ ] Scene 3–6 del capitolo 1
 - [ ] Passaggio a struttura modulare per capitoli (dati JSON separati dal motore)
