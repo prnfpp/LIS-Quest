@@ -1,6 +1,6 @@
-# LIS Quest
+# LIS Quest 
 
-**Un'avventura in cui non impari la Lingua dei Segni Italiana per vincere: vinci perché l'hai capita.**
+**È un'avventura in cui si cerca di imparare la Lingua dei Segni Italiana attraverso un piccolo gioco di ruolo.**
 
 LIS Quest è un gioco narrativo gratuito per bambini e ragazzi (8–14 anni) che avvicina alla LIS
 attraverso una storia, non attraverso un dizionario. Il giocatore approda su un'isola dove una fata,
