@@ -22,8 +22,13 @@ Per le scene 1–2 del capitolo 1:
 | SÌ | `si.webm` + `si.jpg` |
 | NO | `no.webm` + `no.jpg` |
 
-Più l'alfabeto manuale: `lettere/a.webm` … `lettere/z.webm` (21 lettere italiane), e la parola
-`nima.webm` compitata per intero.
+Più l'alfabeto manuale: `lettere/a.webm` … `lettere/z.webm` (26 lettere: le 21 italiane più J, K,
+W, X e Y, che servono per i nomi), e la parola `nima.webm` compitata per intero.
+
+Le lettere sono già disegnate nel gioco a partire dalle descrizioni della dattilologia italiana, ma
+**non sono state validate da nessuno**. Prima ancora delle riprese serve che una persona sorda
+segnante le guardi una per una e dica quali sono sbagliate: è il passo più economico e più urgente
+del progetto, e non richiede una telecamera.
 
 Le specifiche di ripresa e i requisiti tecnici stanno in [CONTRIBUTING.md](./CONTRIBUTING.md).
 

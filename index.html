@@ -235,6 +235,19 @@ input[type=text]:focus{border-color:var(--nima);outline:none}
 .blocco .gl,.slot .gl{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.08em;color:var(--testo-3)}
 .blocco.faccia svg,.slot.faccia svg{width:78px;height:78px}
 
+/* dove il movimento fa parte della lettera, la lettera si muove */
+.lm{transform-box:fill-box;transform-origin:50% 85%}
+.lm-gancio{animation:lmGancio 2.4s ease-in-out infinite}
+@keyframes lmGancio{0%,20%{transform:translate(0,0) rotate(0deg)}55%{transform:translate(4px,7px) rotate(14deg)}90%,100%{transform:translate(0,0) rotate(0deg)}}
+.lm-scatto{animation:lmScatto 1.8s ease-in-out infinite}
+@keyframes lmScatto{0%,62%,100%{transform:translate(0,0)}74%{transform:translate(0,5px)}84%{transform:translate(0,1px)}}
+.lm-secco{animation:lmSecco 1.6s ease-in-out infinite}
+@keyframes lmSecco{0%,70%,100%{transform:translate(0,0)}78%{transform:translate(0,6px)}86%{transform:translate(0,1px)}}
+.lm-onda{animation:lmOnda 1.9s ease-in-out infinite}
+@keyframes lmOnda{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+.tratto-j{stroke-dasharray:72;stroke-dashoffset:72;animation:tracciaJ 2.4s ease-in-out infinite}
+@keyframes tracciaJ{0%,18%{stroke-dashoffset:72;opacity:.9}58%,86%{stroke-dashoffset:0;opacity:.9}100%{stroke-dashoffset:0;opacity:0}}
+
 /* la Z si disegna nell'aria: il tratto fa parte della lettera */
 .tratto-z{stroke-dasharray:90;stroke-dashoffset:90;animation:tracciaZ 2.4s ease-in-out infinite}
 @keyframes tracciaZ{0%{stroke-dashoffset:90;opacity:.9}55%,84%{stroke-dashoffset:0;opacity:.9}100%{stroke-dashoffset:0;opacity:0}}
@@ -334,7 +347,7 @@ footer a{color:var(--testo-2)}
 
   <div class="badge">
     <b>Demo</b>
-    <span>I segni che vedi sono <strong>segnaposto animati</strong>, non LIS reale.</span>
+    <span>L'alfabeto segue le descrizioni della dattilologia italiana ed è <strong>da validare</strong>. I segni delle parole sono ancora <strong>segnaposto</strong>.</span>
     <button id="spiegaBadge">Perché?</button>
   </div>
 
@@ -427,7 +440,8 @@ footer a{color:var(--testo-2)}
 
     <div class="card" style="border-left:4px solid var(--corallo)">
       <h2>Una cosa detta chiaramente</h2>
-      <p>Questi non sono segni della LIS. Sono disegni animati che rispettano la <em>struttura</em> di un segno — configurazione della mano, luogo, movimento, espressione del viso — perché su quella struttura si costruiscono i mini-giochi. Il lessico reale va girato con persone sorde segnanti e validato da loro, prima di finire in mano a un bambino.</p>
+      <p>L'alfabeto manuale che hai usato è costruito sulle descrizioni della dattilologia italiana, ma nessuna persona sorda l'ha ancora guardato e detto se è giusto. Finché non succede, consideralo <em>quasi</em> corretto: la differenza fra quasi e corretto, in una lingua, è tutta.</p>
+      <p>I segni delle parole non sono LIS. Sono disegni animati che rispettano la <em>struttura</em> di un segno — configurazione della mano, luogo, movimento, espressione del viso — perché su quella struttura si costruiscono i mini-giochi. Il lessico reale va girato con persone sorde segnanti e validato da loro, prima di finire in mano a un bambino.</p>
       <p>Un gioco sulla LIS fatto senza persone sorde nel gruppo di lavoro non è un gioco sulla LIS. Questa demo esiste per trovare quelle persone, non per fare a meno di loro.</p>
     </div>
 
@@ -436,6 +450,7 @@ footer a{color:var(--testo-2)}
         <h3>Sei sordo o sorda, o interprete LIS?</h3>
         <p>È di te che il progetto ha bisogno per primo.</p>
         <ul>
+          <li>Guardare l'alfabeto manuale lettera per lettera e dire quali forme sono sbagliate</li>
           <li>Guardare il lessico delle prime due scene e dire cosa non va</li>
           <li>Segnare davanti a una camera, o indicare chi potrebbe farlo</li>
           <li>Validare le frasi: quali ordini sono naturali, quali suonano storti, quali sono sbagliati</li>
@@ -479,17 +494,20 @@ footer a{color:var(--testo-2)}
   <div id="tabAlfa">
     <p style="font-size:13px;margin-bottom:10px">Le 21 lettere italiane, sempre tutte disponibili. Quelle che hai già usato sono accese. <strong>Tocca una lettera</strong> per cercarla su Spread the Sign.</p>
     <div class="alfaGrid spenta" id="alfaGrid"></div>
-    <p style="font-size:12.5px;color:var(--testo-3);margin-top:10px">J, K, W, X e Y servono per i nomi e le parole straniere: arrivano più avanti nel capitolo.</p>
+    <p style="font-size:12.5px;color:var(--testo-3);margin:14px 0 8px">J, K, W, X e Y non stanno nelle parole italiane, ma servono per i nomi: ci sono anche queste.</p>
+    <div class="alfaGrid spenta" id="alfaGridNomi"></div>
   </div>
   <div id="tabParole" hidden></div>
-  <p class="nota"><strong>I disegni animati qui dentro sono segnaposto.</strong> Il pulsante accanto a ogni voce apre <a href="https://www.spreadthesign.com/it.it/search/" target="_blank" rel="noopener">Spread the Sign</a>, il dizionario multilingue del European Sign Language Centre, dove il segno vero c'è in video.</p>
+  <p class="nota"><strong>Le lettere seguono le descrizioni della dattilologia italiana e vanno ancora validate; i segni delle parole sono segnaposto.</strong> In entrambi i casi il collegamento apre <a href="https://www.spreadthesign.com/it.it/search/" target="_blank" rel="noopener">Spread the Sign</a>, il dizionario multilingue del European Sign Language Centre, dove il segno vero c'è in video.</p>
   <div class="btn-row"><button class="btn ghost" onclick="document.getElementById('dlgTacc').close()">Chiudi</button></div>
 </div></dialog>
 
 <dialog id="dlgBadge"><div class="dlg">
-  <h2>Perché i segni sono finti</h2>
-  <p>Insegnare un segno sbagliato è peggio che non insegnarne nessuno: resta addosso e va poi disimparato. Finché il lessico non è girato con segnanti sordi madrelingua e validato, questa demo non mostra LIS reale.</p>
-  <p>Quello che mostra è la <strong>struttura</strong> di un segno, che è ciò su cui si reggono i mini-giochi:</p>
+  <h2>Cosa è vero e cosa no</h2>
+  <p>Insegnare un segno sbagliato è peggio che non insegnarne nessuno: resta addosso e poi va disimparato. Per questo la demo dice apertamente a che punto sta ogni cosa.</p>
+  <p><strong>L'alfabeto manuale</strong> — le lettere del Guscio, del sigillo e dei nomi — è disegnato sulle descrizioni della dattilologia italiana: configurazione delle dita, posizione del pollice, orientamento del palmo, e il movimento dove il movimento fa parte della lettera. È un'approssimazione ragionata, non una fonte: <strong>va ancora validata da segnanti sordi madrelingua</strong>, perché una descrizione scritta non dice quanto le dita sono ricurve né che angolo prende il pollice, ed è lì che si nascondono gli errori.</p>
+  <p><strong>I segni delle parole</strong> — CIAO, MELA, PESCE — restano <strong>segnaposto</strong>. Quelli sono lessico, e il lessico va girato in video con persone sorde segnanti prima di finire in mano a un bambino.</p>
+  <p>Quello che i segnaposto mostrano è la <strong>struttura</strong> di un segno, che è ciò su cui si reggono i mini-giochi:</p>
   <ul style="font-size:14.5px;color:var(--testo-2)">
     <li><strong>Configurazione</strong> — la forma della mano</li>
     <li><strong>Luogo</strong> — dove sta rispetto al corpo</li>
@@ -688,7 +706,10 @@ function suAperte(quali, ang){
   }).join('');
 }
 
-/* ---- le ventuno lettere italiane ---- */
+/* alcune lettere non sono solo una forma: il movimento fa parte della lettera */
+function mov(nome, contenuto){ return '<g class="lm lm-'+nome+'">'+contenuto+'</g>'; }
+
+/* ---- le lettere dell'alfabeto manuale ---- */
 const ALFA_DIS = {
  /* Pugno, pollice disteso di fianco all'indice. Palmo in avanti. */
  A: ()=> polso()+palmo(-20,-6,40,34)+nocche(-18,18)+
@@ -808,7 +829,37 @@ const ALFA_DIS = {
          dito('M -13 -2 L -13 -36')+
          dito('M -19 8 L -7 3', 11)+
          '<path class="tratto-z" d="M -34 -40 L -8 -40 L -34 -20 L -8 -20" fill="none" '+
-         'stroke="#FFC15E" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" opacity=".85"/>'
+         'stroke="#FFC15E" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" opacity=".85"/>',
+
+ /* --- cinque lettere per i nomi e le parole straniere --- */
+
+ /* Come la I, ma il polso disegna in aria il gancio della J. */
+ J: ()=> mov('gancio', polso()+palmo(-20,-6,40,34)+nocche(-18,9)+
+         dito('M 15 -6 L 15 -36', 9)+
+         dito('M -20 9 L -7 4', 11))+
+         '<path class="tratto-j" d="M 26 -30 L 26 -2 q 0 12 -13 12 q -10 0 -12 -8" fill="none" '+
+         'stroke="#FFC15E" stroke-width="3.2" stroke-linecap="round" opacity=".85"/>',
+
+ /* Indice e medio tesi e aperti, pollice teso in mezzo alle due dita; scatto del polso. */
+ K: ()=> mov('scatto', polso()+palmo(-20,-6,40,34)+nocche(4,18)+
+         dito('M -13 -2 L -21 -36')+
+         dito('M -3 -2 L 4 -36')+
+         dito('M -15 9 L -9 -21', 11)),
+
+ /* Indice, medio e anulare tesi e separati; il pollice blocca il mignolo. Statica. */
+ W: ()=> polso()+palmo(-20,-6,40,34)+nocche(9,18,-13,1)+
+         suAperte(['ind','med','anu'], 17)+
+         dito('M -17 13 L 13 5', 11),
+
+ /* Pugno con il solo indice sollevato e piegato a uncino; scatto secco. */
+ X: ()=> mov('secco', polso()+palmo(-20,-6,40,34)+nocche(-18,18,-14,2)+
+         dito('M -13 -10 L -13 -28 L -3 -25')+
+         dito('M -20 9 L -8 4', 11)),
+
+ /* Pollice e mignolo tesi verso l'esterno, tre dita chiuse; il polso oscilla. */
+ Y: ()=> mov('onda', polso()+palmo(-19,-6,38,34)+nocche(-9,11)+
+         dito('M 15 -4 L 26 -28', 9)+
+         dito('M -15 6 L -33 -6', 11))
 };
 
 /* glifo compatto di una lettera, per ruota, caselle e dizionario */
@@ -1508,11 +1559,13 @@ function finisci(){
 
 /* ================= IL GUSCIO (dizionario) ================= */
 const ALFA_IT = 'ABCDEFGHILMNOPQRSTUVZ'.split('');
+const ALFA_NOMI = 'JKWXY'.split('');
 function disegnaAlfabeto(){
-  document.getElementById('alfaGrid').innerHTML = ALFA_IT.map(L=>
+  const cella = L =>
     '<a href="'+stsLink(L)+'" target="_blank" rel="noopener" class="'+(S.letters.indexOf(L)>=0?'vista':'')+'" '+
-    'title="cerca la lettera '+L+' su Spread the Sign">'+letterGlyph(L)+'<b>'+L+'</b></a>'
-  ).join('');
+    'title="cerca la lettera '+L+' su Spread the Sign">'+letterGlyph(L)+'<b>'+L+'</b></a>';
+  document.getElementById('alfaGrid').innerHTML = ALFA_IT.map(cella).join('');
+  document.getElementById('alfaGridNomi').innerHTML = ALFA_NOMI.map(cella).join('');
 }
 function disegnaParole(){
   const c=document.getElementById('tabParole');
@@ -1550,14 +1603,14 @@ document.getElementById('okNome').onclick=()=>{
   const raw=document.getElementById('inNome').value || 'ELIA';
   const pulito = raw.toUpperCase().normalize('NFD').replace(/[^A-Z]/g,'').slice(0,6) || 'ELIA';
   const avviso = document.getElementById('nomeAvviso');
-  /* J, K, W, X e Y non sono ancora nell'alfabeto del capitolo: meglio dirlo che
-     compitarle con una forma inventata. */
+  /* l'alfabeto e' completo, ma se una lettera mancasse meglio dirlo che
+     compitarla con una forma inventata */
   const fuori = pulito.split('').filter(L=>!ALFA_DIS[L]).filter((v,i,a)=>a.indexOf(v)===i);
   if(fuori.length){
     avviso.hidden=false;
-    avviso.textContent = 'Nel capitolo 1 il Guscio non ha ancora ' +
+    avviso.textContent = 'Il Guscio non ha ' +
       (fuori.length===1 ? 'la lettera '+fuori[0] : 'le lettere '+fuori.join(', ')) +
-      ': arrivano più avanti. Prova con un diminutivo o un altro nome.';
+      '. Prova con un diminutivo o un altro nome.';
     document.getElementById('inNome').focus();
     return;
   }
