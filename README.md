@@ -54,7 +54,8 @@ semplice collegamento.
 
 ```
 .
-├── index.html          demo giocabile del capitolo 1 (pagina singola, zero dipendenze)
+├── index.html          il gioco: motore, mini-giochi, disegno dei segni
+├── dialoghi.js         tutte le parole della storia — si modifica senza toccare il codice
 ├── gdd.html            Game Design Document completo
 ├── SEGNI.md            dove andranno le clip video del lessico, e con che requisiti
 ├── CONTRIBUTING.md     come aggiungere un segno, una scena, un capitolo
@@ -62,7 +63,23 @@ semplice collegamento.
 └── README.md
 ```
 
+I due file vanno tenuti nella stessa cartella: `index.html` carica `dialoghi.js` all'avvio.
+
 Le clip dei segni andranno in una cartella `segni/` che si creerà quando ci sarà il primo video.
+
+## ✍️ Cambiare la storia senza programmare
+
+Tutte le parole del gioco — battute, titoli delle scene, istruzioni e risposte dei mini-giochi,
+descrizioni delle classi e del dizionario — stanno in **[`dialoghi.js`](./dialoghi.js)**. Si apre con
+un editor di testo qualunque, si cambia il testo fra apici, si salva e si ricarica la pagina. Il
+file spiega in testa come è fatto e quali tre errori evitare; se ne fai uno, il gioco non resta muto:
+mostra un messaggio che dice cosa guardare.
+
+Perché un file `.js` e non un `.json`, che sarebbe più pulito? Perché un `.json` si legge solo con
+`fetch()`, e i browser lo bloccano quando la pagina è aperta con un doppio clic da `file://`. Il
+gioco smetterebbe di funzionare in locale senza un server — ed è proprio la cosa che questo progetto
+promette di non chiedere. Il contenuto di `dialoghi.js` resta comunque dati e basta: nessuna logica,
+nessuna funzione.
 
 ## 🗺️ A che punto siamo
 
@@ -74,7 +91,8 @@ Le clip dei segni andranno in una cartella `segni/` che si creerà quando ci sar
 - [ ] Lessico girato in video con segnanti sordi (12 segni + 26 lettere)
 - [ ] Validazione linguistica delle frasi dei mini-giochi
 - [ ] Scene 3–6 del capitolo 1
-- [ ] Passaggio a struttura modulare per capitoli (dati JSON separati dal motore)
+- [x] Dialoghi separati dal motore, modificabili senza toccare il codice
+- [ ] Passaggio a struttura modulare per capitoli (una scena per file)
 - [ ] Capitolo 2: il viaggio in nave
 
 ## 📜 Licenze
