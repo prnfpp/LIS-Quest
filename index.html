@@ -418,7 +418,7 @@ footer a{color:var(--testo-2)}
       <div class="dialogo">
         <div class="chi" id="chi">Nima</div>
         <p id="testo">…</p>
-        <div class="tap-hint" id="tapHint"><i></i> tocca per continuare</div>
+        <div class="tap-hint" id="tapHint"><i></i> <span id="tapTesto">tocca per continuare</span></div>
         <button class="btn ghost avanti" id="avanti" hidden>Continua ▸</button>
       </div>
       <div class="gioco" id="gioco" hidden></div>
@@ -518,9 +518,32 @@ footer a{color:var(--testo-2)}
   <div class="btn-row"><button class="btn ghost" onclick="document.getElementById('dlgBadge').close()">Ho capito</button></div>
 </div></dialog>
 
+<!-- Tutte le parole del gioco stanno qui: si modifica questo file per cambiare
+     la storia, senza toccare il codice qui sotto. -->
+<script src="dialoghi.js"></script>
+
 <script>
 (function(){
 "use strict";
+
+/* Se dialoghi.js manca o contiene un errore di battitura, meglio dirlo
+   chiaramente che mostrare una pagina vuota. */
+if(!window.DIALOGHI || !Array.isArray(window.DIALOGHI.scene) || !window.DIALOGHI.scene.length){
+  document.querySelector('.app').innerHTML =
+    '<div class="card" style="border-left:4px solid var(--corallo)">'+
+    '<h2>I dialoghi non si caricano</h2>'+
+    '<p>Il gioco prende tutte le sue parole dal file <strong>dialoghi.js</strong>, che adesso non riesce a leggere. Di solito è una di queste tre cose:</p>'+
+    '<ul style="color:var(--testo-2);font-size:14.5px;line-height:1.6">'+
+    '<li>un apostrofo dentro una battuta scritto <code>\'</code> invece di <code>\\\'</code></li>'+
+    '<li>una virgola di troppo, o che manca, alla fine di una riga</li>'+
+    '<li>una parentesi <code>{</code> o <code>[</code> lasciata aperta</li>'+
+    '</ul>'+
+    '<p>Il file <strong>dialoghi.js</strong> deve stare nella stessa cartella di <strong>index.html</strong>. '+
+    'Per vedere la riga esatta dell\'errore: tasto destro sulla pagina, <em>Ispeziona</em>, scheda <em>Console</em>.</p>'+
+    '</div>';
+  return;
+}
+const D = window.DIALOGHI;
 
 /* ================= SEGNI: sistema parametrico =================
    Ogni segno è descritto dai quattro parametri formazionali.
@@ -564,21 +587,8 @@ const SIGNS = {
 };
 
 /* significato in italiano + parola da cercare sul dizionario reale */
-const USO = {
-  ciao:      ['Ciao',      'Il saluto. Il primo segno che Nima ti ha fatto, prima ancora di sapere chi eri.'],
-  io:        ['Io',        'Se stessi. Si indica il proprio petto: in LIS lo spazio davanti al corpo dice chi fa cosa.'],
-  tu:        ['Tu',        'La persona con cui stai parlando. Nima lo usa ogni volta che ti fa una domanda.'],
-  nome:      ['Nome',      'Il nome di qualcuno. Dopo questo segno di solito arriva la compitazione lettera per lettera.'],
-  fame:      ['Fame',      'Avere fame. Nima lo ha fatto con una faccia che non lasciava molti dubbi.'],
-  mangiare:  ['Mangiare',  'L\'azione di mangiare. Nella frase può stare prima o dopo la cosa che si mangia.'],
-  mela:      ['Mela',      'Il frutto. La prima cosa che hai trovato sulla spiaggia e che le è piaciuta.'],
-  pesce:     ['Pesce',     'L\'animale, e anche quello che finisce nel piatto. Nima lo ha preso tra gli scogli.'],
-  acqua:     ['Acqua',     'Da bere, o quella del mare. Sull\'isola serve spesso.'],
-  bere:      ['Bere',      'L\'azione di bere. Va insieme ad acqua, ma non è la stessa cosa.'],
-  si:        ['Sì',        'Affermare. La testa conta quanto la mano: senza il movimento del capo non è un sì.'],
-  no:        ['No',        'Negare. Anche qui la faccia e la testa fanno metà del lavoro grammaticale.'],
-  conchiglia:['Conchiglia','Quello che si trova sulla battigia. L\'hai notata solo perché guardi bene.']
-};
+const USO = {};
+Object.keys(D.parole||{}).forEach(k=>{ USO[k] = [D.parole[k].cerca, D.parole[k].testo]; });
 function stsLink(parola){ return 'https://www.spreadthesign.com/it.it/search/?q=' + encodeURIComponent(parola); }
 
 
@@ -913,20 +923,15 @@ const OGG = {
 function oggSVG(k){ return OGG[k] || OGG.legno; }
 
 /* ================= CLASSI ================= */
-const CLASSI = [
-  {id:'lince', k:'Occhio di Lince', nome:'Osservatrice / Osservatore',
-   d:'Vedi i dettagli che sfuggono. Più tempo negli enigmi visivi, e una volta per sfida puoi rivedere il segno al rallentatore.',
-   em:'<svg viewBox="0 0 64 64"><ellipse cx="32" cy="32" rx="26" ry="16" fill="#12303F" stroke="#7FE0CE" stroke-width="2.5"/><circle cx="32" cy="32" r="9" fill="#7FE0CE"/><circle cx="32" cy="32" r="4" fill="#0A1E2C"/></svg>'},
-  {id:'canta', k:'Voce di Mano', nome:'Cantastorie',
-   d:'Metti le parole al loro posto. Nelle frasi puoi chiedere a Nima quale blocco va per primo — solo quello.',
-   em:'<svg viewBox="0 0 64 64"><path d="M14 44V16h22l14 12v16z" fill="#12303F" stroke="#FFC15E" stroke-width="2.5"/><path d="M20 26h20M20 34h14" stroke="#FFC15E" stroke-width="3" stroke-linecap="round"/></svg>'},
-  {id:'dita', k:'Dita Rapide', nome:'Scassinatrice / Scassinatore',
-   d:'Le mani vanno più veloci della testa. Più tempo per lettera, e ogni lucchetto ti perdona un errore.',
-   em:'<svg viewBox="0 0 64 64"><rect x="16" y="28" width="32" height="24" rx="5" fill="#12303F" stroke="#EF7361" stroke-width="2.5"/><path d="M23 28v-6a9 9 0 0 1 18 0v6" fill="none" stroke="#EF7361" stroke-width="2.5"/><circle cx="32" cy="39" r="4" fill="#EF7361"/></svg>'},
-  {id:'passo', k:'Passo Curioso', nome:'Esploratrice / Esploratore',
-   d:'Nessun aiuto nei mini-giochi: in cambio vedi le cose nascoste nelle scene, e ogni scoperta vale segni e XP in più.',
-   em:'<svg viewBox="0 0 64 64"><path d="M32 8l6 14 15 2-11 10 3 15-13-7-13 7 3-15-11-10 15-2z" fill="#12303F" stroke="#7FE0CE" stroke-width="2.5"/></svg>'}
-];
+/* gli stemmi delle classi sono disegni, non testo: restano qui.
+   Nomi e descrizioni stanno in dialoghi.js */
+const EMBLEMI = {
+  lince: '<svg viewBox="0 0 64 64"><ellipse cx="32" cy="32" rx="26" ry="16" fill="#12303F" stroke="#7FE0CE" stroke-width="2.5"/><circle cx="32" cy="32" r="9" fill="#7FE0CE"/><circle cx="32" cy="32" r="4" fill="#0A1E2C"/></svg>',
+  canta: '<svg viewBox="0 0 64 64"><path d="M14 44V16h22l14 12v16z" fill="#12303F" stroke="#FFC15E" stroke-width="2.5"/><path d="M20 26h20M20 34h14" stroke="#FFC15E" stroke-width="3" stroke-linecap="round"/></svg>',
+  dita: '<svg viewBox="0 0 64 64"><rect x="16" y="28" width="32" height="24" rx="5" fill="#12303F" stroke="#EF7361" stroke-width="2.5"/><path d="M23 28v-6a9 9 0 0 1 18 0v6" fill="none" stroke="#EF7361" stroke-width="2.5"/><circle cx="32" cy="39" r="4" fill="#EF7361"/></svg>',
+  passo: '<svg viewBox="0 0 64 64"><path d="M32 8l6 14 15 2-11 10 3 15-13-7-13 7 3-15-11-10 15-2z" fill="#12303F" stroke="#7FE0CE" stroke-width="2.5"/></svg>'
+};
+const CLASSI = (D.classi||[]).map(c=>({id:c.id, k:c.titolo, nome:c.ruolo, d:c.testo, em:EMBLEMI[c.id]||''}));
 
 /* ================= STATO ================= */
 const S = {nome:'ELIA', cls:'lince', xp:0, tacc:[], letters:[], scena:0, beat:0, finito:false};
@@ -967,52 +972,38 @@ let beats=[], bi=0, waiting=false;
 function say(sign, text, chi){ return {t:'sign', sign:sign, text:text, chi:chi||'Nima'}; }
 function narr(text){ return {t:'narr', text:text}; }
 
+/* Le scene arrivano da dialoghi.js. Qui si traducono i nomi italiani delle
+   battute nei tipi che il motore conosce: cosi' chi scrive la storia non deve
+   sapere come si chiamano dentro. */
+const PROVE = {compita:'spell', indovina:'riddle', frase:'syntax'};
+const P = D.prove || {};
+const V = D.voci || {};
+
+function parolaDi(p){
+  if(!p || p === '@nome') return S.nome;
+  return String(p).toUpperCase();
+}
+function battuta(b){
+  switch(b.tipo){
+    case 'racconto': return {t:'narr',   text:b.testo};
+    case 'segno':    return {t:'sign',   sign:b.segno, text:b.testo, chi:b.chi||'Nima'};
+    case 'azione':   return {t:'act',    label:b.etichetta, sign:b.segno, text:b.testo,
+                             xp:b.xp||0, learn:b.impara||[]};
+    case 'compita':  return {t:'spell',  word:parolaDi(b.parola), text:b.testo};
+    case 'guscio':   return {t:'guscio', text:b.testo};
+    case 'premio':   return {t:'reward', xp:b.xp||0, learn:b.impara||[], text:b.testo};
+    case 'prova':    return {t:'game',   game:PROVE[b.prova]||b.prova,
+                             word:parolaDi(b.parola), senzaTempo:!!b.senzaTempo,
+                             target:b.soluzione, opts:b.scelte||[], testo:b.testo};
+    default:         return {t:'narr',   text:b.testo||''};
+  }
+}
 function buildScena(n){
-  const NOME = S.nome;
-  if(n===0){
-    scenery(true);
-    el.hudScena.textContent='Scena 1 · Il primo sguardo';
-    return [
-      narr('Ti svegli con la sabbia in bocca. Non ricordi come sei arrivato qui, e la barca non c\'è più.'),
-      narr('Tra le foglie, qualcosa di piccolo si muove. E ti sta guardando.'),
-      say('ciao','Nima ti saluta. Non dice niente: lo fa con la mano.'),
-      narr('Apri la bocca per rispondere. Lei ti guarda le mani, non la faccia. Qui le parole non servono a nulla.'),
-      {t:'act', label:'Salutala anche tu', sign:'ciao', text:'Provi a copiarla. Viene male, ma lei ride.', xp:20, learn:['ciao']},
-      say('io','Si indica. Questo vuol dire: io.'),
-      say('nome','Poi porta due dita alla fronte. Nome.'),
-      {t:'spell', word:'NIMA', mostra:true, text:'E compita il suo nome, lettera per lettera, con la mano. N, I, M, A. Nima.'},
-      narr('Ti accorgi che non stai stando dietro. Lei se ne accorge prima di te: si toglie una conchiglia dalla cintura e te la mette in mano.'),
-      {t:'guscio', text:'Dentro la conchiglia ci sono tutte le lettere, ferme, che puoi guardare quanto vuoi. Da adesso è nella barra in alto: aprila quando ti serve, anche durante una prova.'},
-      say('tu','Adesso indica te.', 'Nima'),
-      say('nome','E rifà il segno di prima. Vuole sapere come ti chiami.'),
-      narr('Dietro di lei, mezza sepolta nella sabbia, c\'è una capanna. Sulla porta un sigillo di conchiglie, chiuso.'),
-      {t:'game', game:'spell', word:NOME, senzaTempo:true, testo:'Il sigillo si apre solo con il tuo nome. Nessuna fretta: qui il tempo non corre.'},
-      {t:'reward', xp:60, learn:['ciao','io','tu','nome'],
-       text:'Il sigillo si illumina e la porta cede. Dentro c\'è una branda, una lanterna, e la prima notte tranquilla da quando sei qui.'}
-    ];
-  }
-  if(n===1){
-    scenery(false);
-    el.hudScena.textContent='Scena 2 · Fame';
-    return [
-      narr('Mattina. La luce entra dalle fessure della capanna e Nima è seduta sul tuo petto, che ti fissa.'),
-      say('fame','Si passa la mano sulla pancia, con la faccia di chi non scherza.'),
-      say('mangiare','Poi porta le dita alla bocca, due volte.'),
-      narr('Fuori, la marea della notte ha lasciato delle cose sulla spiaggia.'),
-      say('mela','Nima ti mostra una cosa sola, e aspetta che tu capisca quale.'),
-      {t:'game', game:'riddle', target:'mela', opts:['mela','conchiglia','granchio','pesce','legno'],
-       testo:'Guarda il segno e tocca la cosa giusta sulla spiaggia.'},
-      {t:'reward', xp:40, learn:['fame','mangiare','mela'], text:'Le porti la mela. Sparisce in quattro morsi: non sembrava così piccola, prima.'},
-      say('si','Fa segno di sì con tutta la testa.'),
-      narr('Poi ti guarda. Tocca a te: adesso è lei a chiederti cosa vuoi mangiare.'),
-      say('pesce','Indica il mare, e fa il segno di quello che ci nuota dentro.'),
-      {t:'game', game:'syntax', testo:'Dille che vuoi mangiare il pesce. Componi la frase con i suoi segni, nell\'ordine che ha senso in LIS.'},
-      {t:'reward', xp:70, learn:['pesce','si','io'],
-       text:'Nima capisce, alza gli occhi al cielo come per dire "e va bene", e vola verso gli scogli. Torna con un pesce più grande di lei.'},
-      narr('Mangiate insieme, seduti sulla sabbia. Da qualche parte oltre gli scogli, una campana suona due volte.')
-    ];
-  }
-  return [];
+  const sc = (D.scene||[])[n];
+  if(!sc) return [];
+  scenery(sc.momento !== 'giorno');
+  el.hudScena.textContent = sc.titolo || '';
+  return (sc.battute||[]).map(battuta);
 }
 
 function runBeat(){
@@ -1023,7 +1014,7 @@ function runBeat(){
   if(b.t!=='narr') el.nima.classList.remove('ombra');
 
   if(b.t==='narr'){
-    el.chi.textContent='L\'isola';
+    el.chi.textContent=V.isola;
     el.testo.className='narr'; el.testo.textContent=b.text;
     const nascosta = (S.scena===0 && bi<2);
     el.nima.classList.toggle('ombra', nascosta);
@@ -1032,14 +1023,14 @@ function runBeat(){
   }
   else if(b.t==='sign'){
     el.nima.classList.remove('ombra');
-    el.chi.textContent=b.chi||'Nima';
+    el.chi.textContent=b.chi||V.nima;
     el.testo.className=''; el.testo.textContent=b.text;
     mostraSegno(SIGNS[b.sign]);
     if(b.sign && SIGNS[b.sign]) impara(b.sign);
     el.tap.hidden=false; waiting=true;
   }
   else if(b.t==='act'){
-    el.chi.textContent='Tu'; el.testo.className=''; el.testo.textContent=b.text||'';
+    el.chi.textContent=V.tu; el.testo.className=''; el.testo.textContent=b.text||'';
     mostraSegno(SIGNS[b.sign]);
     el.avanti.hidden=false; el.avanti.textContent=b.label+' ▸';
     waiting=false;
@@ -1047,23 +1038,23 @@ function runBeat(){
     return;
   }
   else if(b.t==='spell'){
-    el.chi.textContent='Nima'; el.testo.className=''; el.testo.textContent=b.text;
+    el.chi.textContent=V.nima; el.testo.className=''; el.testo.textContent=b.text;
     mostraCompitato(b.word);
     b.word.split('').forEach(imparaLettera);
     el.tap.hidden=false; waiting=true;
   }
   else if(b.t==='guscio'){
-    el.chi.textContent='Il Guscio'; el.testo.className=''; el.testo.textContent=b.text;
+    el.chi.textContent=V.guscio; el.testo.className=''; el.testo.textContent=b.text;
     el.nima.innerHTML='<div class="glow"></div>'+
       '<div style="width:62%;margin:0 auto">'+OGG.conchiglia+'</div>';
     setGloss('IL GUSCIO');
-    el.avanti.hidden=false; el.avanti.textContent='Aprila ▸';
+    el.avanti.hidden=false; el.avanti.textContent=V.apri;
     waiting=false;
-    el.avanti.onclick=()=>{ apriTaccuino(); el.avanti.textContent='Continua ▸'; el.avanti.onclick=next; };
+    el.avanti.onclick=()=>{ apriTaccuino(); el.avanti.textContent=V.avanti; el.avanti.onclick=next; };
     return;
   }
   else if(b.t==='game'){
-    el.chi.textContent='Prova'; el.testo.className=''; el.testo.textContent=b.testo;
+    el.chi.textContent=V.prova; el.testo.className=''; el.testo.textContent=b.testo;
     waiting=false;
     if(b.game==='spell') giocoSpell(b.word, b.senzaTempo);
     else if(b.game==='riddle') giocoRiddle(b);
@@ -1071,7 +1062,7 @@ function runBeat(){
     return;
   }
   else if(b.t==='reward'){
-    el.chi.textContent='…'; el.testo.className=''; el.testo.textContent=b.text;
+    el.chi.textContent=V.premio; el.testo.className=''; el.testo.textContent=b.text;
     addXp(b.xp||0); (b.learn||[]).forEach(impara);
     mostraSegno(SIGNS[(b.learn||['ciao'])[0]] || SIGNS.ciao);
     el.tap.hidden=false; waiting=true;
@@ -1093,6 +1084,8 @@ function portaInVista(nodo){
   const dolce = !window.matchMedia('(prefers-reduced-motion:reduce)').matches;
   window.scrollTo({top: window.scrollY + r.top - 12, behavior: dolce ? 'smooth' : 'auto'});
 }
+
+if(V.tocca) document.getElementById('tapTesto').textContent = V.tocca;
 
 const IDLE = {g:'', h:'piatta', l:'neutroBasso', m:'oscilla', r:4, nm:'neutro'};
 function setGloss(txt){
@@ -1238,15 +1231,15 @@ function giocoSpell(word, senzaTempo){
 
   mostraGioco(true);
   el.gioco.innerHTML =
-    '<h3>Il sigillo delle conchiglie</h3>'+
-    '<p class="istr" id="istr">Guarda con calma: il tuo nome, lettera per lettera.</p>'+
+    '<h3>'+P.compita.titolo+'</h3>'+
+    '<p class="istr" id="istr">'+P.compita.guarda+'</p>'+
     '<div class="barra" id="barra" hidden><i style="width:100%"></i></div>'+
     '<div class="parola" id="parola"></div>'+
-    '<div class="ruota-area"><div class="ruota" id="ruota"><div class="centro">tocca la forma<br>della mano<br>o trascinala</div></div></div>'+
+    '<div class="ruota-area"><div class="ruota" id="ruota"><div class="centro">'+P.compita.centroRuota+'</div></div></div>'+
     '<p class="feedback" id="fb"></p>'+
     '<div class="gioco-foot" id="foot">'+
-      '<button class="btn ghost" type="button" id="rivediL">🔁 Rivedi le lettere</button>'+
-      '<button class="btn ghost" type="button" id="apriGuscio2">🐚 Apri il Guscio</button>'+
+      '<button class="btn ghost" type="button" id="rivediL">'+P.compita.bottoneRivedi+'</button>'+
+      '<button class="btn ghost" type="button" id="apriGuscio2">'+P.comune.bottoneGuscio+'</button>'+
     '</div>';
   document.getElementById('apriGuscio2').onclick = apriTaccuino;
 
@@ -1293,22 +1286,22 @@ function giocoSpell(word, senzaTempo){
       if(idx>=L.length){ clearInterval(timer); vinto(); }
     }else{
       b.classList.add('no'); setTimeout(()=>b.classList.remove('no'),320);
-      if(assorbe>0){ assorbe--; fb.className='feedback'; fb.textContent='Dita Rapide: il sigillo ti perdona questa. Ne resta '+assorbe+'.'; }
-      else{ fb.className='feedback no'; fb.textContent='Non è quella. Guarda dove stanno le dita.'; }
+      if(assorbe>0){ assorbe--; fb.className='feedback'; fb.textContent=P.compita.perdonata+' '+assorbe+'.'; }
+      else{ fb.className='feedback no'; fb.textContent=P.compita.sbagliata; }
     }
   }
   function vinto(){
-    fase='fatto'; fb.className='feedback ok'; fb.textContent='Il sigillo si apre.';
+    fase='fatto'; fb.className='feedback ok'; fb.textContent=P.compita.vinto;
     barra.hidden=true; addXp(40);
     document.getElementById('foot').innerHTML='';
-    const b=document.createElement('button'); b.className='btn'; b.textContent='Entra ▸';
+    const b=document.createElement('button'); b.className='btn'; b.textContent=P.compita.bottoneAvanti;
     b.onclick=next; document.getElementById('foot').appendChild(b);
   }
   function riparti(quanto){
     clearInterval(timer);
     fase='guarda';
     if(quanto!=='soloRivedi') idx=0;
-    istr.textContent='Riguarda con calma. Il tempo qui non ti fa perdere niente.';
+    istr.textContent=P.compita.riguarda;
     disegnaSlot(); barra.hidden=true;
     animaGuarda();
     setTimeout(iniziaGioco, 900 + L.length*guardaMs);
@@ -1328,8 +1321,8 @@ function giocoSpell(word, senzaTempo){
     if(fase==='fatto') return;
     fase='gioca'; tempo=tot;
     istr.textContent = senzaTempo
-      ? 'Adesso tocca a te: le stesse forme, nello stesso ordine. Prenditi il tempo che vuoi.'
-      : 'Adesso tocca a te: le stesse forme, nello stesso ordine.';
+      ? P.compita.toccaCalmo
+      : P.compita.tocca;
     disegnaSlot();
     clearInterval(timer);
     if(senzaTempo){ barra.hidden=true; return; }
@@ -1339,7 +1332,7 @@ function giocoSpell(word, senzaTempo){
       const p=Math.max(0,tempo/tot);
       barra.querySelector('i').style.width=(p*100)+'%';
       barra.classList.toggle('calda', p<.3);
-      if(tempo<=0){ clearInterval(timer); fb.className='feedback'; fb.textContent='Tempo finito — non hai perso niente. Si ricomincia più piano.'; riparti(); }
+      if(tempo<=0){ clearInterval(timer); fb.className='feedback'; fb.textContent=P.compita.tempoFinito; riparti(); }
     },100);
   }
   document.getElementById('rivediL').onclick=()=>{ if(fase!=='fatto') riparti('soloRivedi'); };
@@ -1364,8 +1357,8 @@ function giocoRiddle(b){
 
   mostraGioco(true);
   el.gioco.innerHTML =
-    '<h3>Cosa vuole Nima?</h3>'+
-    '<p class="istr">Il segno è lì sopra, in loop. Tocca la cosa giusta — o trascinagliela sopra — prima che la luce si spenga.</p>'+
+    '<h3>'+P.indovina.titolo+'</h3>'+
+    '<p class="istr">'+P.indovina.istruzioni+'</p>'+
     '<div class="barra" id="barra"><i style="width:100%"></i></div>'+
     '<div style="display:flex;justify-content:center"><div style="width:132px" id="segnoBersaglio">'+renderSign(SIGNS[b.target])+'</div></div>'+
     '<div class="oggetti" id="ogg"></div>'+
@@ -1381,23 +1374,23 @@ function giocoRiddle(b){
     if(k===b.target){
       finito=true; clearInterval(timer); btn.classList.add('giusto');
       btn.innerHTML += '<span>giusto</span>';
-      fb.className='feedback ok'; fb.textContent='Sì. È quella.';
+      fb.className='feedback ok'; fb.textContent=P.indovina.giusto;
       addXp(errori? 25:40);
       foot.innerHTML=''; const c=document.createElement('button');
-      c.className='btn'; c.textContent='Continua ▸'; c.onclick=next; foot.appendChild(c);
+      c.className='btn'; c.textContent=P.indovina.bottoneAvanti; c.onclick=next; foot.appendChild(c);
     }else{
       errori++; btn.classList.add('sbagliato');
       setTimeout(()=>btn.classList.remove('sbagliato'),340);
       fb.className='feedback no';
       fb.textContent = errori>=2
-        ? 'Guarda dove sta la mano, non solo come è fatta: è quello che cambia.'
-        : 'No. Riguarda il segno.';
+        ? P.indovina.sbagliato2
+        : P.indovina.sbagliato;
       if(errori>=3){
         finito=true; clearInterval(timer);
-        fb.className='feedback'; fb.textContent='Te la mostro io. Poi riproviamo insieme.';
+        fb.className='feedback'; fb.textContent=P.indovina.arreso;
         [].forEach.call(cont.children,(c2,i)=>{ if(opts[i]===b.target) c2.classList.add('giusto'); });
         foot.innerHTML=''; const c=document.createElement('button');
-        c.className='btn'; c.textContent='Ho capito ▸'; c.onclick=()=>{ addXp(15); next(); }; foot.appendChild(c);
+        c.className='btn'; c.textContent=P.indovina.bottoneArreso; c.onclick=()=>{ addXp(15); next(); }; foot.appendChild(c);
       }
     }
   }
@@ -1418,16 +1411,16 @@ function giocoRiddle(b){
   });
 
   const guscioBtn=document.createElement('button');
-  guscioBtn.className='btn ghost'; guscioBtn.type='button'; guscioBtn.textContent='🐚 Apri il Guscio';
+  guscioBtn.className='btn ghost'; guscioBtn.type='button'; guscioBtn.textContent=P.comune.bottoneGuscio;
   guscioBtn.onclick=apriTaccuino; foot.appendChild(guscioBtn);
 
   if(rallenta){
     const r=document.createElement('button');
-    r.className='btn ghost'; r.type='button'; r.textContent='🔍 Fermo immagine (Occhio di Lince)';
+    r.className='btn ghost'; r.type='button'; r.textContent=P.indovina.bottoneRallenta;
     r.onclick=()=>{
       const g=el.gioco.querySelector('.hand .mv');
       if(g){ g.style.animationDuration='4.2s'; }
-      r.disabled=true; r.textContent='Rallentato';
+      r.disabled=true; r.textContent=P.indovina.rallentato;
     };
     foot.appendChild(r);
   }
@@ -1437,7 +1430,7 @@ function giocoRiddle(b){
     barra.classList.toggle('calda',p<.3);
     if(tempo<=0){
       clearInterval(timer);
-      fb.className='feedback'; fb.textContent='La luce si è spenta — non succede niente. Nima ripete più piano.';
+      fb.className='feedback'; fb.textContent=P.indovina.tempoFinito;
       const g=el.gioco.querySelector('.hand .mv'); if(g) g.style.animationDuration='3.4s';
       barra.hidden=true;
     }
@@ -1457,8 +1450,8 @@ function giocoSyntax(){
 
   mostraGioco(true);
   el.gioco.innerHTML =
-    '<h3>Dillo a Nima</h3>'+
-    '<p class="istr">Tocca un segno, poi tocca la casella dove va — oppure trascinalo con il dito. Nessun tempo: pensaci.</p>'+
+    '<h3>'+P.frase.titolo+'</h3>'+
+    '<p class="istr">'+P.frase.istruzioni+'</p>'+
     '<div class="frase" id="frase"></div>'+
     '<div class="blocchi" id="blocchi"></div>'+
     '<p class="feedback" id="fb"></p>'+
@@ -1513,13 +1506,13 @@ function giocoSyntax(){
     const valido = ordini.some(o=>o.join(',')===s);
     foot.innerHTML='';
     if(valido && s===naturale){
-      fb.className='feedback ok'; fb.textContent='Nima capisce subito. È l\'ordine che userebbe lei.';
-      addXp(70); avantiBtn('Guarda cosa fa ▸');
+      fb.className='feedback ok'; fb.textContent=P.frase.perfetto;
+      addXp(70); avantiBtn(P.frase.bottoneAvanti);
     }else if(valido){
-      fb.className='feedback ok'; fb.textContent='Va bene: si capisce. Nima però lo direbbe mettendo il pesce prima del verbo.';
+      fb.className='feedback ok'; fb.textContent=P.frase.accettabile;
       addXp(50); avantiBtn('Guarda cosa fa ▸');
     }else{
-      fb.className='feedback no'; fb.textContent='Nima inclina la testa: così non le arriva. Prova a spostare qualcosa.';
+      fb.className='feedback no'; fb.textContent=P.frase.sbagliato;
       if(aiuto) aiutoBtn();
     }
   }
@@ -1529,12 +1522,12 @@ function giocoSyntax(){
   }
   function aiutoBtn(){
     const b=document.createElement('button'); b.className='btn ghost';
-    b.textContent='Chiedi a Nima (Voce di Mano)';
-    b.onclick=()=>{ fb.className='feedback'; fb.textContent='Nima ti indica: chi fa l\'azione va per primo.'; b.disabled=true; };
+    b.textContent=P.frase.bottoneAiuto;
+    b.onclick=()=>{ fb.className='feedback'; fb.textContent=P.frase.aiuto; b.disabled=true; };
     foot.appendChild(b);
   }
   const gb=document.createElement('button');
-  gb.className='btn ghost'; gb.type='button'; gb.textContent='🐚 Apri il Guscio';
+  gb.className='btn ghost'; gb.type='button'; gb.textContent=P.comune.bottoneGuscio;
   gb.onclick=apriTaccuino; foot.appendChild(gb);
   rendiBersaglio(pool, togli);
   render();

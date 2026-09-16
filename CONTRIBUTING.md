@@ -49,19 +49,36 @@ mela: { g:'MELA', video:'segni/mela.webm', poster:'segni/mela.jpg', /* ...i para
 e `renderSign()` mostra il video invece del disegno. I parametri non si cancellano: servono ancora
 per generare i **distrattori** dei mini-giochi (vedi sotto).
 
+## Cambiare i dialoghi
+
+Tutte le parole del gioco stanno in **`dialoghi.js`**, non in `index.html`. Ci si lavora con un
+editor di testo, senza sapere programmare: il file spiega in testa come è fatto. Se ci finisce un
+errore di battitura, il gioco mostra un messaggio che dice dove guardare invece di restare muto.
+
+È un `.js` e non un `.json` per una ragione precisa: un `.json` va letto con `fetch()`, che i browser
+bloccano quando la pagina è aperta con un doppio clic da `file://`. Il gioco deve restare apribile
+senza server. Il contenuto resta dati e basta — nessuna logica, nessuna funzione: se ti viene voglia
+di metterci un `if`, va nel motore.
+
 ## Aggiungere una scena
 
-Le scene sono array di *beat* dentro `buildScena(n)`. I tipi disponibili:
+Una scena è una voce dentro `scene` in `dialoghi.js`: un `titolo` per la barra in alto, un `momento`
+(`notte` o `giorno`) e un elenco di `battute`. I tipi di battuta:
 
-| Beat | Cosa fa |
-|---|---|
-| `narr(testo)` | narrazione, avanza al tocco |
-| `say(segno, testo)` | Nima esegue un segno, che entra nel Guscio |
-| `{t:'act', label, sign, xp, learn}` | un'azione del giocatore con un pulsante |
-| `{t:'spell', word, text}` | Nima compita una parola |
-| `{t:'guscio', text}` | consegna o apertura del dizionario |
-| `{t:'game', game, ...}` | un mini-gioco: `spell`, `riddle`, `syntax` |
-| `{t:'reward', xp, learn, text}` | chiusura di un beat, XP e segni acquisiti |
+| Tipo | Cosa fa | Vuole |
+|---|---|---|
+| `racconto` | narrazione in corsivo, avanza al tocco | `testo` |
+| `segno` | Nima esegue un segno, che entra nel Guscio | `segno`, `testo`, e `chi` se non parla lei |
+| `azione` | un'azione del giocatore, con un pulsante | `etichetta`, `segno`, `testo`, `xp`, `impara` |
+| `compita` | Nima compita una parola lettera per lettera | `parola`, `testo` |
+| `guscio` | consegna o apertura del dizionario | `testo` |
+| `prova` | un mini-gioco: `compita`, `indovina`, `frase` | `prova`, `testo`, più i suoi parametri |
+| `premio` | chiusura di un beat, XP e segni acquisiti | `testo`, `xp`, `impara` |
+
+In `parola` si può scrivere `@nome` per usare il nome del giocatore.
+
+I nomi italiani delle battute vengono tradotti nei tipi interni dal motore, in `battuta()` dentro
+`index.html`: è l'unico punto da toccare se serve un tipo nuovo.
 
 ## Progettare un mini-gioco che non si può barare
 
