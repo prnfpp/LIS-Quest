@@ -79,7 +79,7 @@ window.DIALOGHI = {
 
         {tipo:'segno', segno:'io', testo:'Si indica il petto. Questo vuol dire: io.'},
 
-        {tipo:'segno', segno:'nome', testo:'Poi porta due dita sotto il mento, come chi si ricorda una cosa. Nome.'},
+        {tipo:'segno', segno:'nome', testo:'Poi appoggia due dita — indice e medio, unite — sotto il mento, e da lì le fa scorrere in fuori, di lato. Nome.'},
 
         {tipo:'compita', parola:'NIMA',
          testo:'E scrive il suo nome nell’aria, una lettera alla volta. N, I, M, A. Nima.'},
@@ -92,7 +92,7 @@ window.DIALOGHI = {
 
         {tipo:'segno', segno:'tu', testo:'Adesso indica te.', chi:'Nima'},
 
-        {tipo:'segno', segno:'nome', testo:'E rifà il segno di prima. Due dita sotto il mento. Vuole sapere chi sei.'},
+        {tipo:'segno', segno:'nome', testo:'E rifà il segno di prima: indice e medio sotto il mento, che scorrono in fuori. Vuole sapere chi sei.'},
 
         {tipo:'racconto', testo:'Dietro di lei, mezza sepolta, c’è una capanna. Sulla porta un sigillo di conchiglie, chiuso da chissà quanto tempo.'},
 
@@ -251,7 +251,7 @@ window.DIALOGHI = {
     ciao:      {cerca:'Ciao',       testo:'Il saluto. Il primo segno che hai visto, prima ancora di capire dove eri finito.'},
     io:        {cerca:'Io',         testo:'Se stessi. Si indica il petto: in LIS lo spazio davanti al corpo dice chi fa cosa.'},
     tu:        {cerca:'Tu',         testo:'La persona che hai davanti. Nima lo usa ogni volta che ti fa una domanda, e te ne fa molte.'},
-    nome:      {cerca:'Nome',       testo:'Il nome di qualcuno. Dopo questo segno quasi sempre arrivano le lettere, una per una.'},
+    nome:      {cerca:'Nome',       testo:'Il nome di qualcuno. Indice e medio uniti sotto il mento, che scorrono in fuori: chi segna con la destra li porta da sinistra a destra, chi segna con la sinistra fa il contrario. Dopo questo segno quasi sempre arrivano le lettere, una per una.'},
     fame:      {cerca:'Fame',       testo:'Avere fame. Nima te lo ha fatto seduta sul tuo petto, all’alba, senza chiedere permesso.'},
     mangiare:  {cerca:'Mangiare',   testo:'L’azione di mangiare. Nella frase può stare prima o dopo la cosa che si mangia.'},
     mela:      {cerca:'Mela',       testo:'Il frutto. La prima cosa che la marea ti ha lasciato, e la prima che le è piaciuta.'},

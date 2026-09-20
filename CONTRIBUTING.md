@@ -29,14 +29,56 @@ mela: {
 }
 ```
 
-E la voce corrispondente nel dizionario:
+E la voce corrispondente nel dizionario, che però sta in **`dialoghi.js`**, dentro `parole`:
 
 ```js
-mela: ['Mela', 'Il frutto. La prima cosa che hai trovato sulla spiaggia e che le è piaciuta.']
+mela: {cerca:'Mela', testo:'Il frutto. La prima cosa che la marea ti ha lasciato.'}
 ```
 
-Il primo elemento è la parola con cui il gioco cerca il segno su Spread the Sign; il secondo è il
-testo che il giocatore legge.
+`cerca` è la parola con cui il gioco cerca il segno su Spread the Sign; `testo` è quello che il
+giocatore legge nel Guscio.
+
+I valori disponibili per `l` (il luogo) e per `m` (il movimento) sono le chiavi di `LOC` e le classi
+`.mv-*` in cima allo stesso file: si aggiungono lì, con un nome che dica dove sta la mano o cosa fa,
+non come si chiama l'animazione. Per esempio `sottoMento` + `scorriFuori` sono il luogo e il
+movimento di NOME: due dita appoggiate sotto il mento che scorrono verso l'esterno.
+
+### Come sono disegnate le mani
+
+Un segno non è un'illustrazione fissa: è composto a partire dai parametri, con gli stessi mattoni
+usati per l'alfabeto manuale — un tratto di bordo sotto e uno di pelle sopra, così due dita
+accostate restano due anche a 40 px.
+
+| Funzione | Cosa fa |
+|---|---|
+| `ditoSegno(i, stato, apertura)` | un dito: `0` chiuso sul palmo, `1` teso, `2` ricurvo |
+| `manoSegno(nome)` | palmo, polsino, quattro dita e pollice per una configurazione di `HAND` |
+| `braccioAttivo(x, y)` | il braccio dalla spalla alla mano, con il gomito calcolato |
+| `faceSVG(nm)` | il volto: sopracciglia, occhi, bocca e inclinazione del capo insieme |
+| `renderSign(segno, opzioni)` | la figura intera; con `{compatto:true}` ritaglia su testa e mano |
+
+Due cose da non rompere:
+
+- **La mano si disegna dopo il volto.** Nei segni che stanno sulla guancia, sul mento o sulla fronte
+  la mano è davanti alla faccia: invertire l'ordine la fa sparire dietro la testa.
+- **`{compatto:true}` è quello che si usa nei mini-giochi e nel dizionario.** Lì conta vedere com'è
+  fatta la mano, non quanto è graziosa la fata: il riquadro si calcola sul luogo del segno, così la
+  mano è grande qualunque cosa stia facendo.
+
+### Come è disegnata l'isola
+
+`scenery(notte, nodo)` costruisce il fondale a strati dentro un qualunque contenitore — il palco o
+la copertina. Gli strati si dividono in due famiglie, e la divisione conta:
+
+- quelli che si possono **stirare** (bande di mare, onde, schiuma) stanno in un SVG unico con
+  `preserveAspectRatio="none"`: restano giusti a qualunque larghezza;
+- quelli che stirati diventerebbero ovali (luna, sole, palme, capanna) hanno **ciascuno il proprio
+  riquadro**, posizionato in percentuale, e conservano le proporzioni.
+
+Palme e capanna sono misurate sull'**altezza** del palco, non sulla larghezza: il pannello del
+dialogo occupa sempre la stessa fetta in basso, e solo così la chioma resta visibile anche su un
+telefono stretto. L'orizzonte sta al 25% e la battigia comincia al 42%: se sposti l'uno devi spostare
+anche le fermate della sfumatura di `.stage`, altrimenti il mare finisce sulla sabbia.
 
 ### Quando arrivano i video veri
 
@@ -123,6 +165,11 @@ Se puoi segnare davanti a una camera, questo è quello che serve. Bastano un tel
 
 **Lessico mancante per le scene 1–2:** CIAO, IO, TU, NOME, FAME, MANGIARE, MELA, PESCE, ACQUA,
 BERE, SÌ, NO — più le 21 lettere dell'alfabeto manuale e la parola NIMA compitata.
+
+Serve la clip anche per i segni che nel gioco sembrano già a posto. NOME, per esempio, è disegnato
+su una descrizione esplicita — indice e medio uniti sotto il mento che scorrono verso l'esterno — ma
+una descrizione non dice l'ampiezza dello scorrimento né cosa fa il viso mentre la mano si muove: è
+lì che si vede se un segno è giusto.
 
 ## Pull request
 
