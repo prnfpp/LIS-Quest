@@ -69,7 +69,7 @@ window.DIALOGHI = {
 
         {tipo:'racconto', testo:'La parola ti esce, resta un attimo per aria, poi cade sulla spiaggia e si sbriciola con un rumore sottile, come zucchero. Ecco di cosa è fatta la sabbia, qui: di tutte le parole che i naufraghi prima di te hanno buttato via.'},
 
-        {tipo:'segno', segno:'no', testo:'Lei scuote la testa, piano. Non è arrabbiata. Ti sta solo dicendo che da quella parte non si passa.'},
+        {tipo:'segno', segno:'no', testo:'Alza l’indice, il palmo in avanti, e lo fa andare da una parte all’altra. Non è arrabbiata. Ti sta solo dicendo che da quella parte non si passa.'},
 
         {tipo:'racconto', testo:'Poi ti prende i polsi e te li solleva fino all’altezza del petto. Ti guarda le mani, non la faccia. Su quest’isola si parla da questa parte.'},
 
@@ -79,7 +79,7 @@ window.DIALOGHI = {
 
         {tipo:'segno', segno:'io', testo:'Si indica il petto. Questo vuol dire: io.'},
 
-        {tipo:'segno', segno:'nome', testo:'Poi appoggia due dita — indice e medio, unite — sotto il mento, e da lì le fa scorrere in fuori, di lato. Nome.'},
+        {tipo:'segno', segno:'nome', testo:'Poi porta la mano sotto il mento — pugno chiuso, indice e medio stesi e attaccati, il palmo rivolto al petto — e la fa scorrere in fuori. Nome.'},
 
         {tipo:'compita', parola:'NIMA',
          testo:'E scrive il suo nome nell’aria, una lettera alla volta. N, I, M, A. Nima.'},
@@ -115,9 +115,9 @@ window.DIALOGHI = {
 
         {tipo:'racconto', testo:'Mattina. La luce entra a strisce dalle fessure della capanna. Nima è seduta sul tuo petto e ti fissa da un tempo imprecisato.'},
 
-        {tipo:'segno', segno:'fame', testo:'Si passa la mano sulla pancia. La faccia che fa non lascia molti dubbi.'},
+        {tipo:'segno', segno:'fame', testo:'Si batte il fianco con la mano stesa, il palmo verso terra e il pollice appoggiato sul palmo. La faccia che fa non lascia molti dubbi.'},
 
-        {tipo:'segno', segno:'mangiare', testo:'Poi porta le dita alla bocca, due volte. Non è una domanda.'},
+        {tipo:'segno', segno:'mangiare', testo:'Poi unisce tutte le dita a becco e le porta alla bocca, con le punte in avanti. Due volte. Non è una domanda.'},
 
         {tipo:'racconto', testo:'Fuori, la marea della notte ha lasciato le sue cose sulla battigia, allineate come su una bancarella.'},
 
@@ -134,7 +134,7 @@ window.DIALOGHI = {
 
         {tipo:'racconto', testo:'Poi si pulisce le mani sulle ali e te le apre davanti, vuote. Adesso tocca a te chiedere.'},
 
-        {tipo:'segno', segno:'pesce', testo:'Indica il mare, e fa il segno di quello che ci nuota dentro. Un suggerimento nemmeno troppo nascosto.'},
+        {tipo:'segno', segno:'pesce', testo:'Indica il mare, poi tiene indice e medio stesi e attaccati, la mano di taglio, e li fa ondeggiare come qualcosa che ci nuota dentro. Un suggerimento nemmeno troppo nascosto.'},
 
         {tipo:'prova', prova:'frase',
          testo:'Dille che vuoi mangiare il pesce. Metti i suoi segni nell’ordine che ha senso in LIS.'},
@@ -144,9 +144,9 @@ window.DIALOGHI = {
 
         {tipo:'racconto', testo:'Mangiate seduti sulla sabbia, con le dita, senza dirvi niente. Dopo il pesce ti viene una sete che non ti ricordavi di poter avere.'},
 
-        {tipo:'segno', segno:'acqua', testo:'Nima indica un punto fra le palme, dove qualcosa luccica, e ti fa un segno nuovo: acqua.'},
+        {tipo:'segno', segno:'acqua', testo:'Nima indica un punto fra le palme, dove qualcosa luccica, e ti fa un segno nuovo: mano aperta, dita separate, il pollice appoggiato alla guancia e la mano che va in avanti. Acqua.'},
 
-        {tipo:'segno', segno:'bere', testo:'Poi un altro, diverso: bere. Non sono la stessa cosa, e lei ci tiene parecchio che tu lo veda.'},
+        {tipo:'segno', segno:'bere', testo:'Poi un altro, diverso: pugno chiuso, pollice steso, e la mano che sale alla bocca — è il pollice ad arrivarci per primo. Bere. Non sono la stessa cosa, e lei ci tiene parecchio che tu lo veda.'},
 
         {tipo:'azione', etichetta:'Chiedile da bere', segno:'bere',
          testo:'Fai il segno. Lei annuisce come una maestra soddisfatta e ti porta a una pozza d’acqua dolce nascosta sotto una roccia.',
@@ -156,7 +156,7 @@ window.DIALOGHI = {
 
         {tipo:'racconto', testo:'Poi, da qualche parte oltre gli scogli, una campana suona. Due rintocchi. Come le due sillabe di un nome che non conosci ancora.'},
 
-        {tipo:'segno', segno:'no', testo:'Le chiedi con gli occhi che cosa sia. Lei fa no con la testa. Non vuol dire «non lo so»: vuol dire «non adesso».'},
+        {tipo:'segno', segno:'nonAdesso', testo:'Le chiedi con gli occhi che cosa sia. Lei apre le mani, i palmi verso il basso, e le abbassa davanti al petto; poi fa no con l’indice. Non vuol dire «non lo so»: vuol dire «non adesso».'},
 
         {tipo:'racconto', testo:'Si infila una conchiglia nella cintura, guarda l’orizzonte, e per la prima volta da quando ti ha trovato non ride.'}
       ]
@@ -251,15 +251,16 @@ window.DIALOGHI = {
     ciao:      {cerca:'Ciao',       testo:'Il saluto. Il primo segno che hai visto, prima ancora di capire dove eri finito.'},
     io:        {cerca:'Io',         testo:'Se stessi. Si indica il petto: in LIS lo spazio davanti al corpo dice chi fa cosa.'},
     tu:        {cerca:'Tu',         testo:'La persona che hai davanti. Nima lo usa ogni volta che ti fa una domanda, e te ne fa molte.'},
-    nome:      {cerca:'Nome',       testo:'Il nome di qualcuno. Indice e medio uniti sotto il mento, che scorrono in fuori: chi segna con la destra li porta da sinistra a destra, chi segna con la sinistra fa il contrario. Dopo questo segno quasi sempre arrivano le lettere, una per una.'},
-    fame:      {cerca:'Fame',       testo:'Avere fame. Nima te lo ha fatto seduta sul tuo petto, all’alba, senza chiedere permesso.'},
-    mangiare:  {cerca:'Mangiare',   testo:'L’azione di mangiare. Nella frase può stare prima o dopo la cosa che si mangia.'},
-    mela:      {cerca:'Mela',       testo:'Il frutto. La prima cosa che la marea ti ha lasciato, e la prima che le è piaciuta.'},
-    pesce:     {cerca:'Pesce',      testo:'L’animale, e anche quello che finisce sulla sabbia a colazione. Lei lo prende fra gli scogli.'},
-    acqua:     {cerca:'Acqua',      testo:'Quella dolce e quella salata. Sull’isola la differenza conta parecchio.'},
-    bere:      {cerca:'Bere',       testo:'L’azione di bere. Cammina insieme ad acqua, ma non è la stessa cosa: guarda bene le mani.'},
+    nome:      {cerca:'Nome',       testo:'Il nome di qualcuno. Mano sotto il mento, palmo verso il petto, pugno chiuso tranne indice e medio stesi e attaccati; poi la mano scorre verso il fuori. Chi segna con la destra la porta da sinistra a destra, chi segna con la sinistra fa il contrario. Dopo questo segno quasi sempre arrivano le lettere, una per una.'},
+    fame:      {cerca:'Fame',       testo:'Avere fame. Mano stesa con il pollice appoggiato sul palmo, palmo verso terra, che colpisce il fianco. Nima te lo ha fatto all’alba, seduta sul tuo petto, senza chiedere permesso.'},
+    mangiare:  {cerca:'Mangiare',   testo:'L’azione di mangiare. Tutte le dita unite a becco, le punte verso la bocca, e la mano che si avvicina. Nella frase può stare prima o dopo la cosa che si mangia.'},
+    mela:      {cerca:'Mela',       testo:'Il frutto. Mano a tazza davanti alla bocca, palmo verso la faccia, che sale lungo la bocca due volte. La prima cosa che la marea ti ha lasciato, e la prima che le è piaciuta.'},
+    pesce:     {cerca:'Pesce',      testo:'L’animale. Mano di taglio, palmo verso il lato, indice e medio stesi e attaccati che ondeggiano come un pesce nell’acqua. Lei lo prende fra gli scogli.'},
+    acqua:     {cerca:'Acqua',      testo:'Quella dolce e quella salata. Mano aperta con le dita separate, palmo in avanti, il pollice che tocca la guancia e poi va avanti. Sull’isola la differenza fra le due conta parecchio.'},
+    bere:      {cerca:'Bere',       testo:'L’azione di bere. Pugno chiuso e pollice steso, mano che sale alla bocca: è il pollice il primo a toccarla. Cammina insieme ad acqua, ma non è la stessa cosa — guarda bene le mani.'},
     si:        {cerca:'Sì',         testo:'Affermare. La testa conta quanto la mano: senza il movimento del capo non è un sì.'},
-    no:        {cerca:'No',         testo:'Negare. Anche qui faccia e testa fanno metà del lavoro. Nima lo usa poco, ma quando lo usa si capisce.'},
+    no:        {cerca:'No',         testo:'Negare. Indice teso e mano chiusa, palmo in avanti, che va da una parte all’altra e torna. Anche qui faccia e testa fanno metà del lavoro.'},
+    nonAdesso: {cerca:'Non adesso', testo:'«Non ora, più tardi.» Due segni di fila: prima le mani aperte con il palmo in basso che scendono davanti al petto, poi il segno NO. Nima lo usa quando la campana suona oltre gli scogli, e non ha voglia di spiegare.'},
     conchiglia:{cerca:'Conchiglia', testo:'Quello che si trova sulla battigia. Una te l’ha messa in mano lei, ed è diventata il tuo dizionario.'}
   }
 };

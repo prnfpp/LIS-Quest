@@ -21,9 +21,18 @@ Per le scene 1–2 del capitolo 1:
 | BERE | `bere.webm` + `bere.jpg` |
 | SÌ | `si.webm` + `si.jpg` |
 | NO | `no.webm` + `no.jpg` |
+| NON ADESSO | `non-adesso.webm` + `non-adesso.jpg` |
 
 Più l'alfabeto manuale: `lettere/a.webm` … `lettere/z.webm` (26 lettere: le 21 italiane più J, K,
 W, X e Y, che servono per i nomi), e la parola `nima.webm` compitata per intero.
+
+NON ADESSO è un segno composto (le mani aperte che scendono davanti al petto, poi NO): va girato
+tutto di seguito, in una clip sola, senza tagli fra i due momenti.
+
+Nove di questi segni — NOME, FAME, MANGIARE, MELA, PESCE, ACQUA, BERE, NO e NON ADESSO — nel gioco
+sono disegnati a partire da descrizioni esplicite di chi segna, non più inventati. Resta comunque
+tutto da girare e da validare: una descrizione dice la forma, non l'ampiezza del movimento né cosa
+fa il viso mentre la mano si muove.
 
 Le lettere sono già disegnate nel gioco a partire dalle descrizioni della dattilologia italiana, ma
 **non sono state validate da nessuno**. Prima ancora delle riprese serve che una persona sorda
