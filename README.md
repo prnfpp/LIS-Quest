@@ -38,8 +38,8 @@ rispettano la *struttura* di un segno — configurazione della mano, luogo sul c
 espressione del viso — perché su quella struttura si reggono i mini-giochi. Il contenuto linguistico,
 però, è inventato.
 
-Fanno eccezione parziale nove segni — **NOME, FAME, MANGIARE, MELA, PESCE, ACQUA, BERE, NO** e
-**NON ADESSO** — ridisegnati su descrizioni esplicite di chi segna: configurazione della mano,
+Fanno eccezione parziale dieci segni — **NOME, FAME, MANGIARE, MELA, PESCE, ACQUA, BERE, SÌ, NO**
+e **NON ADESSO** — ridisegnati su descrizioni esplicite di chi segna: configurazione della mano,
 orientamento del palmo, luogo sul corpo, movimento. Prima erano inventati (NOME stava sulla fronte,
 FAME sulla pancia, MELA sulla guancia) e quindi semplicemente sbagliati. Adesso sono *più vicini*,
 il che non vuol dire validati: una descrizione scritta non dice quanto è ampio uno scorrimento,
@@ -102,7 +102,8 @@ nessuna funzione.
 - [ ] Validazione linguistica delle frasi dei mini-giochi
 - [ ] Scene 3–6 del capitolo 1
 - [x] Dialoghi separati dal motore, modificabili senza toccare il codice
-- [x] Nove segni ridisegnati su descrizioni di chi segna, con orientamento del palmo, seconda mano e segni composti
+- [x] Dieci segni ridisegnati su descrizioni di chi segna, con orientamento del palmo, seconda mano e segni composti
+- [x] Mani con volume, unghie, pieghe, ombra portata e freccia del movimento: il disegno è il contenuto finale
 - [x] Passaggio grafico: isola a strati (giorno e notte), Nima ridisegnata, mani leggibili nelle prove
 - [ ] Passaggio a struttura modulare per capitoli (una scena per file)
 - [ ] Capitolo 2: il viaggio in nave
