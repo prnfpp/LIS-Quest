@@ -8,13 +8,14 @@
    COME SI MODIFICA
    1. Apri questo file con un editor di testo qualunque (Blocco note, TextEdit,
       VS Code: va bene tutto).
-   2. Cambia solo il testo fra apici singoli: 'cosi''.
+   2. Cambia solo il testo fra apici singoli: 'cosi'.
    3. Salva, e ricarica la pagina del gioco nel browser.
 
    LE TRE REGOLE DA NON SBAGLIARE
    · Un apostrofo dentro una battuta va scritto \' — con la barra rovesciata
      davanti. Scrivere «non c'è» senza barra rompe il gioco; «non c\'è» no.
      In alternativa usa l'apostrofo tipografico ’ , che non ha bisogno di nulla.
+     (In questo file si usa sempre ’ : è più sicuro.)
    · La virgola alla fine di ogni riga serve. L'ultima di un elenco non la vuole.
    · Le parentesi graffe { } e quadre [ ] vanno sempre chiuse.
 
@@ -24,26 +25,25 @@
    I TIPI DI BATTUTA
    Ogni voce dentro «battute» ha un «tipo», che decide cosa succede a schermo:
 
-     racconto  la voce dell'isola, in corsivo. Vuole: testo
-     segno     Nima fa un segno mentre parla.   Vuole: segno, testo — e chi, se
-                                                a parlare non è lei
-     azione    tocca al giocatore fare un segno. Vuole: etichetta, segno, testo,
-                                                e se vuoi xp e impara
-     compita   Nima compita una parola lettera per lettera. Vuole: parola, testo
-     guscio    consegna il dizionario al giocatore. Vuole: testo
-     prova     parte un mini-gioco. Vuole: prova, testo — e quello che serve al
-                                                mini-gioco (vedi sotto)
-     premio    ricompensa dopo una prova. Vuole: testo, e se vuoi xp e impara
+   racconto   la voce dell'isola, in corsivo. Vuole: testo
+   segno      Nima fa un segno mentre parla. Vuole: segno, testo — e chi, se
+              a parlare non è lei
+   azione     tocca al giocatore fare un segno. Vuole: etichetta, segno, testo,
+              e se vuoi xp e impara
+   compita    Nima compita una parola lettera per lettera. Vuole: parola, testo
+   guscio     consegna il dizionario al giocatore. Vuole: testo
+   prova      parte un mini-gioco. Vuole: prova, testo — e quello che serve al
+              mini-gioco (vedi sotto)
+   premio     ricompensa dopo una prova. Vuole: testo, e se vuoi xp e impara
 
    I TRE MINI-GIOCHI, dentro una battuta di tipo «prova»:
-     prova:'compita'  parola: la parola da compitare. Scrivi @nome per usare il
-                      nome del giocatore. senzaTempo:true toglie il cronometro.
-     prova:'indovina' soluzione: la cosa giusta. scelte: l'elenco fra cui cercarla.
-     prova:'frase'    non vuole altro: la frase è definita nel codice.
+   prova:'compita'   parola: la parola da compitare. Scrivi @nome per usare il
+                     nome del giocatore. senzaTempo:true toglie il cronometro.
+   prova:'indovina'  soluzione: la cosa giusta. scelte: l'elenco fra cui cercarla.
+   prova:'frase'     non vuole altro: la frase è definita nel codice.
 
    «segno» e «impara» si riferiscono ai segni del lessico: i nomi disponibili
    sono quelli elencati in «parole», in fondo a questo file.
-
    «xp» sono i punti esperienza. Toglili o cambiali liberamente.
    ========================================================================== */
 
@@ -53,87 +53,114 @@ window.DIALOGHI = {
   scene: [
 
     {
-      titolo: 'Scena 1 · Il primo sguardo',
-      momento: 'notte',            /* 'notte' o 'giorno': cambia i colori dell'isola */
+      titolo: 'Scena 1 · La spiaggia fatta di parole',
+      momento: 'notte', /* 'notte' o 'giorno': cambia i colori dell'isola */
       battute: [
 
-        {tipo:'racconto', testo:'Ti svegli con la sabbia in bocca. Non ricordi come sei arrivato qui, e la barca non c\'è più.'},
+        {tipo:'racconto', testo:'Ti svegli con la bocca piena di sabbia e la testa vuota. Della barca non resta un’asse. Del mare, solo il sapore.'},
 
-        {tipo:'racconto', testo:'Tra le foglie, qualcosa di piccolo si muove. E ti sta guardando.'},
+        {tipo:'racconto', testo:'La spiaggia è bianca e non finisce mai. Di cosa sia fatta davvero, lo scoprirai fra poco.'},
 
-        {tipo:'segno', segno:'ciao', testo:'Nima ti saluta. Non dice niente: lo fa con la mano.'},
+        {tipo:'racconto', testo:'Tra le foglie qualcosa di piccolo si sposta. Ha due ali sottili come foglie, e non fanno rumore. Ti guarda da un pezzo.'},
 
-        {tipo:'racconto', testo:'Apri la bocca per rispondere. Lei ti guarda le mani, non la faccia. Qui le parole non servono a nulla.'},
+        {tipo:'segno', segno:'ciao', testo:'Esce allo scoperto e alza una mano. Non dice niente: il saluto lo fa la mano.'},
+
+        {tipo:'racconto', testo:'Apri la bocca. Provi a dire ciao.'},
+
+        {tipo:'racconto', testo:'La parola ti esce, resta un attimo per aria, poi cade sulla spiaggia e si sbriciola con un rumore sottile, come zucchero. Ecco di cosa è fatta la sabbia, qui: di tutte le parole che i naufraghi prima di te hanno buttato via.'},
+
+        {tipo:'segno', segno:'no', testo:'Lei scuote la testa, piano. Non è arrabbiata. Ti sta solo dicendo che da quella parte non si passa.'},
+
+        {tipo:'racconto', testo:'Poi ti prende i polsi e te li solleva fino all’altezza del petto. Ti guarda le mani, non la faccia. Su quest’isola si parla da questa parte.'},
 
         {tipo:'azione', etichetta:'Salutala anche tu', segno:'ciao',
-         testo:'Provi a copiarla. Viene male, ma lei ride.',
+         testo:'Copi la sua mano. Ti viene storto. Lei ride senza fare rumore: le tremano le ali, e si capisce lo stesso.',
          xp:20, impara:['ciao']},
 
-        {tipo:'segno', segno:'io', testo:'Si indica. Questo vuol dire: io.'},
+        {tipo:'segno', segno:'io', testo:'Si indica il petto. Questo vuol dire: io.'},
 
-        {tipo:'segno', segno:'nome', testo:'Poi porta due dita alla fronte. Nome.'},
+        {tipo:'segno', segno:'nome', testo:'Poi porta due dita sotto il mento, come chi si ricorda una cosa. Nome.'},
 
         {tipo:'compita', parola:'NIMA',
-         testo:'E compita il suo nome, lettera per lettera, con la mano. N, I, M, A. Nima.'},
+         testo:'E scrive il suo nome nell’aria, una lettera alla volta. N, I, M, A. Nima.'},
 
-        {tipo:'racconto', testo:'Ti accorgi che non stai stando dietro. Lei se ne accorge prima di te: si toglie una conchiglia dalla cintura e te la mette in mano.'},
+        {tipo:'racconto', testo:'Lo rifà. Più lento. Poi ancora più lento. Tu ti perdi sempre a metà, e lei se ne accorge prima di te.'},
 
-        {tipo:'guscio', testo:'Dentro la conchiglia ci sono tutte le lettere, ferme, che puoi guardare quanto vuoi. Da adesso è nella barra in alto: aprila quando ti serve, anche durante una prova.'},
+        {tipo:'segno', segno:'conchiglia', testo:'Si stacca dalla cintura una conchiglia grande come il tuo palmo.'},
+
+        {tipo:'guscio', testo:'Dentro ci sono tutte le lettere, ferme, che aspettano. Le mani di Nima corrono; queste no. Da adesso il Guscio è nella barra in alto: aprilo quando ti serve, anche in mezzo a una prova.'},
 
         {tipo:'segno', segno:'tu', testo:'Adesso indica te.', chi:'Nima'},
 
-        {tipo:'segno', segno:'nome', testo:'E rifà il segno di prima. Vuole sapere come ti chiami.'},
+        {tipo:'segno', segno:'nome', testo:'E rifà il segno di prima. Due dita sotto il mento. Vuole sapere chi sei.'},
 
-        {tipo:'racconto', testo:'Dietro di lei, mezza sepolta nella sabbia, c\'è una capanna. Sulla porta un sigillo di conchiglie, chiuso.'},
+        {tipo:'racconto', testo:'Dietro di lei, mezza sepolta, c’è una capanna. Sulla porta un sigillo di conchiglie, chiuso da chissà quanto tempo.'},
+
+        {tipo:'racconto', testo:'Nima ci appoggia sopra una mano e fa una faccia che spiega tutto: questa porta non si apre con la forza. Si apre con un nome.'},
 
         {tipo:'prova', prova:'compita', parola:'@nome', senzaTempo:true,
-         testo:'Il sigillo si apre solo con il tuo nome. Nessuna fretta: qui il tempo non corre.'},
+         testo:'Il sigillo aspetta il tuo nome, lettera per lettera. Qui il tempo non corre: prenditelo tutto.'},
 
-        {tipo:'premio', xp:60, impara:['ciao','io','tu','nome'],
-         testo:'Il sigillo si illumina e la porta cede. Dentro c\'è una branda, una lanterna, e la prima notte tranquilla da quando sei qui.'}
+        {tipo:'premio', xp:60, impara:['ciao','io','tu','nome','conchiglia'],
+         testo:'Le conchiglie si accendono una dopo l’altra e la porta cede con un sospiro. Dentro c’è una branda, una lanterna e il primo silenzio che non ti fa paura da quando sei qui.'},
 
+        {tipo:'racconto', testo:'Nima si siede sul davanzale, le ali chiuse, e resta lì. Fuori la spiaggia luccica ancora, piena di parole che qualcun altro ha sprecato.'}
       ]
     },
 
     {
-      titolo: 'Scena 2 · Fame',
+      titolo: 'Scena 2 · Quello che porta la marea',
       momento: 'giorno',
       battute: [
 
-        {tipo:'racconto', testo:'Mattina. La luce entra dalle fessure della capanna e Nima è seduta sul tuo petto, che ti fissa.'},
+        {tipo:'racconto', testo:'Mattina. La luce entra a strisce dalle fessure della capanna. Nima è seduta sul tuo petto e ti fissa da un tempo imprecisato.'},
 
-        {tipo:'segno', segno:'fame', testo:'Si passa la mano sulla pancia, con la faccia di chi non scherza.'},
+        {tipo:'segno', segno:'fame', testo:'Si passa la mano sulla pancia. La faccia che fa non lascia molti dubbi.'},
 
-        {tipo:'segno', segno:'mangiare', testo:'Poi porta le dita alla bocca, due volte.'},
+        {tipo:'segno', segno:'mangiare', testo:'Poi porta le dita alla bocca, due volte. Non è una domanda.'},
 
-        {tipo:'racconto', testo:'Fuori, la marea della notte ha lasciato delle cose sulla spiaggia.'},
+        {tipo:'racconto', testo:'Fuori, la marea della notte ha lasciato le sue cose sulla battigia, allineate come su una bancarella.'},
 
-        {tipo:'segno', segno:'mela', testo:'Nima ti mostra una cosa sola, e aspetta che tu capisca quale.'},
+        {tipo:'segno', segno:'mela', testo:'Nima ti mostra un segno solo, e aspetta. Vuole vedere se hai imparato a guardare.'},
 
         {tipo:'prova', prova:'indovina', soluzione:'mela',
          scelte:['mela','conchiglia','granchio','pesce','legno'],
-         testo:'Guarda il segno e tocca la cosa giusta sulla spiaggia.'},
+         testo:'Guarda il segno e tocca la cosa giusta sulla battigia.'},
 
         {tipo:'premio', xp:40, impara:['fame','mangiare','mela'],
-         testo:'Le porti la mela. Sparisce in quattro morsi: non sembrava così piccola, prima.'},
+         testo:'Gliela porti. Sparisce in quattro morsi. Non sembrava così piccola, prima.'},
 
-        {tipo:'segno', segno:'si', testo:'Fa segno di sì con tutta la testa.'},
+        {tipo:'segno', segno:'si', testo:'Fa sì con tutta la testa, e le briciole le cadono dalle ginocchia.'},
 
-        {tipo:'racconto', testo:'Poi ti guarda. Tocca a te: adesso è lei a chiederti cosa vuoi mangiare.'},
+        {tipo:'racconto', testo:'Poi si pulisce le mani sulle ali e te le apre davanti, vuote. Adesso tocca a te chiedere.'},
 
-        {tipo:'segno', segno:'pesce', testo:'Indica il mare, e fa il segno di quello che ci nuota dentro.'},
+        {tipo:'segno', segno:'pesce', testo:'Indica il mare, e fa il segno di quello che ci nuota dentro. Un suggerimento nemmeno troppo nascosto.'},
 
         {tipo:'prova', prova:'frase',
-         testo:'Dille che vuoi mangiare il pesce. Componi la frase con i suoi segni, nell\'ordine che ha senso in LIS.'},
+         testo:'Dille che vuoi mangiare il pesce. Metti i suoi segni nell’ordine che ha senso in LIS.'},
 
         {tipo:'premio', xp:70, impara:['pesce','si','io'],
-         testo:'Nima capisce, alza gli occhi al cielo come per dire "e va bene", e vola verso gli scogli. Torna con un pesce più grande di lei.'},
+         testo:'Nima capisce al primo colpo. Alza gli occhi al cielo come per dire «e va bene», e parte verso gli scogli. Torna con un pesce più lungo di lei, tenuto per la coda con tutte e due le mani.'},
 
-        {tipo:'racconto', testo:'Mangiate insieme, seduti sulla sabbia. Da qualche parte oltre gli scogli, una campana suona due volte.'}
+        {tipo:'racconto', testo:'Mangiate seduti sulla sabbia, con le dita, senza dirvi niente. Dopo il pesce ti viene una sete che non ti ricordavi di poter avere.'},
 
+        {tipo:'segno', segno:'acqua', testo:'Nima indica un punto fra le palme, dove qualcosa luccica, e ti fa un segno nuovo: acqua.'},
+
+        {tipo:'segno', segno:'bere', testo:'Poi un altro, diverso: bere. Non sono la stessa cosa, e lei ci tiene parecchio che tu lo veda.'},
+
+        {tipo:'azione', etichetta:'Chiedile da bere', segno:'bere',
+         testo:'Fai il segno. Lei annuisce come una maestra soddisfatta e ti porta a una pozza d’acqua dolce nascosta sotto una roccia.',
+         xp:30, impara:['acqua','bere']},
+
+        {tipo:'racconto', testo:'Bevi finché non ti fa male la fronte. Nima intanto guarda il mare, ferma, con le ali chiuse.'},
+
+        {tipo:'racconto', testo:'Poi, da qualche parte oltre gli scogli, una campana suona. Due rintocchi. Come le due sillabe di un nome che non conosci ancora.'},
+
+        {tipo:'segno', segno:'no', testo:'Le chiedi con gli occhi che cosa sia. Lei fa no con la testa. Non vuol dire «non lo so»: vuol dire «non adesso».'},
+
+        {tipo:'racconto', testo:'Si infila una conchiglia nella cintura, guarda l’orizzonte, e per la prima volta da quando ti ha trovato non ride.'}
       ]
     }
-
   ],
 
   /* ======================= LE PROVE =======================
@@ -142,64 +169,63 @@ window.DIALOGHI = {
   prove: {
 
     compita: {
-      titolo:      'Il sigillo delle conchiglie',
-      guarda:      'Guarda con calma: il tuo nome, lettera per lettera.',
-      tocca:       'Adesso tocca a te: le stesse forme, nello stesso ordine.',
-      toccaCalmo:  'Adesso tocca a te: le stesse forme, nello stesso ordine. Prenditi il tempo che vuoi.',
-      centroRuota: 'tocca la forma<br>della mano<br>o trascinala',
-      sbagliata:   'Non è quella. Guarda dove stanno le dita.',
-      perdonata:   'Dita Rapide: il sigillo ti perdona questa. Ne resta',
-      vinto:       'Il sigillo si apre.',
-      tempoFinito: 'Tempo finito — non hai perso niente. Si ricomincia più piano.',
-      riguarda:    'Riguarda con calma. Il tempo qui non ti fa perdere niente.',
-      bottoneRivedi: '🔁 Rivedi le lettere',
-      bottoneAvanti: 'Entra ▸'
+      titolo:       'Il sigillo delle conchiglie',
+      guarda:       'Guarda con calma. Il tuo nome, una lettera alla volta.',
+      tocca:        'Adesso tu. Le stesse forme, nello stesso ordine.',
+      toccaCalmo:   'Adesso tu. Le stesse forme, nello stesso ordine — e tutto il tempo che vuoi.',
+      centroRuota:  'tocca la forma<br>della mano<br>o trascinala',
+      sbagliata:    'Non è quella. Guarda dove stanno le dita.',
+      perdonata:    'Dita Rapide: il sigillo chiude un occhio. Ne resta',
+      vinto:        'Le conchiglie si accendono. La porta è tua.',
+      tempoFinito:  'Tempo finito, e non hai perso niente. Si ricomincia più piano.',
+      riguarda:     'Riguarda con calma. Qui il tempo non toglie niente a nessuno.',
+      bottoneRivedi:'🔁 Rivedi le lettere',
+      bottoneAvanti:'Entra ▸'
     },
 
     indovina: {
-      titolo:     'Cosa vuole Nima?',
-      istruzioni: 'Il segno è lì sopra, in loop. Tocca la cosa giusta — o trascinagliela sopra — prima che la luce si spenga.',
-      giusto:     'Sì. È quella.',
-      sbagliato:  'No. Riguarda il segno.',
-      sbagliato2: 'Guarda dove sta la mano, non solo come è fatta: è quello che cambia.',
-      arreso:     'Te la mostro io. Poi riproviamo insieme.',
-      tempoFinito:'La luce si è spenta — non succede niente. Nima ripete più piano.',
-      bottoneAvanti:  'Continua ▸',
-      bottoneArreso:  'Ho capito ▸',
+      titolo:        'Cosa vuole Nima?',
+      istruzioni:    'Il segno è lì sopra e si ripete. Tocca la cosa giusta — o trascinagliela sopra — prima che la luce si spenga.',
+      giusto:        'Sì. È quella.',
+      sbagliato:     'No. Riguarda il segno.',
+      sbagliato2:    'Guarda dove sta la mano, non solo com’è fatta: è quello che cambia tutto.',
+      arreso:        'Te la mostro io. Poi la rifacciamo insieme.',
+      tempoFinito:   'La luce si è spenta, e non è successo niente. Nima ripete più piano.',
+      bottoneAvanti: 'Continua ▸',
+      bottoneArreso: 'Ho capito ▸',
       bottoneRallenta:'🔍 Fermo immagine (Occhio di Lince)',
-      rallentato:     'Rallentato'
+      rallentato:    'Rallentato'
     },
 
     frase: {
-      titolo:     'Dillo a Nima',
-      istruzioni: 'Tocca un segno, poi tocca la casella dove va — oppure trascinalo con il dito. Nessun tempo: pensaci.',
-      perfetto:   'Nima capisce subito. È l\'ordine che userebbe lei.',
-      accettabile:'Va bene: si capisce. Nima però lo direbbe mettendo il pesce prima del verbo.',
-      sbagliato:  'Nima inclina la testa: così non le arriva. Prova a spostare qualcosa.',
-      bottoneAvanti: 'Guarda cosa fa ▸',
-      bottoneAiuto:  'Chiedi a Nima (Voce di Mano)',
-      aiuto:         'Nima ti indica: chi fa l\'azione va per primo.'
+      titolo:       'Dillo a Nima',
+      istruzioni:   'Tocca un segno, poi la casella dove va — oppure trascinalo con il dito. Nessun tempo: pensaci.',
+      perfetto:     'Nima capisce subito. È l’ordine che userebbe lei.',
+      accettabile:  'Si capisce, e va bene così. Lei però metterebbe il pesce prima del verbo.',
+      sbagliato:    'Nima inclina la testa: così non le arriva. Prova a spostare qualcosa.',
+      bottoneAvanti:'Guarda cosa fa ▸',
+      bottoneAiuto: 'Chiedi a Nima (Voce di Mano)',
+      aiuto:        'Nima ti indica, poi indica la prima casella: chi fa l’azione va per primo.'
     },
 
     comune: {
       bottoneGuscio: '🐚 Apri il Guscio'
     }
-
   },
 
   /* ======================= LE VOCI =======================
      L'etichetta sopra ogni battuta: dice chi sta parlando. E le due parole
      scritte sui pulsanti che fanno andare avanti la storia. */
   voci: {
-    isola:   'L\'isola',        /* per le battute di tipo «racconto» */
-    nima:    'Nima',            /* per «segno» e «compita», se non scrivi «chi» */
-    tu:      'Tu',              /* per «azione»: sta parlando il giocatore */
-    guscio:  'Il Guscio',       /* per «guscio» */
-    prova:   'Prova',           /* per «prova» */
-    premio:  '…',               /* per «premio» */
-    avanti:  'Continua ▸',
-    apri:    'Aprila ▸',
-    tocca:   'tocca per continuare'
+    isola:  'L’isola',      /* per le battute di tipo «racconto» */
+    nima:   'Nima',         /* per «segno» e «compita», se non scrivi «chi» */
+    tu:     'Tu',           /* per «azione»: sta parlando il giocatore */
+    guscio: 'Il Guscio',    /* per «guscio» */
+    prova:  'Prova',        /* per «prova» */
+    premio: '…',            /* per «premio» */
+    avanti: 'Continua ▸',
+    apri:   'Aprila ▸',
+    tocca:  'tocca per continuare'
   },
 
   /* ======================= LE CLASSI =======================
@@ -208,13 +234,10 @@ window.DIALOGHI = {
   classi: [
     {id:'lince', titolo:'Occhio di Lince', ruolo:'Osservatrice / Osservatore',
      testo:'Vedi i dettagli che sfuggono. Più tempo negli enigmi visivi, e una volta per sfida puoi rivedere il segno al rallentatore.'},
-
     {id:'canta', titolo:'Voce di Mano', ruolo:'Cantastorie',
      testo:'Metti le parole al loro posto. Nelle frasi puoi chiedere a Nima quale blocco va per primo — solo quello.'},
-
     {id:'dita', titolo:'Dita Rapide', ruolo:'Scassinatrice / Scassinatore',
      testo:'Le mani vanno più veloci della testa. Più tempo per lettera, e ogni lucchetto ti perdona un errore.'},
-
     {id:'passo', titolo:'Passo Curioso', ruolo:'Esploratrice / Esploratore',
      testo:'Nessun aiuto nei mini-giochi: in cambio vedi le cose nascoste nelle scene, e ogni scoperta vale segni e XP in più.'}
   ],
@@ -225,19 +248,18 @@ window.DIALOGHI = {
      Il nome a sinistra (ciao, io, tu...) è quello da usare in «segno» e in
      «impara» nelle battute qui sopra. */
   parole: {
-    ciao:      {cerca:'Ciao',      testo:'Il saluto. Il primo segno che Nima ti ha fatto, prima ancora di sapere chi eri.'},
-    io:        {cerca:'Io',        testo:'Se stessi. Si indica il proprio petto: in LIS lo spazio davanti al corpo dice chi fa cosa.'},
-    tu:        {cerca:'Tu',        testo:'La persona con cui stai parlando. Nima lo usa ogni volta che ti fa una domanda.'},
-    nome:      {cerca:'Nome',      testo:'Il nome di qualcuno. Dopo questo segno di solito arriva la compitazione lettera per lettera.'},
-    fame:      {cerca:'Fame',      testo:'Avere fame. Nima lo ha fatto con una faccia che non lasciava molti dubbi.'},
-    mangiare:  {cerca:'Mangiare',  testo:'L\'azione di mangiare. Nella frase può stare prima o dopo la cosa che si mangia.'},
-    mela:      {cerca:'Mela',      testo:'Il frutto. La prima cosa che hai trovato sulla spiaggia e che le è piaciuta.'},
-    pesce:     {cerca:'Pesce',     testo:'L\'animale, e anche quello che finisce nel piatto. Nima lo ha preso tra gli scogli.'},
-    acqua:     {cerca:'Acqua',     testo:'Da bere, o quella del mare. Sull\'isola serve spesso.'},
-    bere:      {cerca:'Bere',      testo:'L\'azione di bere. Va insieme ad acqua, ma non è la stessa cosa.'},
-    si:        {cerca:'Sì',        testo:'Affermare. La testa conta quanto la mano: senza il movimento del capo non è un sì.'},
-    no:        {cerca:'No',        testo:'Negare. Anche qui la faccia e la testa fanno metà del lavoro grammaticale.'},
-    conchiglia:{cerca:'Conchiglia',testo:'Quello che si trova sulla battigia. L\'hai notata solo perché guardi bene.'}
+    ciao:      {cerca:'Ciao',       testo:'Il saluto. Il primo segno che hai visto, prima ancora di capire dove eri finito.'},
+    io:        {cerca:'Io',         testo:'Se stessi. Si indica il petto: in LIS lo spazio davanti al corpo dice chi fa cosa.'},
+    tu:        {cerca:'Tu',         testo:'La persona che hai davanti. Nima lo usa ogni volta che ti fa una domanda, e te ne fa molte.'},
+    nome:      {cerca:'Nome',       testo:'Il nome di qualcuno. Dopo questo segno quasi sempre arrivano le lettere, una per una.'},
+    fame:      {cerca:'Fame',       testo:'Avere fame. Nima te lo ha fatto seduta sul tuo petto, all’alba, senza chiedere permesso.'},
+    mangiare:  {cerca:'Mangiare',   testo:'L’azione di mangiare. Nella frase può stare prima o dopo la cosa che si mangia.'},
+    mela:      {cerca:'Mela',       testo:'Il frutto. La prima cosa che la marea ti ha lasciato, e la prima che le è piaciuta.'},
+    pesce:     {cerca:'Pesce',      testo:'L’animale, e anche quello che finisce sulla sabbia a colazione. Lei lo prende fra gli scogli.'},
+    acqua:     {cerca:'Acqua',      testo:'Quella dolce e quella salata. Sull’isola la differenza conta parecchio.'},
+    bere:      {cerca:'Bere',       testo:'L’azione di bere. Cammina insieme ad acqua, ma non è la stessa cosa: guarda bene le mani.'},
+    si:        {cerca:'Sì',         testo:'Affermare. La testa conta quanto la mano: senza il movimento del capo non è un sì.'},
+    no:        {cerca:'No',         testo:'Negare. Anche qui faccia e testa fanno metà del lavoro. Nima lo usa poco, ma quando lo usa si capisce.'},
+    conchiglia:{cerca:'Conchiglia', testo:'Quello che si trova sulla battigia. Una te l’ha messa in mano lei, ed è diventata il tuo dizionario.'}
   }
-
 };
