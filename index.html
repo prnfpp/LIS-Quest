@@ -855,49 +855,116 @@ if(!window.DIALOGHI || !Array.isArray(window.DIALOGHI.scene) || !window.DIALOGHI
 const D = window.DIALOGHI;
 
 /* ================= SEGNI: sistema parametrico =================
-   Ogni segno è descritto dai quattro parametri formazionali: configurazione
-   della mano, luogo sul corpo, movimento, espressione del viso.
+   Ogni segno è descritto dai parametri formazionali: configurazione della mano,
+   ORIENTAMENTO del palmo, luogo sul corpo, movimento, espressione del viso — e,
+   quando serve, la seconda mano e le fasi di cui è fatto.
    Nel prodotto finale questo oggetto porta anche `video:"...webm"`,
-   e renderSign() mostra la clip invece del disegno. */
+   e renderSign() mostra la clip invece del disegno.
 
-/* I luoghi sono punti sulla figura di Nima: la testa sta in (107,52), il busto
-   scende da y=84. La mano attiva arriva dalla spalla di destra (chi guarda).
-   «Fuori» quindi vuol dire verso le x che crescono: lontano dalla linea del corpo. */
+   DA CHE PARTE SEGNA NIMA
+   Nima è destra, ed è vista di fronte: la sua mano destra sta dunque a SINISTRA
+   di chi guarda. Nel disegno la testa è centrata in x=107, quindi:
+     · x che cresce  = sinistra di Nima = destra di chi guarda
+     · x che cala    = destra di Nima   = sinistra di chi guarda
+   «Verso il fuori», per la sua destra, vuol dire verso le x che calano.
+   Chi impara si trova davanti a una persona che segna e la rispecchia: è la
+   stessa cosa che succede in aula. */
+
+/* I luoghi sono punti sulla figura: la testa sta in (107,52), il busto scende
+   da y=84, l'anca è intorno a y=126. Il punto è dove finisce il PALMO, non la
+   punta delle dita: per i segni che toccano il viso il luogo sta quindi un po’
+   discosto, e sono le dita ad arrivare. */
 const LOC = {
-  fronte:[128,26], occhio:[128,46], guancia:[138,64], bocca:[116,72], mento:[116,84],
-  sottoMento:[130,84], collo:[106,90], petto:[110,110], spalla:[132,98], neutro:[122,122],
-  neutroAlto:[126,102], neutroBasso:[118,140], lato:[156,116]
+  fronte:[86,26], occhio:[86,46], guancia:[76,62],
+  latoGuancia:[76,70],   /* ACQUA: il palmo sta di lato, il pollice arriva alla guancia */
+  bocca:[96,80],         /* MELA: la mano davanti alla bocca */
+  versoBocca:[76,82],    /* MANGIARE: il becco punta alla bocca e la raggiunge */
+  boccaDaSotto:[87,90],  /* BERE: il pollice sale verso la bocca */
+  mento:[98,84], sottoMento:[78,100],
+  collo:[108,92], petto:[100,112], spalla:[82,98],
+  fianco:[78,122],       /* FAME: il fianco, all’altezza dell’anca */
+  neutro:[88,116], neutroAlto:[88,100], neutroBasso:[92,140], lato:[56,116],
+  davantiPetto:[90,112], /* PESCE: la mano ondeggia davanti al petto */
+  /* i due lati del petto, per i segni a due mani */
+  pettoDestro:[88,116], pettoSinistro:[126,116]
 };
 
 /* f[0] è il pollice, poi indice, medio, anulare, mignolo.
-   0 = chiuso sul palmo · 1 = teso · 2 = ricurvo.   sp = dita distanziate. */
+   0 = chiuso sul palmo · 1 = teso · 2 = ricurvo · 3 = pollice di traverso sul palmo.
+   sp = dita distanziate. beak/cup/arc/ring = configurazioni con un disegno proprio. */
 const HAND = {
   piatta:{f:[1,1,1,1,1],sp:0}, cinque:{f:[1,1,1,1,1],sp:1}, pugno:{f:[0,0,0,0,0],sp:0},
+  b:{f:[3,1,1,1,1],sp:0},              /* mano stesa, pollice appoggiato sul palmo */
   indice:{f:[0,1,0,0,0],sp:0}, v:{f:[0,1,1,0,0],sp:1}, u:{f:[0,1,1,0,0],sp:0},
   tre:{f:[1,1,1,0,0],sp:1}, pinza:{f:[2,2,0,0,0],sp:0}, artiglio:{f:[2,2,2,2,2],sp:1},
   pollice:{f:[1,0,0,0,0],sp:0}, elle:{f:[1,1,0,0,0],sp:1}, mignolo:{f:[0,0,0,0,1],sp:0},
-  becco:{f:[2,2,2,2,2],sp:0}, ci:{f:[2,2,2,2,2],sp:0,arc:1}, o:{f:[0,0,0,0,0],sp:0,ring:1},
+  becco:{f:[2,2,2,2,2],sp:0,beak:1},   /* tutte le punte unite a formare un becco */
+  coppa:{f:[2,2,2,2,2],sp:0,cup:1},    /* dita curve: fra palmo e dita ci sta una tazza */
+  ci:{f:[2,2,2,2,2],sp:0,arc:1}, o:{f:[0,0,0,0,0],sp:0,ring:1},
   w:{f:[0,1,1,1,0],sp:1}, corna:{f:[0,1,0,0,1],sp:1}, quattro:{f:[0,1,1,1,1],sp:1}
 };
 
-/* lessico delle scene 1-2 */
+/* L'orientamento del palmo (`or`) dice che faccia della mano vediamo:
+     'dorso'  — il palmo guarda Nima (verso il petto, verso la faccia): vediamo il dorso
+     'palmo'  — il palmo guarda avanti, verso chi guarda
+     'taglio' — il palmo guarda di lato o verso terra: vediamo la mano di taglio
+   È il parametro che mancava, e senza il quale metà di questi segni non si
+   distingue dall'altra metà. */
+
 const SIGNS = {
-  ciao:      {g:'CIAO',      h:'piatta', l:'spalla',    m:'oscilla',   r:-12, nm:'sorriso'},
-  io:        {g:'IO',        h:'indice', l:'petto',     m:'tap',       r:168, nm:'neutro'},
-  tu:        {g:'TU',        h:'indice', l:'neutro',    m:'avanti',    r:-8,  nm:'neutro'},
-  /* NOME: indice e medio uniti sotto il mento, che scorrono verso il fuori.
-     Palmo verso il basso, dita che puntano alla linea mediana: per questo la
-     mano è ruotata di quasi un quarto di giro, e il movimento è laterale. */
-  nome:      {g:'NOME',      h:'u',      l:'sottoMento', m:'scorriFuori', r:-96, nm:'neutro'},
-  fame:      {g:'FAME',      h:'artiglio',l:'petto',    m:'giu',       r:0,   nm:'intenso'},
-  mangiare:  {g:'MANGIARE',  h:'becco',  l:'bocca',     m:'doppioTap', r:-14, nm:'neutro'},
-  mela:      {g:'MELA',      h:'pinza',  l:'guancia',   m:'ruota',     r:-20, nm:'neutro'},
-  pesce:     {g:'PESCE',     h:'piatta', l:'neutro',    m:'nuota',     r:-70, nm:'neutro'},
-  acqua:     {g:'ACQUA',     h:'w',      l:'mento',     m:'doppioTap', r:-10, nm:'neutro'},
-  bere:      {g:'BERE',      h:'ci',     l:'bocca',     m:'ruota',     r:-30, nm:'neutro'},
-  si:        {g:'SÌ',        h:'pugno',  l:'neutroAlto',m:'giu',       r:0,   nm:'affermativo'},
-  no:        {g:'NO',        h:'u',      l:'neutroAlto',m:'oscilla',   r:-6,  nm:'nega'},
-  conchiglia:{g:'CONCHIGLIA',h:'artiglio',l:'neutro',   m:'chiudi',    r:-40, nm:'neutro'},
+
+  /* ---- segni descritti da chi segna: forma, orientamento, luogo, movimento ----
+     Restano disegni, non video, e vanno validati come tutto il resto: ma la
+     forma che provano a mostrare è quella che ci è stata descritta, non una
+     inventata dal codice. */
+
+  /* Mano destra sotto il mento, palmo verso il petto, pugno chiuso tranne
+     indice e medio stesi e attaccati; poi la mano scorre verso il fuori. */
+  nome:      {g:'NOME',      h:'u',       or:'dorso',  l:'sottoMento',  m:'scorriFuori', r:60,  nm:'neutro'},
+
+  /* Mano stesa con il pollice appoggiato sul palmo, palmo verso terra,
+     che colpisce il fianco. */
+  fame:      {g:'FAME',      h:'b',       or:'taglio', l:'fianco',      m:'colpisce',    r:168, nm:'intenso'},
+
+  /* Mano a becco — tutte le dita unite — che si avvicina alla bocca con le
+     punte rivolte verso la bocca. */
+  mangiare:  {g:'MANGIARE',  h:'becco',   or:'dorso',  l:'versoBocca',  m:'avvicina',    r:74,  nm:'neutro'},
+
+  /* Mano a tazza davanti alla bocca, palmo verso la faccia, che sale lungo la
+     bocca due volte. */
+  mela:      {g:'MELA',      h:'coppa',   or:'dorso',  l:'bocca',       m:'suDue',       r:-6,  nm:'neutro'},
+
+  /* Mano destra, palmo rivolto a sinistra, pugno chiuso tranne indice e medio
+     stesi e attaccati; dita e mano ondeggiano come un pesce nell’acqua. */
+  pesce:     {g:'PESCE',     h:'u',       or:'taglio', l:'davantiPetto',m:'nuota',       r:62,  nm:'neutro'},
+
+  /* Mano aperta, dita distese e separate, palmo in avanti; il pollice tocca la
+     guancia e la mano va in avanti. */
+  acqua:     {g:'ACQUA',     h:'cinque',  or:'palmo',  l:'latoGuancia', m:'staccaAvanti',r:-6,  nm:'neutro'},
+
+  /* Pugno chiuso con il pollice steso, che si avvicina alla bocca: il pollice è
+     la prima cosa che la tocca. */
+  bere:      {g:'BERE',      h:'pollice', or:'palmo',  l:'boccaDaSotto',m:'avvicina',    r:-10, nm:'neutro'},
+
+  /* Indice teso, mano chiusa, palmo in avanti: va da sinistra a destra e
+     ritorno. */
+  no:        {g:'NO',        h:'indice',  or:'palmo',  l:'neutroAlto',  m:'scuoti',      r:0,   nm:'nega'},
+
+  /* Segno composto. Prima fase: mani aperte, palmo verso il basso, che scendono
+     davanti al petto. Seconda fase: il segno NO. */
+  nonAdesso: {g:'NON ADESSO', nm:'nega', fasi:[
+    {h:'piatta', or:'dorso', l:'pettoDestro', m:'giu', r:186, scorcio:.55, nm:'neutro',
+     due:{h:'piatta', or:'dorso', l:'pettoSinistro', m:'giu', r:174}},
+    {h:'indice', or:'palmo', l:'neutroAlto', m:'scuoti', r:0, nm:'nega'}
+  ]},
+
+  /* ---- ancora segnaposto: nessuno li ha ancora descritti né validati ---- */
+  ciao:      {g:'CIAO',      h:'piatta',  or:'palmo',  l:'spalla',      m:'oscilla',     r:12,  nm:'sorriso'},
+  io:        {g:'IO',        h:'indice',  or:'dorso',  l:'petto',       m:'tap',         r:86,  nm:'neutro'},
+  tu:        {g:'TU',        h:'indice',  or:'dorso',  l:'neutro',      m:'avanti',      r:8,   nm:'neutro'},
+  si:        {g:'SÌ',        h:'pugno',   or:'dorso',  l:'neutroAlto',  m:'giu',         r:0,   nm:'affermativo'},
+  conchiglia:{g:'CONCHIGLIA',h:'artiglio',or:'dorso',  l:'neutro',      m:'chiudi',      r:40,  nm:'neutro'},
+
   /* volti per lo slot non manuale */
   vNeutro:   {g:'VISO NEUTRO', faceOnly:1, nm:'neutro'},
   vDomanda:  {g:'DOMANDA',     faceOnly:1, nm:'domanda'},
@@ -915,7 +982,8 @@ function stsLink(parola){ return 'https://www.spreadthesign.com/it.it/search/?q=
    pelle sopra): è l'unica che regge la riduzione a 40 px senza che due dita
    accostate diventino una macchia sola.
    Sistema di coordinate locale: palmo centrato in (0,0), dita verso l'alto,
-   polso verso il basso, pollice a sinistra. */
+   polso verso il basso, pollice a sinistra. Quello che si disegna è quindi il
+   DORSO della mano destra; `or:'palmo'` lo ribalta, `or:'taglio'` lo stringe. */
 
 function n2(v){ return Math.round(v*100)/100; }
 
@@ -925,58 +993,103 @@ const SEG_Y     = -7;                      /* le dita nascono dentro il palmo */
 const SEG_W     = 5.8;                     /* piu' sottili: due dita unite restano due */
 
 /* un dito del lessico: teso, ricurvo o ripiegato sul palmo */
-function ditoSegno(i, stato, apertura){
-  const x = SEG_BASE[i], len = SEG_LUNG[i];
+function ditoSegno(i, stato, apertura, k){
+  const x = SEG_BASE[i], len = SEG_LUNG[i], w = SEG_W*k;
   const ang = (i-1.5)*apertura;
   const rad = ang*Math.PI/180, dx = Math.sin(rad), dy = -Math.cos(rad);
   if(stato===1){
-    return dito('M '+x+' '+SEG_Y+' L '+n2(x+dx*len)+' '+n2(SEG_Y+dy*len), SEG_W);
+    return dito('M '+x+' '+SEG_Y+' L '+n2(x+dx*len)+' '+n2(SEG_Y+dy*len), w);
   }
   if(stato===2){
     const mx = x+dx*len*.62, my = SEG_Y+dy*len*.62;
     const r2 = (ang+70)*Math.PI/180;
     return dito('M '+x+' '+SEG_Y+' Q '+n2(mx)+' '+n2(my)+' '+
-                n2(mx+Math.sin(r2)*len*.48)+' '+n2(my-Math.cos(r2)*len*.48), SEG_W);
+                n2(mx+Math.sin(r2)*len*.48)+' '+n2(my-Math.cos(r2)*len*.48), w);
   }
   const mx = x+dx*len*.4, my = SEG_Y+dy*len*.4;
   const r2 = (ang+140)*Math.PI/180;
   return dito('M '+x+' '+SEG_Y+' Q '+n2(mx)+' '+n2(my)+' '+
-              n2(mx+Math.sin(r2)*len*.44)+' '+n2(my-Math.cos(r2)*len*.44), SEG_W-0.2);
+              n2(mx+Math.sin(r2)*len*.44)+' '+n2(my-Math.cos(r2)*len*.44), w-0.2);
 }
-function polliceSegno(stato){
-  if(stato===1) return dito('M -9 3 Q -16 -1 -19 -13', 7);
-  if(stato===2) return dito('M -9 3 Q -15 0 -14 -8', 7);
-  return dito('M -9 4 Q -14 0 -7 -4', 7);
+function polliceSegno(stato, k){
+  const w = 7*k;
+  if(stato===3) return dito('M -9 7 L 7 4', w-0.4);   /* di traverso, appoggiato sul palmo */
+  if(stato===1) return dito('M -9 3 Q -16 -1 -19 -13', w);
+  if(stato===2) return dito('M -9 3 Q -15 0 -14 -8', w);
+  return dito('M -9 4 Q -14 0 -7 -4', w);
 }
-function palmoSegno(){
-  return '<path d="M -11 -8 q 0 -6 5.5 -6 h 11 q 5.5 0 5.5 6 v 14 q 0 10 -11 10 q -11 0 -11 -10 z" '+
-         'fill="'+PELLE+'" stroke="'+BORDO+'" stroke-width="2.2" stroke-linejoin="round"/>'+
-         '<path d="M -5 4 q 5 3 10 0" fill="none" stroke="'+BORDO+'" stroke-width="1.3" '+
-         'stroke-linecap="round" opacity=".45"/>';
+/* tutte le punte che si toccano: il becco. Le dita partono gia' ravvicinate e
+   finiscono in un polpastrello solo, altrimenti resta una mano qualunque. */
+function beccoSegno(k){
+  let s='';
+  [-6.4,-2.2,2.2,6.4].forEach((x)=>{
+    s += dito('M '+n2(x*1.3)+' -4 Q '+n2(x*.5)+' -16 0 -26', SEG_W*k-1);
+  });
+  s += dito('M -8.5 1 Q -6 -14 -1.5 -24', 6.2*k-0.6);
+  return s + '<circle cx="0" cy="-26.5" r="'+n2(4.4*k)+'" fill="'+PELLE+
+             '" stroke="'+BORDO+'" stroke-width="2"/>';
+}
+/* dita curve e pollice curvo: fra i due ci sta lo spazio per una tazza.
+   Le punte si piegano dalla parte del pollice, cosi' la C si apre verso il viso. */
+function coppaSegno(k){
+  let s='';
+  SEG_BASE.forEach((x)=>{
+    s += dito('M '+x+' -6 Q '+n2(x-1)+' -18 '+n2(x+6)+' -23', SEG_W*k);
+  });
+  return s + dito('M -9 2 Q -17 -5 -11 -15', 6.6*k);
+}
+function palmoSegno(vista){
+  const base =
+    '<path d="M -11 -8 q 0 -6 5.5 -6 h 11 q 5.5 0 5.5 6 v 14 q 0 10 -11 10 q -11 0 -11 -10 z" '+
+    'fill="'+PELLE+'" stroke="'+BORDO+'" stroke-width="2.2" stroke-linejoin="round"/>';
+  if(vista === 'palmo')
+    /* il palmo: le pieghe e il cuscinetto sotto il pollice */
+    return base +
+      '<path d="M -5 4 q 5 3 10 0" fill="none" stroke="'+BORDO+'" stroke-width="1.3" stroke-linecap="round" opacity=".5"/>'+
+      '<path d="M -6 -2 q 6 4 11 1" fill="none" stroke="'+BORDO+'" stroke-width="1.2" stroke-linecap="round" opacity=".38"/>'+
+      '<path d="M -8 9 q 5 -5 5 -13" fill="none" stroke="'+BORDO+'" stroke-width="1.2" stroke-linecap="round" opacity=".35"/>';
+  if(vista === 'taglio') return base;
+  /* il dorso: le nocche */
+  return base +
+    '<g fill="'+BORDO+'" opacity=".42">'+
+      '<circle cx="-8" cy="-6" r="1.5"/><circle cx="-2.7" cy="-7" r="1.5"/>'+
+      '<circle cx="2.7" cy="-7" r="1.5"/><circle cx="8" cy="-6" r="1.5"/></g>';
 }
 function polsinoSegno(){
   return '<path d="M -9 14 q 9 4 18 0 l 2 9 q -11 5 -22 0 z" fill="#2E6E7C" '+
          'stroke="#1E5361" stroke-width="1.6" stroke-linejoin="round"/>';
 }
-function manoSegno(handName){
+function manoSegno(handName, vista){
   const cfg = HAND[handName] || HAND.piatta;
   const ap = cfg.sp ? 14 : 7;   /* anche «unite» tiene un ventaglio: senza, le dita si fondono */
-  let s = polsinoSegno() + palmoSegno();
-  if(cfg.ring){
-    s += anello(0,-13,10.5);
-  }else if(cfg.arc){
-    /* configurazione a C: pollice sotto, quattro dita ricurve sopra */
-    s += dito('M 10 -21 A 15 15 0 0 0 -8 -8', 7.2);
-    s += dito('M 8 6 A 11 11 0 0 1 -8 1', 6.8);
-  }else{
-    for(let i=0;i<4;i++) s += ditoSegno(i, cfg.f[i+1], ap);
-    s += polliceSegno(cfg.f[0]);
+  /* di taglio la mano viene stretta in orizzontale: i tratti vanno ingrossati
+     nella stessa misura, altrimenti le dita diventano fili */
+  const k = vista === 'taglio' ? 1.38 : 1;
+  let dita = '';
+  if(cfg.ring)      dita = anello(0,-13,10.5);
+  else if(cfg.arc)  dita = dito('M 10 -21 A 15 15 0 0 0 -8 -8', 7.2*k) +
+                           dito('M 8 6 A 11 11 0 0 1 -8 1', 6.8*k);
+  else if(cfg.beak) dita = beccoSegno(k);
+  else if(cfg.cup)  dita = coppaSegno(k);
+  else{
+    for(let i=0;i<4;i++) dita += ditoSegno(i, cfg.f[i+1], ap, k);
+    dita += polliceSegno(cfg.f[0], k);
   }
-  return s;
+  return polsinoSegno() + palmoSegno(vista) + dita;
 }
-function handSVG(handName, rot, moveClass){
+/* `scorcio` è la mano vista di punta: le dita puntano verso chi guarda e si
+   accorciano. Senza, «palmo verso il basso, dita in avanti» non si può
+   disegnare di fronte — verrebbe una mano che punta in giù, che è un'altra cosa. */
+function handSVG(handName, rot, moveClass, or, scorcio){
+  const vista = or || 'dorso';
+  const posa = vista === 'palmo'  ? 'scale(-1,1)'
+             : vista === 'taglio' ? 'scale(.7,1)'
+             : 'translate(0,0)';
+  const corto = scorcio && scorcio < 1 ? ' scale(1,'+scorcio+')' : '';
   return '<g class="mv '+(moveClass||'')+'">'+
-    '<g transform="rotate('+(rot||0)+') scale(1.2)">'+ manoSegno(handName) +'</g></g>';
+    '<g transform="rotate('+(rot||0)+') scale(1.2)'+corto+'">'+
+      '<g transform="'+posa+'">'+ manoSegno(handName, vista) +'</g>'+
+    '</g></g>';
 }
 
 /* ---------- il volto ----------
@@ -1048,9 +1161,14 @@ function faceSVG(nm){
 }
 
 /* ---------- Nima ----------
-   Ali, corpo, braccia. Il braccio attivo arriva alla mano con una curva:
-   una linea retta faceva sembrare il braccio un bastone. */
+   Ali, corpo, braccia. Il braccio arriva alla mano con una curva: una linea
+   retta faceva sembrare il braccio un bastone.
+   La spalla DESTRA di Nima sta a sinistra di chi guarda, perché la vediamo di
+   fronte: è da lì che parte la mano che segna. */
 let SEGNO_UID = 0;
+
+const SPALLA_DESTRA   = [93,96];
+const SPALLA_SINISTRA = [121,96];
 
 function aliSVG(u){
   const ala = (x, s) =>
@@ -1081,20 +1199,38 @@ function corpoSVG(u){
     '</g>';
 }
 
-/* braccio a riposo, sempre dalla parte opposta alla mano che segna */
-function braccioRiposo(){
-  return '<path d="M93 96 C 85 106 81 118 83 129" fill="none" stroke="'+BORDO+'" stroke-width="9" stroke-linecap="round" opacity=".35"/>'+
-    '<path d="M93 96 C 85 106 81 118 83 129" fill="none" stroke="'+PELLE+'" stroke-width="7.2" stroke-linecap="round"/>'+
-    '<circle cx="83" cy="132" r="6.4" fill="'+PELLE+'" stroke="'+BORDO+'" stroke-width="1.8"/>';
-}
-/* braccio attivo: spalla, gomito calcolato, mano */
-function braccioAttivo(px, py){
-  const sx = 121, sy = 96;
-  const gx = sx + (px-sx)*0.45 + 14, gy = sy + (py-sy)*0.5 + 6;
+/* braccio: dalla spalla alla mano, con il gomito spostato verso l'esterno */
+function braccio(spalla, px, py, fuori){
+  const sx = spalla[0], sy = spalla[1];
+  const gx = sx + (px-sx)*0.45 + fuori, gy = sy + (py-sy)*0.5 + 6;
   const d = 'M'+sx+' '+sy+' Q '+n2(gx)+' '+n2(gy)+' '+px+' '+py;
   return '<path d="'+d+'" fill="none" stroke="'+BORDO+'" stroke-width="9.4" '+
            'stroke-linecap="round" opacity=".35"/>'+
          '<path d="'+d+'" fill="none" stroke="'+PELLE+'" stroke-width="7.2" stroke-linecap="round"/>';
+}
+/* il braccio sinistro, quando il segno usa una mano sola: sta giù, rilassato */
+function braccioRiposo(){
+  const d = 'M121 96 C 129 106 133 118 131 129';
+  return '<path d="'+d+'" fill="none" stroke="'+BORDO+'" stroke-width="9" stroke-linecap="round" opacity=".35"/>'+
+    '<path d="'+d+'" fill="none" stroke="'+PELLE+'" stroke-width="7.2" stroke-linecap="round"/>'+
+    '<circle cx="131" cy="132" r="6.4" fill="'+PELLE+'" stroke="'+BORDO+'" stroke-width="1.8"/>';
+}
+/* Dove cade il polso, data la posizione del palmo e la rotazione della mano.
+   Il braccio deve arrivare lì e non al centro del palmo: altrimenti la manica
+   resta staccata dall'avambraccio, come una mano che galleggia. */
+const POLSO_LOC = 24;      /* distanza palmo→polso, gia' scalata */
+function polsoDi(px, py, r, scorcio){
+  const a = (r||0)*Math.PI/180, d = POLSO_LOC*(scorcio || 1);
+  return [n2(px - d*Math.sin(a)), n2(py + d*Math.cos(a))];
+}
+
+/* una mano posata nel suo luogo. `sinistra` ribalta il disegno: è l'altra mano,
+   e una mano sinistra non è una destra girata di lato, è il suo specchio. */
+function manoPosata(px, py, h, r, m, or, sinistra, scorcio){
+  const dentro = handSVG(h, sinistra ? -(r||0) : (r||0), 'mv-'+(m||'tap'), or, scorcio);
+  return '<g class="hand" style="transform:translate('+px+'px,'+py+'px)">'+
+    (sinistra ? '<g transform="scale(-1,1)">'+dentro+'</g>' : dentro)+
+    '</g>';
 }
 
 function defsSegno(u){
@@ -1110,44 +1246,82 @@ function defsSegno(u){
     '</defs>';
 }
 
+/* i luoghi toccati da una fase: servono a ritagliare il riquadro compatto */
+function luoghiDi(f){
+  if(f.faceOnly) return [];
+  const p = [LOC[f.l] || LOC.neutro];
+  if(f.due) p.push(LOC[f.due.l] || LOC.neutro);
+  return p;
+}
+
+/* una fase del segno: corpo, braccia, volto e mani.
+   La mano si disegna DOPO il volto: nei segni che stanno sulla guancia, sul
+   mento o sulla bocca sta davanti alla faccia, non dietro. */
+function figuraSegno(f, u){
+  const nm = f.nm || 'neutro';
+  if(f.faceOnly) return corpoSVG(u) + faceSVG(nm);
+
+  const p = LOC[f.l] || LOC.neutro, px = p[0], py = p[1];
+  let corpo = corpoSVG(u), mani = '';
+
+  if(f.due){
+    const q  = LOC[f.due.l] || LOC.neutro;
+    const sq = f.due.scorcio || f.scorcio;
+    const wq = polsoDi(q[0], q[1], f.due.r, sq);
+    corpo += braccio(SPALLA_SINISTRA, wq[0], wq[1], 14);
+    mani  += manoPosata(q[0], q[1], f.due.h || f.h, f.due.r, f.due.m || f.m,
+                        f.due.or || f.or, true, sq);
+  }else{
+    corpo += braccioRiposo();
+  }
+  const w = polsoDi(px, py, f.r, f.scorcio);
+  corpo += braccio(SPALLA_DESTRA, w[0], w[1], -14);
+  mani  += manoPosata(px, py, f.h, f.r, f.m, f.or, false, f.scorcio);
+
+  return corpo + faceSVG(nm) + mani;
+}
+
 /* rende un segno: figura intera, figura ritagliata sulla mano, o solo volto.
    `compatto` serve dentro i mini-giochi e nel dizionario, dove quello che conta
-   è vedere com'è fatta la mano, non quanto è graziosa la fata. */
+   è vedere com'è fatta la mano, non quanto è graziosa la fata.
+   Un segno composto ha più `fasi`: si disegnano tutte e si alternano, perché
+   un disegno fermo non può mostrare due momenti insieme. */
 function renderSign(sign, opts){
   if(!sign) return '';
   opts = opts || {};
-  const u  = ++SEGNO_UID;
-  const nm = sign.nm || 'neutro';
-  const p  = LOC[sign.l] || LOC.neutro;
-  const px = p[0], py = p[1];
+  const u = ++SEGNO_UID;
+  const fasi = sign.fasi || [sign];
+  const piuFasi = fasi.length > 1;
 
   let vb;
   if(sign.faceOnly)      vb = '64 10 88 92';
-  else if(opts.compatto) vb = riquadroSuMano(px, py);
+  else if(opts.compatto) vb = riquadroSuMano([].concat.apply([], fasi.map(luoghiDi)));
   else                   vb = '34 4 186 172';
 
-  let body = corpoSVG(u), mano = '';
-  if(!sign.faceOnly){
-    body += braccioRiposo() + braccioAttivo(px, py);
-    mano = '<g class="hand" style="transform:translate('+px+'px,'+py+'px)">'+
-             handSVG(sign.h, sign.r, 'mv-'+(sign.m||'tap'))+'</g>';
-  }
-  /* la mano va disegnata DOPO il volto: nei segni che stanno sulla guancia,
-     sul mento o sulla fronte sta davanti alla faccia, non dietro */
+  const corpo = fasi.map((f,i)=>{
+    const dentro = figuraSegno(Object.assign({nm:sign.nm}, f), u);
+    return piuFasi ? '<g class="fase fase-'+(i+1)+'">'+dentro+'</g>' : dentro;
+  }).join('');
+
   return '<svg viewBox="'+vb+'" xmlns="http://www.w3.org/2000/svg" role="img" '+
+    'class="segno'+(piuFasi?' segno-fasi':'')+'" '+
     'aria-label="segno segnaposto: '+(sign.g||'')+'">'+
     defsSegno(u) + (opts.compatto||sign.faceOnly ? '' : aliSVG(u)) +
-    body + faceSVG(nm) + mano + '</svg>';
+    corpo + '</svg>';
 }
 
-/* riquadro che tiene dentro la testa e la mano, qualunque sia il luogo del segno */
-function riquadroSuMano(px, py){
-  let x0 = Math.min(72, px-30), x1 = Math.max(142, px+30);
-  let y0 = Math.min(12, py-30), y1 = Math.max(96, py+30);
+/* riquadro che tiene dentro la testa e tutte le mani del segno */
+function riquadroSuMano(punti){
+  let x0 = 72, x1 = 142, y0 = 12, y1 = 96;
+  (punti||[]).forEach(p=>{
+    x0 = Math.min(x0, p[0]-30); x1 = Math.max(x1, p[0]+30);
+    y0 = Math.min(y0, p[1]-30); y1 = Math.max(y1, p[1]+30);
+  });
   const w = x1-x0, h = y1-y0, lato = Math.max(w,h);
   x0 -= (lato-w)/2; y0 -= (lato-h)/2;
   return n2(x0-7)+' '+n2(y0-7)+' '+n2(lato+14)+' '+n2(lato+14);
 }
+
 /* ===== alfabeto manuale =====
    Le configurazioni seguono le descrizioni della dattilologia italiana, non sono
    piu' segnaposto arbitrari. Restano da validare con segnanti sordi madrelingua,
@@ -1375,6 +1549,9 @@ const MOVE_CSS = document.createElement('style');
 MOVE_CSS.textContent = `
 .hand{transform-box:view-box;transform-origin:0 0}
 .mv{transform-box:fill-box;transform-origin:50% 60%}
+/* I movimenti sono descritti nel piano dello schermo: x che cresce va verso
+   destra di chi guarda, cioe' verso la SINISTRA di Nima. «Fuori», per la sua
+   mano destra, e' quindi verso le x che calano. */
 .mv-tap{animation:mTap 1.5s ease-in-out infinite}
 .mv-doppioTap{animation:mDT 1.8s ease-in-out infinite}
 .mv-giu{animation:mGiu 1.6s ease-in-out infinite}
@@ -1385,23 +1562,72 @@ MOVE_CSS.textContent = `
 .mv-cerchio{animation:mCer 2s linear infinite}
 .mv-nuota{animation:mNuo 1.9s ease-in-out infinite}
 .mv-chiudi{animation:mChi 1.8s ease-in-out infinite}
-/* NOME: contatto sotto il mento, poi scorrimento laterale verso il fuori */
-.mv-scorriFuori{animation:mScorri 2.1s ease-in-out infinite}
-@keyframes mTap{0%,100%{transform:translate(0,0)}45%{transform:translate(-7px,2px)}}
-@keyframes mDT{0%,100%{transform:translate(0,0)}20%{transform:translate(-6px,1px)}40%{transform:translate(0,0)}60%{transform:translate(-6px,1px)}80%{transform:translate(0,0)}}
+/* NOME: contatto sotto il mento, poi scorrimento verso il fuori */
+.mv-scorriFuori{animation:mScorri 2.2s ease-in-out infinite}
+/* FAME: due colpi sul fianco, verso il corpo */
+.mv-colpisce{animation:mColpo 1.8s ease-in-out infinite}
+/* MANGIARE, BERE: la mano sale verso la bocca e torna */
+.mv-avvicina{animation:mAvvic 2s ease-in-out infinite}
+/* MELA: due passate verso l'alto davanti alla bocca */
+.mv-suDue{animation:mSuDue 2s ease-in-out infinite}
+/* ACQUA: dal contatto sulla guancia, in avanti */
+.mv-staccaAvanti{animation:mStacca 2.1s ease-in-out infinite}
+/* NO: l'indice va e torna, da un lato all'altro */
+.mv-scuoti{animation:mScuoti 1.3s ease-in-out infinite}
+@keyframes mTap{0%,100%{transform:translate(0,0)}45%{transform:translate(7px,2px)}}
+@keyframes mDT{0%,100%{transform:translate(0,0)}20%{transform:translate(6px,1px)}40%{transform:translate(0,0)}60%{transform:translate(6px,1px)}80%{transform:translate(0,0)}}
 @keyframes mGiu{0%{transform:translate(0,-11px)}55%{transform:translate(0,10px)}100%{transform:translate(0,-11px)}}
 @keyframes mSu{0%{transform:translate(0,11px)}55%{transform:translate(0,-10px)}100%{transform:translate(0,11px)}}
-@keyframes mAv{0%,100%{transform:scale(1)}50%{transform:scale(1.2) translate(4px,0)}}
+@keyframes mAv{0%,100%{transform:scale(1)}50%{transform:scale(1.2) translate(-4px,0)}}
 @keyframes mOsc{0%,100%{transform:rotate(-15deg)}50%{transform:rotate(15deg)}}
-@keyframes mRot{0%,100%{transform:rotate(0)}50%{transform:rotate(78deg)}}
+@keyframes mRot{0%,100%{transform:rotate(0)}50%{transform:rotate(-78deg)}}
 @keyframes mCer{0%{transform:translate(8px,0)}25%{transform:translate(0,8px)}50%{transform:translate(-8px,0)}75%{transform:translate(0,-8px)}100%{transform:translate(8px,0)}}
-@keyframes mNuo{0%,100%{transform:translate(-9px,3px) rotate(-6deg)}50%{transform:translate(11px,-3px) rotate(8deg)}}
+@keyframes mNuo{
+  0%,100%{transform:translate(-10px,4px) rotate(7deg)}
+  30%{transform:translate(0,-3px) rotate(-6deg)}
+  65%{transform:translate(10px,3px) rotate(6deg)}
+}
 @keyframes mChi{0%,100%{transform:scale(1.14)}50%{transform:scale(.86)}}
 @keyframes mScorri{
-  0%,14%{transform:translate(-5px,0)}
-  62%{transform:translate(17px,-2px)}
-  78%,100%{transform:translate(-5px,0)}
+  0%,16%{transform:translate(3px,0)}
+  60%{transform:translate(-15px,1px)}
+  78%,100%{transform:translate(3px,0)}
 }
+@keyframes mColpo{
+  0%,100%{transform:translate(-5px,0)}
+  18%{transform:translate(2px,0)}
+  36%{transform:translate(-5px,0)}
+  54%{transform:translate(2px,0)}
+  72%{transform:translate(-5px,0)}
+}
+@keyframes mAvvic{
+  0%,100%{transform:translate(-4px,4px)}
+  24%{transform:translate(5px,-3px)}
+  48%{transform:translate(-4px,4px)}
+  72%{transform:translate(5px,-3px)}
+}
+@keyframes mSuDue{
+  0%,100%{transform:translate(0,7px)}
+  24%{transform:translate(0,-6px)}
+  50%{transform:translate(0,7px)}
+  74%{transform:translate(0,-6px)}
+}
+@keyframes mStacca{
+  0%,22%{transform:translate(0,0) scale(1)}
+  62%{transform:translate(-7px,-1px) scale(1.14)}
+  82%,100%{transform:translate(0,0) scale(1)}
+}
+@keyframes mScuoti{
+  0%,100%{transform:translate(-6px,0) rotate(-12deg)}
+  50%{transform:translate(6px,0) rotate(12deg)}
+}
+/* Un segno composto si guarda per fasi: si alternano, perche' un disegno fermo
+   non puo' mostrare due momenti nello stesso istante. Non e' decorazione:
+   e' il segno, quindi non si ferma nemmeno con prefers-reduced-motion. */
+.segno-fasi .fase-1{animation:faseUno 4.8s ease-in-out infinite}
+.segno-fasi .fase-2{animation:faseDue 4.8s ease-in-out infinite}
+@keyframes faseUno{0%,40%{opacity:1}48%,90%{opacity:0}98%,100%{opacity:1}}
+@keyframes faseDue{0%,40%{opacity:0}48%,90%{opacity:1}98%,100%{opacity:0}}
 /* le ali battono: due colpi rapidi e una pausa, come un insetto */
 .ali{animation:ali 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 55%}
 @keyframes ali{0%,100%{transform:scaleX(1) rotate(0deg)}18%{transform:scaleX(.82) rotate(-1.5deg)}36%{transform:scaleX(1.02) rotate(1deg)}54%{transform:scaleX(.88) rotate(-1deg)}}
@@ -1777,7 +2003,7 @@ function portaInVista(nodo){
 
 if(V.tocca) document.getElementById('tapTesto').textContent = V.tocca;
 
-const IDLE = {g:'', h:'piatta', l:'neutroBasso', m:'oscilla', r:4, nm:'neutro'};
+const IDLE = {g:'', h:'piatta', or:'dorso', l:'neutroBasso', m:'oscilla', r:-4, nm:'neutro'};
 function setGloss(txt){
   el.gloss.textContent = txt || '';
   el.gloss.classList.toggle('on', !!txt);

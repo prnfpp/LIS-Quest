@@ -38,11 +38,15 @@ rispettano la *struttura* di un segno — configurazione della mano, luogo sul c
 espressione del viso — perché su quella struttura si reggono i mini-giochi. Il contenuto linguistico,
 però, è inventato.
 
-L'unica eccezione parziale è **NOME**, ridisegnato su una descrizione esplicita della forma reale:
-indice e medio uniti sotto il mento, che scorrono verso l'esterno — da sinistra a destra per chi
-segna con la destra, al contrario per chi segna con la sinistra. Prima stava sulla fronte, e era
-semplicemente sbagliato. Adesso è *più vicino*, il che non vuol dire validato: una descrizione
-scritta non dice quanto è ampio lo scorrimento né cosa fa il viso mentre la mano si muove.
+Fanno eccezione parziale nove segni — **NOME, FAME, MANGIARE, MELA, PESCE, ACQUA, BERE, NO** e
+**NON ADESSO** — ridisegnati su descrizioni esplicite di chi segna: configurazione della mano,
+orientamento del palmo, luogo sul corpo, movimento. Prima erano inventati (NOME stava sulla fronte,
+FAME sulla pancia, MELA sulla guancia) e quindi semplicemente sbagliati. Adesso sono *più vicini*,
+il che non vuol dire validati: una descrizione scritta non dice quanto è ampio uno scorrimento,
+quanto sono curve le dita di una mano a tazza, né cosa fa il viso mentre la mano si muove.
+
+Nima è destra ed è vista di fronte: la sua mano destra sta a sinistra di chi guarda, come quando si
+è seduti davanti a una persona che segna.
 
 Insegnare un segno sbagliato è peggio che non insegnarne nessuno: resta addosso e poi va
 disimparato. Il lessico reale va ancora girato con **segnanti e/o interpreti** e validato da loro prima
@@ -98,7 +102,7 @@ nessuna funzione.
 - [ ] Validazione linguistica delle frasi dei mini-giochi
 - [ ] Scene 3–6 del capitolo 1
 - [x] Dialoghi separati dal motore, modificabili senza toccare il codice
-- [x] Correzione del segno NOME: dalla fronte a sotto il mento, con lo scorrimento verso l'esterno
+- [x] Nove segni ridisegnati su descrizioni di chi segna, con orientamento del palmo, seconda mano e segni composti
 - [x] Passaggio grafico: isola a strati (giorno e notte), Nima ridisegnata, mani leggibili nelle prove
 - [ ] Passaggio a struttura modulare per capitoli (una scena per file)
 - [ ] Capitolo 2: il viaggio in nave

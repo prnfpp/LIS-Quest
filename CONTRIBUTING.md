@@ -15,19 +15,37 @@ fa sapere.
 
 ## Aggiungere un segno
 
-Tutto il lessico sta nell'oggetto `SIGNS` dentro `index.html`, insieme alla sua descrizione in
-italiano in `USO`. Un segno è descritto dai quattro parametri formazionali:
+Tutto il lessico sta nell'oggetto `SIGNS` dentro `index.html`. Un segno è descritto dai parametri
+formazionali:
 
 ```js
 mela: {
   g:  'MELA',       // glossa, in maiuscolo
-  h:  'pinza',      // configurazione della mano (chiave di HAND)
-  l:  'guancia',    // luogo sul corpo (chiave di LOC)
-  m:  'ruota',      // movimento (una delle animazioni .mv-*)
-  r:  -20,          // orientamento, in gradi
+  h:  'coppa',      // configurazione della mano (chiave di HAND)
+  or: 'dorso',      // orientamento del palmo: 'dorso' | 'palmo' | 'taglio'
+  l:  'bocca',      // luogo sul corpo (chiave di LOC)
+  m:  'suDue',      // movimento (una delle animazioni .mv-*)
+  r:  -6,           // rotazione della mano nel piano, in gradi
   nm: 'neutro'      // componente non manuale: la faccia
 }
 ```
+
+Tre parametri in più, che servono a segni che senza non si possono scrivere:
+
+| Parametro | A cosa serve |
+|---|---|
+| `or` | che faccia della mano vediamo. `dorso` = il palmo guarda Nima; `palmo` = guarda avanti, verso chi legge; `taglio` = guarda di lato o verso terra, e la mano si vede di profilo |
+| `scorcio` | la mano vista di punta, fra 0 e 1: accorcia le dita lungo il loro asse. Senza, «palmo verso il basso, dita in avanti» diventerebbe una mano che punta in giù, che è un altro segno |
+| `due` | la seconda mano: `{h, or, l, r, m}`. Il disegno viene specchiato, perché una mano sinistra non è una destra girata di lato |
+| `fasi` | un segno composto da più momenti, ciascuno con i suoi parametri: si disegnano tutti e si alternano. NON ADESSO è così — le mani che scendono, poi il segno NO |
+
+### Da che parte segna Nima
+
+Nima è destra ed è vista **di fronte**: la sua mano destra sta perciò a **sinistra** di chi guarda.
+Nel disegno la testa è centrata in `x=107`, quindi le x che crescono vanno verso la *sinistra* di
+Nima e le x che calano verso la sua *destra*. «Verso il fuori», per la sua mano destra, vuol dire
+verso le x che calano — ed è così che è scritta l'animazione `.mv-scorriFuori`. Chi impara si trova
+davanti a una persona che segna e la rispecchia: è quello che succede anche in aula.
 
 E la voce corrispondente nel dizionario, che però sta in **`dialoghi.js`**, dentro `parole`:
 
@@ -51,9 +69,10 @@ accostate restano due anche a 40 px.
 
 | Funzione | Cosa fa |
 |---|---|
-| `ditoSegno(i, stato, apertura)` | un dito: `0` chiuso sul palmo, `1` teso, `2` ricurvo |
-| `manoSegno(nome)` | palmo, polsino, quattro dita e pollice per una configurazione di `HAND` |
-| `braccioAttivo(x, y)` | il braccio dalla spalla alla mano, con il gomito calcolato |
+| `ditoSegno(i, stato, apertura)` | un dito: `0` chiuso sul palmo, `1` teso, `2` ricurvo, `3` (solo pollice) di traverso |
+| `manoSegno(nome, vista)` | palmo, polsino, dita e pollice; `vista` decide nocche o pieghe del palmo |
+| `braccio(spalla, x, y, fuori)` | il braccio dalla spalla al **polso**, con il gomito calcolato |
+| `polsoDi(x, y, r, scorcio)` | dove cade il polso, data la posa della mano |
 | `faceSVG(nm)` | il volto: sopracciglia, occhi, bocca e inclinazione del capo insieme |
 | `renderSign(segno, opzioni)` | la figura intera; con `{compatto:true}` ritaglia su testa e mano |
 
@@ -61,6 +80,8 @@ Due cose da non rompere:
 
 - **La mano si disegna dopo il volto.** Nei segni che stanno sulla guancia, sul mento o sulla fronte
   la mano è davanti alla faccia: invertire l'ordine la fa sparire dietro la testa.
+- **Il braccio finisce al polso, non al centro del palmo.** `polsoDi()` lo calcola dalla rotazione
+  della mano; saltarlo lascia la manica staccata dall'avambraccio.
 - **`{compatto:true}` è quello che si usa nei mini-giochi e nel dizionario.** Lì conta vedere com'è
   fatta la mano, non quanto è graziosa la fata: il riquadro si calcola sul luogo del segno, così la
   mano è grande qualunque cosa stia facendo.
@@ -164,12 +185,13 @@ Se puoi segnare davanti a una camera, questo è quello che serve. Bastano un tel
 | Consegna | WebM VP9 + MP4 di riserva, 300–600 KB, con poster JPEG |
 
 **Lessico mancante per le scene 1–2:** CIAO, IO, TU, NOME, FAME, MANGIARE, MELA, PESCE, ACQUA,
-BERE, SÌ, NO — più le 21 lettere dell'alfabeto manuale e la parola NIMA compitata.
+BERE, SÌ, NO, NON ADESSO — più le 21 lettere dell'alfabeto manuale e la parola NIMA compitata.
 
-Serve la clip anche per i segni che nel gioco sembrano già a posto. NOME, per esempio, è disegnato
-su una descrizione esplicita — indice e medio uniti sotto il mento che scorrono verso l'esterno — ma
-una descrizione non dice l'ampiezza dello scorrimento né cosa fa il viso mentre la mano si muove: è
-lì che si vede se un segno è giusto.
+Serve la clip anche per i segni che nel gioco sembrano già a posto. NOME, FAME, MANGIARE, MELA,
+PESCE, ACQUA, BERE, NO e NON ADESSO sono disegnati su descrizioni esplicite di chi segna — forma
+della mano, orientamento del palmo, luogo, movimento — ma una descrizione non dice l'ampiezza di uno
+scorrimento, quanto sono curve le dita di una mano a tazza, né cosa fa il viso mentre la mano si
+muove: è lì che si vede se un segno è giusto, ed è per questo che il video non si può saltare.
 
 ## Pull request
 
