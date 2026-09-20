@@ -130,7 +130,7 @@ window.DIALOGHI = {
         {tipo:'premio', xp:40, impara:['fame','mangiare','mela'],
          testo:'Gliela porti. Sparisce in quattro morsi. Non sembrava così piccola, prima.'},
 
-        {tipo:'segno', segno:'si', testo:'Fa sì con tutta la testa, e le briciole le cadono dalle ginocchia.'},
+        {tipo:'segno', segno:'si', testo:'Chiude il pugno, tiene fuori pollice e mignolo, e lo fa annuire al polso come fa la testa quando dice sì. Le briciole le cadono dalle ginocchia.'},
 
         {tipo:'racconto', testo:'Poi si pulisce le mani sulle ali e te le apre davanti, vuote. Adesso tocca a te chiedere.'},
 
@@ -258,7 +258,7 @@ window.DIALOGHI = {
     pesce:     {cerca:'Pesce',      testo:'L’animale. Mano di taglio, palmo verso il lato, indice e medio stesi e attaccati che ondeggiano come un pesce nell’acqua. Lei lo prende fra gli scogli.'},
     acqua:     {cerca:'Acqua',      testo:'Quella dolce e quella salata. Mano aperta con le dita separate, palmo in avanti, il pollice che tocca la guancia e poi va avanti. Sull’isola la differenza fra le due conta parecchio.'},
     bere:      {cerca:'Bere',       testo:'L’azione di bere. Pugno chiuso e pollice steso, mano che sale alla bocca: è il pollice il primo a toccarla. Cammina insieme ad acqua, ma non è la stessa cosa — guarda bene le mani.'},
-    si:        {cerca:'Sì',         testo:'Affermare. La testa conta quanto la mano: senza il movimento del capo non è un sì.'},
+    si:        {cerca:'Sì',         testo:'Affermare. Pugno chiuso con il palmo rivolto di lato, pollice e mignolo stesi, e la mano che annuisce al polso come fa la testa. E la testa conta quanto la mano: senza il movimento del capo non è un sì.'},
     no:        {cerca:'No',         testo:'Negare. Indice teso e mano chiusa, palmo in avanti, che va da una parte all’altra e torna. Anche qui faccia e testa fanno metà del lavoro.'},
     nonAdesso: {cerca:'Non adesso', testo:'«Non ora, più tardi.» Due segni di fila: prima le mani aperte con il palmo in basso che scendono davanti al petto, poi il segno NO. Nima lo usa quando la campana suona oltre gli scogli, e non ha voglia di spiegare.'},
     conchiglia:{cerca:'Conchiglia', testo:'Quello che si trova sulla battigia. Una te l’ha messa in mano lei, ed è diventata il tuo dizionario.'}

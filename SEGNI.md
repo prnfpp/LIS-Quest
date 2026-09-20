@@ -29,8 +29,8 @@ W, X e Y, che servono per i nomi), e la parola `nima.webm` compitata per intero.
 NON ADESSO è un segno composto (le mani aperte che scendono davanti al petto, poi NO): va girato
 tutto di seguito, in una clip sola, senza tagli fra i due momenti.
 
-Nove di questi segni — NOME, FAME, MANGIARE, MELA, PESCE, ACQUA, BERE, NO e NON ADESSO — nel gioco
-sono disegnati a partire da descrizioni esplicite di chi segna, non più inventati. Resta comunque
+Dieci di questi segni — NOME, FAME, MANGIARE, MELA, PESCE, ACQUA, BERE, SÌ, NO e NON ADESSO — nel
+gioco sono disegnati a partire da descrizioni esplicite di chi segna, non più inventati. Resta comunque
 tutto da girare e da validare: una descrizione dice la forma, non l'ampiezza del movimento né cosa
 fa il viso mentre la mano si muove.
 

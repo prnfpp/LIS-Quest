@@ -34,7 +34,7 @@ Tre parametri in più, che servono a segni che senza non si possono scrivere:
 
 | Parametro | A cosa serve |
 |---|---|
-| `or` | che faccia della mano vediamo. `dorso` = il palmo guarda Nima; `palmo` = guarda avanti, verso chi legge; `taglio` = guarda di lato o verso terra, e la mano si vede di profilo |
+| `or` | che faccia della mano vediamo. `dorso` = il palmo guarda Nima; `palmo` = guarda avanti, verso chi legge; `taglio` = guarda di lato o verso terra, e la mano si vede di costa; `trequarti` = a metà fra le due, quando di costa pura due dita finirebbero una dietro l'altra |
 | `scorcio` | la mano vista di punta, fra 0 e 1: accorcia le dita lungo il loro asse. Senza, «palmo verso il basso, dita in avanti» diventerebbe una mano che punta in giù, che è un altro segno |
 | `due` | la seconda mano: `{h, or, l, r, m}`. Il disegno viene specchiato, perché una mano sinistra non è una destra girata di lato |
 | `fasi` | un segno composto da più momenti, ciascuno con i suoi parametri: si disegnano tutti e si alternano. NON ADESSO è così — le mani che scendono, poi il segno NO |
@@ -69,10 +69,43 @@ accostate restano due anche a 40 px.
 
 | Funzione | Cosa fa |
 |---|---|
-| `ditoSegno(i, stato, apertura)` | un dito: `0` chiuso sul palmo, `1` teso, `2` ricurvo, `3` (solo pollice) di traverso |
-| `manoSegno(nome, vista)` | palmo, polsino, dita e pollice; `vista` decide nocche o pieghe del palmo |
+| `dito(percorso, spessore)` | un dito, in quattro passate: bordo, pelle, ombra da un lato, luce dall'altro |
+| `piegaDito` / `unghiaDito` | il solco della falange e l'unghia: dicono quante dita ci sono e da che parte guardano |
+| `ditoSegno(i, stato, apertura, k, vista)` | un dito: `0` chiuso sul palmo, `1` teso, `2` ricurvo, `3` (solo pollice) di traverso |
+| `palmoSegno(vista)` | la sagoma del palmo, sfumata, con nocche e tendini (dorso), pieghe e cuscinetto (palmo) o la costa (taglio) |
+| `manoSegno(nome, vista)` | palmo, polsino, dita e pollice per una configurazione di `HAND` |
 | `braccio(spalla, x, y, fuori)` | il braccio dalla spalla al **polso**, con il gomito calcolato |
 | `polsoDi(x, y, r, scorcio)` | dove cade il polso, data la posa della mano |
+| `tracciaMov(movimento)` | la freccia del movimento, presa da `TRACCE` |
+
+### Le frecce del movimento
+
+Un disegno fermo non distingue un tocco da uno scorrimento, né una mano che va
+avanti da una che va in basso: per questo ogni movimento ha il suo percorso in
+`TRACCE`, disegnato intorno al palmo e in parte coperto dalla mano, con la punta
+che sporge. Le coordinate sono **relative al centro del palmo e allineate allo
+schermo**: è il movimento visto da chi guarda, non dalla mano.
+
+Sopra la freccia corre una scia luminosa nel verso dell'andata. La punta doppia
+si usa solo dove il movimento è davvero simmetrico — un dondolio, una scossa da
+un lato all'altro: dove la mano va e poi torna, la punta è una sola, altrimenti
+il verso diventa ambiguo.
+
+### Perché la mano ha un volume
+
+Non ci sarà una versione con i video: questo disegno è il contenuto finale, e
+deve dire da che parte guarda una mano. Lo fa con quattro indizi che si sommano,
+e conviene non toglierne nessuno:
+
+- **il tubo** — ogni dito è disegnato quattro volte sullo stesso percorso (bordo,
+  pelle, ombra, luce): è quello che lo fa leggere come un volume e non una linea;
+- **l'unghia** — si vede da dorso e da tre quarti, mai dal palmo: è il segnale
+  più rapido di quale faccia stiamo guardando;
+- **nocche e tendini** contro **pieghe e cuscinetto del pollice** — il dorso e il
+  palmo hanno due superfici diverse, e si riconoscono anche in miniatura;
+- **l'ombra portata** (`.hand{filter:drop-shadow(...)}`) — dice quale delle due,
+  mano o viso, sta davanti. Senza, una mano sulla guancia sembra disegnata sulla
+  guancia.
 | `faceSVG(nm)` | il volto: sopracciglia, occhi, bocca e inclinazione del capo insieme |
 | `renderSign(segno, opzioni)` | la figura intera; con `{compatto:true}` ritaglia su testa e mano |
 
@@ -187,11 +220,12 @@ Se puoi segnare davanti a una camera, questo è quello che serve. Bastano un tel
 **Lessico mancante per le scene 1–2:** CIAO, IO, TU, NOME, FAME, MANGIARE, MELA, PESCE, ACQUA,
 BERE, SÌ, NO, NON ADESSO — più le 21 lettere dell'alfabeto manuale e la parola NIMA compitata.
 
-Serve la clip anche per i segni che nel gioco sembrano già a posto. NOME, FAME, MANGIARE, MELA,
-PESCE, ACQUA, BERE, NO e NON ADESSO sono disegnati su descrizioni esplicite di chi segna — forma
-della mano, orientamento del palmo, luogo, movimento — ma una descrizione non dice l'ampiezza di uno
-scorrimento, quanto sono curve le dita di una mano a tazza, né cosa fa il viso mentre la mano si
-muove: è lì che si vede se un segno è giusto, ed è per questo che il video non si può saltare.
+Dieci segni — NOME, FAME, MANGIARE, MELA, PESCE, ACQUA, BERE, SÌ, NO e NON ADESSO — sono disegnati
+su descrizioni esplicite di chi segna: forma della mano, orientamento del palmo, luogo, movimento.
+Il disegno resta comunque da guardare e correggere, perché una descrizione non dice l'ampiezza di
+uno scorrimento, quanto sono curve le dita di una mano a tazza, né cosa fa il viso mentre la mano si
+muove. Le clip qui sopra servono da riferimento per chi disegna, anche se il gioco continuerà a
+mostrare i disegni: chi valida guarda il disegno accanto al video e dice dove sbaglia.
 
 ## Pull request
 
