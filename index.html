@@ -938,8 +938,10 @@ const SIGNS = {
   mangiare:  {g:'MANGIARE',  h:'becco',   or:'dorso',  l:'versoBocca',  m:'avvicina',    r:74,  nm:'neutro'},
 
   /* Mano a tazza davanti alla bocca, palmo verso la faccia, che sale lungo la
-     bocca due volte. */
-  mela:      {g:'MELA',      h:'coppa',   or:'dorso',  l:'bocca',       m:'suDue',       r:-6,  nm:'neutro'},
+     bocca due volte. La mano e' coricata: le dita puntano verso la sinistra di
+     Nima (destra di chi guarda) e il polso sta dalla parte opposta, da cui
+     arriva il braccio. */
+  mela:      {g:'MELA',      h:'coppa',   or:'dorso',  l:'bocca',       m:'suDue',       r:90,  nm:'neutro'},
 
   /* Mano destra, palmo rivolto a sinistra, pugno chiuso tranne indice e medio
      stesi e attaccati; dita e mano ondeggiano come un pesce nell’acqua. */
@@ -1303,7 +1305,7 @@ const TRACCE = {
   doppioTap:    {d:'M -38 20 L -16 20'},
   giu:          {d:'M 30 -18 L 30 24'},
   su:           {d:'M 30 24 L 30 -18'},
-  suDue:        {d:'M 30 26 L 30 -14'},
+  suDue:        {d:'M 44 24 L 44 -18'},   /* MELA: la mano e' coricata e larga, la freccia sta piu' in fuori */
   avanti:       {d:'M -30 30 L -10 16'},
   staccaAvanti: {d:'M 8 34 L -24 28'},
   oscilla:      {d:'M -26 28 A 28 28 0 0 0 26 28', due:1},
