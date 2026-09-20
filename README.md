@@ -38,6 +38,12 @@ rispettano la *struttura* di un segno — configurazione della mano, luogo sul c
 espressione del viso — perché su quella struttura si reggono i mini-giochi. Il contenuto linguistico,
 però, è inventato.
 
+L'unica eccezione parziale è **NOME**, ridisegnato su una descrizione esplicita della forma reale:
+indice e medio uniti sotto il mento, che scorrono verso l'esterno — da sinistra a destra per chi
+segna con la destra, al contrario per chi segna con la sinistra. Prima stava sulla fronte, e era
+semplicemente sbagliato. Adesso è *più vicino*, il che non vuol dire validato: una descrizione
+scritta non dice quanto è ampio lo scorrimento né cosa fa il viso mentre la mano si muove.
+
 Insegnare un segno sbagliato è peggio che non insegnarne nessuno: resta addosso e poi va
 disimparato. Il lessico reale va ancora girato con **segnanti e/o interpreti** e validato da loro prima
 di finire in mano a un bambino. Nel codice ogni segno ha già lo slot per la clip video: quando i
@@ -92,6 +98,8 @@ nessuna funzione.
 - [ ] Validazione linguistica delle frasi dei mini-giochi
 - [ ] Scene 3–6 del capitolo 1
 - [x] Dialoghi separati dal motore, modificabili senza toccare il codice
+- [x] Correzione del segno NOME: dalla fronte a sotto il mento, con lo scorrimento verso l'esterno
+- [x] Passaggio grafico: isola a strati (giorno e notte), Nima ridisegnata, mani leggibili nelle prove
 - [ ] Passaggio a struttura modulare per capitoli (una scena per file)
 - [ ] Capitolo 2: il viaggio in nave
 
