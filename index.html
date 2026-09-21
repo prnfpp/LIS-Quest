@@ -933,9 +933,11 @@ const SIGNS = {
 
   /* Mano destra sotto il mento, palmo verso il petto, pugno chiuso tranne
      indice e medio stesi e attaccati; poi la mano scorre verso il fuori.
-     Le dita puntano di traverso, verso la sinistra di Nima: sono loro che
-     strisciano sotto il mento mentre la mano va dalla parte opposta. */
-  nome:      {g:'NOME',      h:'u',       dita:['dentro','su'],   palmo:'indietro',
+     Il pugno e' chiuso davvero: il pollice serra mignolo e anulare, e le
+     uniche dita stese sono indice e medio. La mano e' a novanta gradi — le
+     dita stese puntano di traverso, verso la sinistra di Nima — e sono loro
+     che strisciano sotto il mento mentre la mano va dalla parte opposta. */
+  nome:      {g:'NOME',      h:'u',       dita:'dentro',          palmo:'indietro',
               l:'sottoMento',  m:'scorriFuori', nm:'neutro'},
 
   /* Mano stesa con il pollice appoggiato sul palmo, palmo verso terra,
@@ -1000,8 +1002,8 @@ const SIGNS = {
   /* ---- ancora segnaposto: nessuno li ha ancora descritti né validati ---- */
   ciao:      {g:'CIAO',      h:'piatta',  dita:'su',              palmo:'avanti',
               l:'spalla',      m:'oscilla',     nm:'sorriso'},
-  io:        {g:'IO',        h:'indice',  dita:['dentro','dentro','indietro'],
-              palmo:['giu','avanti'],
+  io:        {g:'IO',        h:'indice',  dita:['dentro','indietro'],
+              palmo:'giu',
               l:'petto',       m:'tap',         nm:'neutro'},
   tu:        {g:'TU',        h:'indice',  dita:['avanti','dentro'], palmo:['giu','avanti'],
               l:'neutro',      m:'avanti',      nm:'neutro'},
@@ -1240,12 +1242,22 @@ function catenaPollice(ang){
   const p = [t.base.slice()];
   let R = mulM(rotZ(ang[0] || 0), rotX(-(ang[1] || 0)));
   let q = t.base.slice();
+  /* Le tre flessioni sono ang[2], ang[3], ang[4], una per osso. Prima la
+     prima veniva saltata e la terza non veniva applicata mai: il pollice non
+     poteva chiudere la punta, e quello che si vedeva era una curva che non e'
+     di nessuna mano — la falange finale tirata diritta in mezzo a due
+     piegate. */
   for(let i=0;i<t.ossa.length;i++){
-    if(i) R = mulM(R, rotX(-(ang[i+1] || 0)));
+    R = mulM(R, rotX(-(ang[i+2] || 0)));
     q = som(q, appM(R, [0, t.ossa[i], 0]));
     p.push(q.slice());
   }
-  return p;
+  /* Il DORSO dell'ultima falange, che e' dove sta l'unghia. Il pollice non ha
+     l'unghia dove la hanno le altre dita: l'opposizione lo ruota, e la sua
+     unghia guarda di lato rispetto a quelle. Usando il dorso della MANO per
+     decidere se disegnarla si otteneva l'unghia del pollice accesa quando si
+     vede il palmo — una macchia chiara di cui non si capiva cosa fosse. */
+  return {giunti: p, dorso: appM(R, [0,0,1])};
 }
 
 /* ---------- le configurazioni ----------
@@ -1261,74 +1273,82 @@ const CURVO  = [0,34,46,14];
 
 function posa(o){
   return Object.assign({ind:CHIUSO, med:CHIUSO, anu:CHIUSO, mig:CHIUSO,
-                        pol:[10,10,14,10,6]}, o);
+                        pol:[-18,6,0,30,40]}, o);
 }
 const CONFIG = {
   /* --- mani piatte e aperte --- */
   piatta:  posa({ind:TESO, med:TESO, anu:TESO, mig:TESO, pol:[20,14,10,6,3]}),
   cinque:  posa({ind:[14,2,4,2], med:[5,2,4,2], anu:[-6,2,4,2], mig:[-16,3,6,3],
                  pol:[34,16,10,6,3]}),
-  b:       posa({ind:TESO, med:TESO, anu:TESO, mig:TESO, pol:[-18,10,45,70,45]}),
+  b:       posa({ind:TESO, med:TESO, anu:TESO, mig:TESO, pol:[-22,0,0,30,70]}),
   quattro: posa({ind:[12,2,4,2], med:[4,2,4,2], anu:[-5,2,4,2], mig:[-14,3,6,3],
-                 pol:[-18,10,45,70,45]}),
+                 pol:[-22,0,0,30,70]}),
 
   /* --- pugni: cambia il pollice, e cambia la lettera --- */
-  pugno:   posa({pol:[-6,16,40,70,40]}),
+  pugno:   posa({pol:[-16,0,0,55,70]}),
   a:       posa({pol:[14,10,6,3,2]}),
-  s:       posa({pol:[-12,14,45,75,45]}),
-  t:       posa({pol:[2,34,34,20,8]}),
+  s:       posa({pol:[-22,0,0,55,70]}),
+  t:       posa({pol:[-8,8,0,10,75]}),
 
   /* --- un dito, due dita --- */
-  indice:  posa({ind:TESO, pol:[8,26,36,24,10]}),
-  u:       posa({ind:[3,2,4,2], med:[-3,2,4,2], pol:[6,30,42,28,12]}),
-  v:       posa({ind:[15,2,4,2], med:[-13,2,4,2], pol:[6,30,42,28,12]}),
-  r:       posa({ind:[-7,10,6,2], med:[9,14,10,4], pol:[6,30,42,28,12]}),
-  mignolo: posa({mig:TESO, pol:[6,30,42,28,12]}),
+  indice:  posa({ind:TESO, pol:[-22,0,0,50,70]}),
+  /* Indice e medio tesi e uniti, le altre due chiuse dal POLLICE che le
+     serra: e' quello che fa di NOME un pugno con due dita fuori invece di una
+     mano con due dita alzate e il pollice per aria. Vale anche per la lettera
+     U e per PESCE, che sono la stessa configurazione. */
+  u:       posa({ind:[3,2,4,2], med:[-3,2,4,2], pol:[-22,0,0,50,70]}),
+  v:       posa({ind:[15,2,4,2], med:[-13,2,4,2], pol:[-22,0,0,50,70]}),
+  r:       posa({ind:[-7,10,6,2], med:[9,14,10,4], pol:[-22,0,0,50,70]}),
+  mignolo: posa({mig:TESO, pol:[-22,0,0,50,70]}),
   y:       posa({mig:[-16,2,4,2], pol:[42,10,6,3,2]}),
-  corna:   posa({ind:[16,2,4,2], mig:[-16,2,4,2], pol:[4,34,44,30,14]}),
+  corna:   posa({ind:[16,2,4,2], mig:[-16,2,4,2], pol:[-22,0,0,50,70]}),
   elle:    posa({ind:TESO, pol:[52,8,6,3,2]}),
   pollice: posa({pol:[30,10,6,3,2]}),
   tre:     posa({ind:[14,2,4,2], med:[2,2,4,2], pol:[38,14,8,4,2]}),
   w:       posa({ind:[16,2,4,2], med:[4,2,4,2], anu:[-10,2,4,2],
-                 pol:[-2,50,42,28,14]}),
+                 pol:[-24,0,0,40,75]}),
   g:       posa({ind:TESO, pol:[58,10,8,4,2]}),
   q:       posa({ind:TESO, pol:[54,12,10,6,2]}),
-  x:       posa({ind:[2,12,78,34], pol:[8,28,38,26,12]}),
+  x:       posa({ind:[2,12,78,34], pol:[-22,0,0,50,70]}),
 
   /* --- mani curve: quello che raccoglie, quello che stringe ---
      Qui la differenza fra un artiglio, una tazza e un becco è tutta in quanto
      si flettono le nocche e quanto il pollice si oppone: se si esagera
      diventano tutte un pugno. */
   artiglio:posa({ind:[12,26,38,10], med:[4,26,42,10], anu:[-5,26,40,10], mig:[-14,28,38,10],
-                 pol:[30,0,25,50,35]}),
+                 pol:[30,0,0,25,70]}),
   coppa:   posa({ind:[6,32,40,12], med:[2,32,44,12], anu:[-3,32,42,12], mig:[-9,34,40,12],
-                 pol:[14,0,35,50,35]}),
+                 pol:[16,0,0,35,70]}),
   ci:      posa({ind:[4,28,30,8], med:[1,28,32,8], anu:[-2,28,30,8], mig:[-6,30,28,8],
-                 pol:[0,0,30,45,31]}),
+                 pol:[0,0,0,30,65]}),
   c:       posa({ind:[3,24,24,6], med:[1,24,26,6], anu:[-2,24,24,6], mig:[-5,26,22,6],
-                 pol:[0,0,30,50,35]}),
+                 pol:[0,0,0,30,70]}),
   becco:   posa({ind:[4,46,54,24], med:[1,46,58,24], anu:[-3,46,56,24], mig:[-7,48,52,24],
-                 pol:[-2,6,45,15,11]}),
-  pinza:   posa({ind:[2,36,52,28], pol:[-2,21,5,25,18]}),
+                 pol:[-2,0,0,60,5]}),
+  pinza:   posa({ind:[2,36,52,28], pol:[-2,9,0,25,25]}),
   o:       posa({ind:[2,30,46,26], med:[0,28,44,24], anu:[-2,28,42,24], mig:[-5,30,40,24],
-                 pol:[-2,27,0,0,0]}),
+                 pol:[-2,9,15,0,0]}),
   e:       posa({ind:[2,58,70,38], med:[0,58,74,38], anu:[-2,58,72,38], mig:[-5,60,68,38],
-                 pol:[-4,0,55,50,35]}),
+                 pol:[-4,0,0,60,70]}),
 
-  /* --- le due che vanno guardate dal basso --- */
-  m:       posa({ind:[4,54,28,8], med:[0,54,30,8], anu:[-4,54,28,8],
-                 pol:[-8,14,45,70,40]}),
-  n:       posa({ind:[3,54,28,8], med:[-3,54,30,8],
-                 pol:[-8,14,45,70,40]}),
-  p:       posa({ind:[4,4,6,2], med:[-6,54,18,6], pol:[26,26,18,12,6]}),
+  /* --- le due che puntano al pavimento ---
+     Le dita sono DISTESE, non flesse: e' la mano che e' girata in basso, non
+     le dita che si ripiegano. Flesse com'erano, con la mano rivolta al
+     pavimento finivano a ricciolo dietro il palmo, e M ed N diventavano due
+     sagome vuote identiche. */
+  m:       posa({ind:[4,4,5,3], med:[0,3,5,3], anu:[-4,4,5,3],
+                 pol:[-20,0,0,60,70]}),
+  n:       posa({ind:[3,4,5,3], med:[-3,3,5,3],
+                 pol:[-20,0,0,60,70]}),
+  p:       posa({ind:[4,4,6,2], med:[-6,54,18,6], pol:[-12,12,10,0,0]}),
 
   /* --- tre forme che servono solo all'alfabeto --- */
   /* D: indice teso, le altre tre ripiegate a chiudere un cerchio col pollice */
   d:       posa({ind:TESO, med:[0,54,52,30], anu:[-3,54,50,30], mig:[-7,56,48,30],
-                 pol:[-14,12,40,10,7]}),
+                 pol:[-14,12,5,10,60]}),
   /* F: indice e pollice a cerchio, le altre tre tese e staccate */
   f:       posa({ind:[4,34,50,26], med:[3,2,4,2], anu:[-6,2,4,2], mig:[-15,3,6,3],
-                 pol:[-2,27,0,5,4]}),
+                 pol:[-2,6,5,25,10]}),
   /* K: indice e medio tesi e aperti, pollice teso in mezzo alle due dita */
   k:       posa({ind:[15,2,4,2], med:[-13,2,4,2], pol:[24,16,10,5,2]})
 };
@@ -1531,17 +1551,19 @@ function ditoPiegato(pt3, largh, B, opt){
          n2(b[0]+uy*r)+'" y2="'+n2(b[1]-ux*r)+'" stroke="var(--bordo-pelle)" '+
          'stroke-width="'+n2(.9*MANO.scala*3)+'" stroke-linecap="round" opacity=".36"/>';
   }
-  /* l'unghia sull'ultima falange, se ne vediamo il dorso */
-  if(versoNoi > .12 && opt.unghie !== false){
+  /* l'unghia sull'ultima falange, se ne vediamo il dorso — quello di QUESTA
+     falange, che per il pollice non e' quello della mano */
+  const dorsoUnghia = opt.unghiaDorso ? opt.unghiaDorso[2] : versoNoi;
+  if(dorsoUnghia > .12 && opt.unghie !== false){
     const u = pt.length-1, q = pt[u], p = pt[u-1];
     let dx = q[0]-p[0], dy = q[1]-p[1];
     const l = Math.hypot(dx,dy) || 1; dx/=l; dy/=l;
     const cx = q[0]-dx*largh[u]*q[3]*.5, cy = q[1]-dy*largh[u]*q[3]*.5;
-    const ux = largh[u]*q[3]*.54, uy = largh[u]*q[3]*.74*Math.min(1, versoNoi+.35);
+    const ux = largh[u]*q[3]*.54, uy = largh[u]*q[3]*.74*Math.min(1, dorsoUnghia+.35);
     const ang = Math.atan2(dy,dx)*180/Math.PI - 90;
     s += '<ellipse cx="'+n2(cx)+'" cy="'+n2(cy)+'" rx="'+n2(ux)+'" ry="'+n2(uy)+'" '+
           'transform="rotate('+n2(ang)+' '+n2(cx)+' '+n2(cy)+')" fill="var(--unghia)" '+
-          'opacity="'+n2(Math.min(.8, .3+versoNoi*.6))+'"/>';
+          'opacity="'+n2(Math.min(.8, .3+dorsoUnghia*.6))+'"/>';
   }
   return {d:d, alone:alone, ao:occlusione(d, 1.0), pieno:pieno, detta:s,
           z: pt3.reduce((a,p)=>a+p[2],0)/pt3.length};
@@ -1600,8 +1622,8 @@ function ditoSolido(pt3, largh, B, opt){
   const bx = pq[0]+(pp[0]-pq[0])*.92, by = pq[1]+(pp[1]-pq[1])*.92;
   s += '<path d="M '+n2(ax)+' '+n2(ay)+' L '+n2(bx)+' '+n2(by)+
        '" fill="none" stroke="var(--carne)" stroke-width="'+
-       n2(largh[u]*pp[3]*1.05)+'" stroke-linecap="round" opacity="'+
-       n2(versoNoi > 0 ? .14 : .22)+'"/>';
+       n2(largh[u]*pp[3]*.95)+'" stroke-linecap="round" opacity="'+
+       n2(versoNoi > 0 ? .10 : .15)+'"/>';
 
   /* la fascia di luce, con la rugosita' giusta per la faccia che vediamo: il
      palmo e' privo di peli e ricco di ghiandole, quindi riflette concentrato —
@@ -1640,17 +1662,20 @@ function ditoSolido(pt3, largh, B, opt){
          'stroke="var(--bordo-pelle)" stroke-width="'+n2(.9*MANO.scala*2.9)+
          '" stroke-linecap="round" opacity="'+n2(.16+piega*.26)+'"/>';
   }
-  /* l'unghia: si vede solo se il dorso guarda chi legge. Non si sceglie. */
-  if(versoNoi > .12 && opt.unghie !== false){
+  /* L'unghia: si vede solo se il dorso di QUESTA falange guarda chi legge.
+     Per le dita il dorso e' quello della mano; per il pollice no, e chi
+     disegna il pollice lo passa. */
+  const dorsoUnghia = opt.unghiaDorso ? opt.unghiaDorso[2] : versoNoi;
+  if(dorsoUnghia > .12 && opt.unghie !== false){
     const q = pt[u], p = pt[u-1];
     let dx = q[0]-p[0], dy = q[1]-p[1];
     const l = Math.hypot(dx,dy) || 1; dx/=l; dy/=l;
     const cx = q[0]-dx*largh[u]*q[3]*.55, cy = q[1]-dy*largh[u]*q[3]*.55;
-    const ux = largh[u]*q[3]*.56, uy = largh[u]*q[3]*.78*Math.min(1, versoNoi+.35);
+    const ux = largh[u]*q[3]*.56, uy = largh[u]*q[3]*.78*Math.min(1, dorsoUnghia+.35);
     const ang = Math.atan2(dy,dx)*180/Math.PI - 90;
     s += '<ellipse cx="'+n2(cx)+'" cy="'+n2(cy)+'" rx="'+n2(ux)+'" ry="'+n2(uy)+'" '+
           'transform="rotate('+n2(ang)+' '+n2(cx)+' '+n2(cy)+')" fill="var(--unghia)" '+
-          'opacity="'+n2(Math.min(.8, .3+versoNoi*.6))+'"/>';
+          'opacity="'+n2(Math.min(.8, .3+dorsoUnghia*.6))+'"/>';
   }
   return {d:pr.d, alone:alone, ao:occlusione(pr.d, .9), pieno:pieno, detta:s,
           z: pt3.reduce((a,p)=>a+p[2],0)/pt3.length};
@@ -1679,7 +1704,7 @@ function palmoSolido(pose, B, opt){
      vede lavorare a occhio nudo, e si ottiene spingendo in fuori il punto del
      tenar in proporzione all'angolo di opposizione — la stessa idea delle
      forme guidate dall'angolo dell'osso, senza la mesh da deformare. */
-  const cat = catenaPollice(pose.pol);
+  const cat = catenaPollice(pose.pol).giunti;
   const opp = Math.max(0, Math.min(1, (pose.pol[1]||0)/45));
   const gonfio = 1 + opp*.17;
   const ten = [MANO.pollice.base[0]*gonfio - opp*3,
@@ -1836,8 +1861,17 @@ function manoSVG(nomeConfig, B, opt){
      era disegnato per intero, e il pollice sembrava partire dal POLSO e
      attraversare il palmo come un bastone storto: era la cosa piu' sbagliata
      di tutta la mano. Di un pollice vero si vedono due falangi. */
-  const cp = catenaPollice(pose.pol).map(p=>appM3(B,p));
-  pelle.push(ditoSolido(cp.slice(1), MANO.pollice.largh.slice(1), B, opt));
+  const pol = catenaPollice(pose.pol);
+  const cp = pol.giunti.map(q=>appM3(B,q));
+  /* Il pollice comincia DENTRO il palmo, come le altre dita: partendo esatto
+     sulla nocca la sua sagoma toccava quella del palmo senza sovrapporsi, e
+     nel punto di contatto il buio d'occlusione disegnava una riga di traverso
+     — il pollice sembrava tagliato a metà. */
+  const up = nrm(dif(cp[2], cp[1]));
+  const radice = dif(cp[1], per(up, 9));
+  pelle.push(ditoSolido([radice].concat(cp.slice(2)),
+                        MANO.pollice.largh.slice(1), B,
+                        Object.assign({}, opt, {unghiaDorso: appM3(B, pol.dorso)})));
   pelle.push(palmoSolido(pose, B, opt));
 
   /* Il bordo esterno e' MORBIDO e caldo, non un taglio di forbici. Con un
@@ -2793,17 +2827,20 @@ const ALFA = {
  /* Indice in alto, pollice di lato: angolo di 90 gradi. */
  L: {h:'elle',    dita:'su',               palmo:'avanti'},
  /* Mano rivolta in basso: indice, medio e anulare distesi uniti verso il
-    pavimento. Il palmo guarda chi legge, se no la mano scende di taglio. */
- M: {h:'m',       dita:'giu',              palmo:'avanti'},
+    pavimento. Di queste lettere si vedono le NOCCHE: si fanno col palmo
+    girato verso chi segna, quindi chi guarda ne vede il dorso. Era il
+    contrario, e chi copiava la lettera girava la mano dalla parte sbagliata. */
+ M: {h:'m',       dita:'giu',              palmo:'indietro'},
  /* Come M, ma solo indice e medio distesi in basso. */
- N: {h:'n',       dita:'giu',              palmo:'avanti'},
+ N: {h:'n',       dita:'giu',              palmo:'indietro'},
  /* Tutte le punte unite a quella del pollice: un cerchio. */
  O: {h:'o',       dita:'su',               palmo:['avanti','fuori']},
  /* Indice in avanti, medio in basso ad angolo retto, pollice sulla falange
     del medio. */
  P: {h:'p',       dita:['fuori','giu'],    palmo:'avanti'},
- /* Indice e pollice distesi e distanziati verso il pavimento. */
- Q: {h:'q',       dita:'giu',              palmo:'avanti'},
+ /* Indice e pollice distesi e distanziati verso il pavimento: come M e N,
+    punta in basso, e di lei si vede il dorso. */
+ Q: {h:'q',       dita:'giu',              palmo:'indietro'},
  /* Indice e medio tesi e incrociati fra loro. */
  R: {h:'r',       dita:'su',               palmo:'avanti'},
  /* Pugno stretto, pollice davanti a indice e medio. */

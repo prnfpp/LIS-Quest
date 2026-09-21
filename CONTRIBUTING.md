@@ -201,6 +201,32 @@ Disegnandolo per intero il pollice sembrava partire dal **polso** e attraversare
 bastone storto: era la cosa più sbagliata di tutta la mano. Di un pollice, guardandolo, si vedono due
 falangi — corte e grosse.
 
+#### L'unghia del pollice non sta dove stanno le altre
+
+Il pollice ha tre flessioni, `pol[2]`, `pol[3]`, `pol[4]`, una per osso. Per un po' la prima veniva
+saltata e la terza non veniva applicata mai: il pollice non poteva chiudere la punta, e quello che si
+vedeva era una curva che non è di nessuna mano — la falange finale tirata diritta in mezzo a due
+piegate. Gli angoli delle configurazioni erano stati risolti *contro quella cinematica*, quindi
+correggerla ha richiesto di ricalcolarli tutti.
+
+E l'unghia: l'opposizione ruota il pollice, quindi la sua unghia guarda **di lato** rispetto a quelle
+delle altre dita. Usando il dorso della *mano* per decidere se disegnarla si otteneva l'unghia del
+pollice accesa proprio quando si vede il palmo — una macchia chiara di cui non si capiva cosa fosse.
+`catenaPollice` restituisce anche il dorso della sua ultima falange, e l'unghia si decide da lì.
+
+Il pollice comincia **dentro** il palmo come le altre dita: partendo esatto sulla nocca la sua sagoma
+toccava quella del palmo senza sovrapporsi, e nel punto di contatto il buio d'occlusione disegnava una
+riga di traverso — il pollice sembrava tagliato a metà.
+
+#### Le lettere che puntano in basso mostrano le NOCCHE
+
+M, N e Q si fanno col palmo girato verso chi segna, quindi chi guarda ne vede il dorso. Era il
+contrario, e chi copiava la lettera girava la mano dalla parte sbagliata. E le loro dita sono
+**distese**, non flesse: è la mano che è girata verso il pavimento. Flesse com'erano, con la mano
+rivolta in basso finivano a ricciolo dietro il palmo, e M ed N diventavano due sagome vuote identiche.
+
+Le lettere che si fanno col palmo verso chi guarda — E, I — restano `palmo:'avanti'`.
+
 #### Le proporzioni contano più dei millimetri
 
 In una mano vera un indice è circa tre quarti del palmo, non quanto il palmo. Con dita lunghe come il
