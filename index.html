@@ -1348,8 +1348,63 @@ function profiloCatena(pt3, largh, chiudiPunta){
   for(let i=su.length-2;i>=0;i--) d += ' L '+n2(giu[i][0])+' '+n2(giu[i][1]);
   return {d: d+' Z', pt: pt, su: su, giu: giu};
 }
-/* la fascia: la stessa catena, più stretta e spostata verso la luce */
-function fascia(pt3, largh, lato, quanto, sottile){
+/* ---------- la pelle ----------
+   Quattro cose che il rapporto di ricerca sulla resa delle mani in LIS elenca
+   come indispensabili, e che qui sono tradotte dal loro mezzo — una mesh PBR
+   illuminata in tempo reale — al nostro, che è un disegno vettoriale generato.
+   La traduzione non è una rinuncia: tutte e quattro si RICAVANO dal modello,
+   perché il modello conosce lo spessore, la profondità e la normale di ogni
+   pezzo, ed è esattamente quello che quegli algoritmi consumano.
+
+     occlusione ambientale  il buio nelle fessure. Senza, quattro dita
+                            accostate hanno due contorni sottili e in
+                            miniatura si fondono in un dito largo — e contare
+                            le dita, in LIS, è la cosa più importante.
+     traslucenza            la luce che attraversa la carne. Non è uniforme:
+                            è forte dove il volume è SOTTILE — il bordo delle
+                            dita, la punta, la membrana fra le dita — e nulla
+                            sul palmo, che è spesso. Lo spessore lo sappiamo.
+     albedo non omogeneo    la pelle non è di un colore solo: è calda dove il
+                            sangue è vicino (punte, polpastrelli, nocche
+                            flesse), più fredda dove sotto ci sono tendini e
+                            ossa (il dorso).
+     rugosità               il palmo è più lucido del dorso, quindi la sua
+                            luce è più stretta e più accesa.
+
+   Niente di tutto questo chiede una libreria, una texture o una GPU: chiede
+   di sapere com'è fatta la mano, e quello lo sappiamo già. */
+
+/* Quanto si allarga il buio di contatto. Va tenuto STRETTO: l'occlusione
+   ambientale sta nelle fessure, e allargata diventa un'ombra portata attorno
+   a ogni dito — la mano finisce in una nuvola grigia e si perde il contrario
+   di quello che serve. Un dito e' largo cinque o sei unita' di disegno: il
+   buio non deve superarne una. */
+const AO       = 1.25;
+const RIF_SPESS = 5.2;   /* spessore di riferimento: sopra si e' opachi, sotto traslucidi */
+
+/* quanto è traslucida una parte, dal suo spessore: 0 opaca, 1 vetro */
+function traslucenza(mezzaLargh){
+  return Math.max(0, Math.min(1, (RIF_SPESS/Math.max(.5, mezzaLargh) - .62) * 1.15));
+}
+
+/* L'occlusione ambientale: un alone scuro FUORI dalla sagoma, sfumato con tre
+   passate invece che con un filtro — un filtro gaussiano su quaranta pezzi per
+   mano è una rasterizzazione per pezzo, e su un telefono si paga.
+   Ogni pezzo se lo porta dietro, e l'ordine di profondità fa il resto: l'alone
+   del dito davanti cade sul dito dietro, il suo viene coperto. Dove due dita
+   si toccano i due aloni si sommano, e la fessura si scurisce da sé. */
+function occlusione(d, k){
+  const q = AO*(k||1);
+  return '<g fill="none" stroke="var(--pelle-ombra)" stroke-linejoin="round">'+
+    '<path d="'+d+'" stroke-width="'+n2(q*2.4)+'" opacity=".07"/>'+
+    '<path d="'+d+'" stroke-width="'+n2(q*1.3)+'" opacity=".11"/>'+
+    '<path d="'+d+'" stroke-width="'+n2(q*0.6)+'" opacity=".15"/></g>';
+}
+
+/* la fascia: la stessa catena, più stretta e spostata di lato.
+   Il colore lo dice chi chiama: prima lo decideva il SEGNO dello spostamento,
+   e per cambiare la luce senza cambiare il lato non c'era modo. */
+function fascia(pt3, largh, lato, quanto, sottile, colore, opac){
   const pt = pt3.map(proietta);
   const lp = [];
   for(let i=0;i<pt.length;i++){
@@ -1361,54 +1416,198 @@ function fascia(pt3, largh, lato, quanto, sottile){
   }
   let d = 'M '+n2(lp[0][0])+' '+n2(lp[0][1]);
   for(let i=1;i<lp.length;i++) d += ' L '+n2(lp[i][0])+' '+n2(lp[i][1]);
-  return '<path d="'+d+'" fill="none" stroke="'+(lato>0 ? 'var(--pelle-luce)' : 'var(--pelle-ombra)')+
+  return '<path d="'+d+'" fill="none" stroke="'+colore+
          '" stroke-width="'+n2(sottile)+'" stroke-linecap="round" stroke-linejoin="round" '+
-         'opacity="'+(lato>0 ? '.6' : '.42')+'"/>';
+         'opacity="'+n2(opac)+'"/>';
 }
 
-/* un dito intero: profilo, fasce, pieghe dei giunti, unghia se si vede il dorso */
-function ditoSolido(pt3, largh, B, opt){
-  const pr = profiloCatena(pt3, largh);
-  /* la normale del dorso di questo dito, nel mondo */
-  const dorso = appM3(B, [0,0,1]);
-  const versoNoi = dorso[2];                   /* >0: vediamo il dorso */
-  /* da che parte cade la luce, in proiezione */
-  const luce = opt.luce || LUCE;
-  const lat = (pun(appM3(B,[1,0,0]), luce) >= 0) ? -1 : 1;
+/* Un dito molto flesso NON si puo' disegnare come un profilo unico.
+   A pugno chiuso le tre falangi girano di piu' di mezzo giro: la catena
+   diventa una spirale, e la sagoma che la fascia si auto-interseca. Il pieno
+   tiene ancora, ma il contorno disegna le proprie intersezioni, e un pugno
+   viene fuori come un fascio di stecchi incrociati. E' lo stesso guaio che in
+   una mesh si chiama compenetrazione poligonale.
+   La soluzione non e' spezzare il dito in tre volumi: provato, e dodici
+   falangi con dodici contorni sono un graticcio peggiore della spirale. Un
+   dito chiuso, guardato, non e' tre cilindri: e' UNA massa compatta con le
+   pieghe dentro. Quindi la sagoma e' l'inviluppo del dito intero — un solo
+   contorno, che non si puo' auto-intersecare perche' un inviluppo e' convesso
+   — e le pieghe dei giunti si disegnano dentro. Cosi' le separazioni che si
+   vedono sono quelle fra un DITO e l'altro, che sono quelle che contano:
+   quante dita ci sono e' l'informazione, dove finisce una falange no. */
+const PIEGA_ROTTURA = 68;      /* gradi oltre i quali il dito si disegna a massa */
 
-  /* la luce di bordo: la stessa sagoma un filo spostata verso l'ombra e
-     tinta di caldo, che sbuca sul contorno. È quello che stacca la mano dal
-     viso e dal fondale invece di lasciarla incollata. */
-  const rx = -luce[0]*RIM*.55, ry = luce[1]*RIM*.55;
-  let s = '<g transform="translate('+n2(rx)+','+n2(ry)+')"><path d="'+pr.d+
-            '" fill="var(--pelle-luce)" stroke="var(--pelle-luce)" stroke-width="'+
-            n2(RIM)+'" stroke-linejoin="round" opacity=".55"/></g>';
-  s += '<path d="'+pr.d+'" fill="var(--pelle)" stroke="var(--bordo-pelle)" '+
-            'stroke-width="'+n2(ORLO)+'" stroke-linejoin="round"/>';
-  s += fascia(pt3, largh, lat, .44, 2.2);
-  s += fascia(pt3, largh, -lat, .5, 2.6);
-
-  /* le pieghe: dove il dito si piega, una riga di traverso */
+function ditoPiegato(pt3, largh, B, opt){
   const pt = pt3.map(proietta);
-  for(let i=1;i<pt.length-1;i++){
-    const a = pt[i-1], b = pt[i+1];
+  const luce = opt.luce || LUCE;
+  const dorso = appM3(B, [0,0,1]);
+  const versoNoi = dorso[2];
+  const lat = (pun(appM3(B,[1,0,0]), luce) >= 0) ? -1 : 1;
+  const palmoSu = versoNoi < 0;
+
+  /* i punti del contorno di ogni falange, tutti insieme */
+  const nuvola = [];
+  for(let i=0;i<pt.length;i++){
+    const a = pt[Math.max(0,i-1)], b = pt[Math.min(pt.length-1,i+1)];
     let dx = b[0]-a[0], dy = b[1]-a[1];
     const l = Math.hypot(dx,dy) || 1; dx/=l; dy/=l;
-    const r = largh[i]*pt[i][3]*.82;
-    s += '<line x1="'+n2(pt[i][0]-dy*r)+'" y1="'+n2(pt[i][1]+dx*r)+'" '+
-              'x2="'+n2(pt[i][0]+dy*r)+'" y2="'+n2(pt[i][1]-dx*r)+'" '+
-          'stroke="var(--bordo-pelle)" stroke-width="'+n2(.9*MANO.scala*3.2)+
-          '" stroke-linecap="round" opacity=".45"/>';
+    const r = largh[i]*pt[i][3];
+    nuvola.push([pt[i][0]-dy*r, pt[i][1]+dx*r], [pt[i][0]+dy*r, pt[i][1]-dx*r],
+                [pt[i][0]+dx*r, pt[i][1]+dy*r], [pt[i][0]-dx*r, pt[i][1]-dy*r]);
   }
-  /* l'unghia: si vede solo se il dorso guarda chi legge. Non si scegle più. */
+  const d = contornoMorbido(inviluppo(nuvola), 1.8);
+  const tr = traslucenza(largh.reduce((a,v)=>a+v,0)/largh.length);
+  const rx = -luce[0]*RIM*.55, ry = luce[1]*RIM*.55;
+
+  let s = occlusione(d, 1.0);
+  s += '<g transform="translate('+n2(rx)+','+n2(ry)+')"><path d="'+d+
+       '" fill="var(--carne)" stroke="var(--carne)" stroke-width="'+
+       n2(RIM*(.6+tr*.7))+'" stroke-linejoin="round" opacity="'+
+       n2(.26+tr*.30)+'"/></g>';
+  s += '<path d="'+d+'" fill="var(--pelle)" stroke="var(--bordo-pelle)" '+
+       'stroke-width="'+n2(ORLO)+'" stroke-linejoin="round"/>';
+  /* la falda d'ombra dal lato lontano dalla luce, come sul palmo */
+  s += '<path d="'+d+'" fill="none" stroke="var(--pelle-ombra)" stroke-width="'+
+       n2(RIM*1.5)+'" opacity=".26" transform="translate('+n2(luce[0]*1.2)+','+
+       n2(-luce[1]*1.2)+')"/>';
+  /* la luce lungo la catena: dice da che parte si avvolge il dito */
+  s += fascia(pt3, largh, lat, palmoSu ? .5 : .42, palmoSu ? 1.5 : 2.2,
+              'var(--pelle-luce)', palmoSu ? .62 : .44);
+
+  /* le pieghe dei giunti, DENTRO la massa: sono loro a dire che la' c'e' una
+     nocca e non un sasso */
+  for(let i=1;i<pt.length-1;i++){
+    const a = pt[i-1], c = pt[i+1], b = pt[i];
+    let ax = b[0]-a[0], ay = b[1]-a[1], cx = c[0]-b[0], cy = c[1]-b[1];
+    const la = Math.hypot(ax,ay)||1, lc = Math.hypot(cx,cy)||1;
+    ax/=la; ay/=la; cx/=lc; cy/=lc;
+    const dx = ax+cx, dy = ay+cy, l = Math.hypot(dx,dy) || 1;
+    const ux = dx/l, uy = dy/l, r = largh[i]*b[3]*.78;
+    s += '<line x1="'+n2(b[0]-uy*r)+'" y1="'+n2(b[1]+ux*r)+'" x2="'+
+         n2(b[0]+uy*r)+'" y2="'+n2(b[1]-ux*r)+'" stroke="var(--bordo-pelle)" '+
+         'stroke-width="'+n2(.9*MANO.scala*3)+'" stroke-linecap="round" opacity=".36"/>';
+  }
+  /* l'unghia sull'ultima falange, se ne vediamo il dorso */
   if(versoNoi > .12 && opt.unghie !== false){
     const u = pt.length-1, q = pt[u], p = pt[u-1];
     let dx = q[0]-p[0], dy = q[1]-p[1];
     const l = Math.hypot(dx,dy) || 1; dx/=l; dy/=l;
-    const cx = q[0]-dx*largh[u]*q[3]*.55, cy = q[1]-dy*largh[u]*q[3]*.55;
-    const rx = largh[u]*q[3]*.56, ry = largh[u]*q[3]*.78*Math.min(1, versoNoi+.35);
+    const cx = q[0]-dx*largh[u]*q[3]*.5, cy = q[1]-dy*largh[u]*q[3]*.5;
+    const ux = largh[u]*q[3]*.54, uy = largh[u]*q[3]*.74*Math.min(1, versoNoi+.35);
     const ang = Math.atan2(dy,dx)*180/Math.PI - 90;
-    s += '<ellipse cx="'+n2(cx)+'" cy="'+n2(cy)+'" rx="'+n2(rx)+'" ry="'+n2(ry)+'" '+
+    s += '<ellipse cx="'+n2(cx)+'" cy="'+n2(cy)+'" rx="'+n2(ux)+'" ry="'+n2(uy)+'" '+
+          'transform="rotate('+n2(ang)+' '+n2(cx)+' '+n2(cy)+')" fill="var(--unghia)" '+
+          'stroke="var(--bordo-pelle)" stroke-width="'+n2(.7)+'" opacity="'+
+          n2(Math.min(1, .45+versoNoi))+'"/>';
+  }
+  return {svg:s, z: pt3.reduce((a,p)=>a+p[2],0)/pt3.length};
+}
+
+/* quanto piega di piu' questo dito, in gradi, fra due segmenti consecutivi */
+function pieghaMax(pt3){
+  let m = 0;
+  for(let i=1;i<pt3.length-1;i++){
+    const u = nrm(dif(pt3[i], pt3[i-1])), v = nrm(dif(pt3[i+1], pt3[i]));
+    m = Math.max(m, Math.acos(Math.max(-1, Math.min(1, pun(u,v))))/RAD);
+  }
+  return m;
+}
+
+/* un dito intero: occlusione, traslucenza, profilo, fasce, pieghe, unghia */
+function ditoSolido(pt3, largh, B, opt){
+  if(pieghaMax(pt3) > PIEGA_ROTTURA) return ditoPiegato(pt3, largh, B, opt);
+  const pr = profiloCatena(pt3, largh);
+  const pt = pr.pt;
+  /* la normale del dorso di questo dito, nel mondo */
+  const dorso = appM3(B, [0,0,1]);
+  const versoNoi = dorso[2];                   /* >0: vediamo il dorso */
+  const luce = opt.luce || LUCE;
+  /* da che parte cade la luce, in proiezione */
+  const lat = (pun(appM3(B,[1,0,0]), luce) >= 0) ? -1 : 1;
+  /* quanto e' sottile questo dito, in media e sulla punta */
+  const u = largh.length-1;
+  const media = largh.reduce((a,v)=>a+v,0)/largh.length;
+  const tr = traslucenza(media);
+
+  /* 1. il buio di contatto, sotto tutto */
+  let s = occlusione(pr.d, .9);
+
+  /* 2. la traslucenza. La sagoma spostata verso l'ombra e tinta di carne, che
+     sbuca sul contorno: e' quella che dice che la mano e' piena di sangue e
+     non di gesso, e che la stacca dal viso e dal fondale. L'intensita' viene
+     dallo SPESSORE — un mignolo sottile brilla, il pollice grosso no — perche'
+     e' quello che fa la luce che attraversa un dito in controluce. */
+  const rx = -luce[0]*RIM*.55, ry = luce[1]*RIM*.55;
+  s += '<g transform="translate('+n2(rx)+','+n2(ry)+')"><path d="'+pr.d+
+         '" fill="var(--carne)" stroke="var(--carne)" stroke-width="'+
+         n2(RIM*(.6+tr*.7))+'" stroke-linejoin="round" opacity="'+
+         n2(.26+tr*.30)+'"/></g>';
+
+  /* 3. il pieno e il contorno */
+  s += '<path d="'+pr.d+'" fill="var(--pelle)" stroke="var(--bordo-pelle)" '+
+            'stroke-width="'+n2(ORLO)+'" stroke-linejoin="round"/>';
+
+  /* 4. l'albedo: la punta e' piu' calda del resto, perche' il sangue del
+     polpastrello e' a un decimo di millimetro dalla superficie. Il dorso,
+     dove sotto ci sono tendini e ossa, resta piu' freddo — e a farlo basta
+     non scaldarlo. */
+  const pp = pt[u], pq = pt[u-1];
+  /* la scia resta DENTRO la sagoma: larga poco piu' di mezzo dito e fermata
+     prima della punta. Piu' larga di cosi' esce dal profilo e si legge come
+     uno smalto, che e' l'ultima cosa che vogliamo su una mano che insegna. */
+  const ax = pq[0]+(pp[0]-pq[0])*.5, ay = pq[1]+(pp[1]-pq[1])*.5;
+  const bx = pq[0]+(pp[0]-pq[0])*.92, by = pq[1]+(pp[1]-pq[1])*.92;
+  s += '<path d="M '+n2(ax)+' '+n2(ay)+' L '+n2(bx)+' '+n2(by)+
+       '" fill="none" stroke="var(--carne)" stroke-width="'+
+       n2(largh[u]*pp[3]*1.05)+'" stroke-linecap="round" opacity="'+
+       n2(versoNoi > 0 ? .14 : .22)+'"/>';
+
+  /* 5. le fasce, con la rugosita' giusta per la faccia che vediamo: il palmo
+     e' privo di peli e ricco di ghiandole, quindi riflette concentrato — luce
+     stretta e accesa; il dorso e' piu' ruvido — luce larga e smorzata. */
+  const palmoSu = versoNoi < 0;
+  s += fascia(pt3, largh,  lat, palmoSu ? .54 : .44,
+              palmoSu ? 1.6 : 2.4, 'var(--pelle-luce)', palmoSu ? .74 : .52);
+  s += fascia(pt3, largh, -lat, .5, 2.6, 'var(--pelle-ombra)', .42);
+
+  /* 6. Le pieghe dei giunti. Non una riga di traverso su ogni nocca: una riga
+     c'e' SOLO dove il dito e' piegato davvero, e curva dalla parte in cui si
+     piega. Quanto e' piegato lo si misura fra i due segmenti, quindi un dito
+     teso non prende nessuna piega e uno flesso la prende marcata.
+     Prima erano tutte uguali e tutte presenti, e un dito diventava una canna
+     di bambu' a tre sezioni: erano loro, insieme alla fascia di luce, a fare
+     sembrare ogni falange un cilindro a se'. */
+  for(let i=1;i<pt.length-1;i++){
+    const a = pt[i-1], c = pt[i+1], b = pt[i];
+    let ax = b[0]-a[0], ay = b[1]-a[1];
+    let cx = c[0]-b[0], cy = c[1]-b[1];
+    const la = Math.hypot(ax,ay)||1, lc = Math.hypot(cx,cy)||1;
+    ax/=la; ay/=la; cx/=lc; cy/=lc;
+    /* il seno dell'angolo fra i due segmenti: zero se il dito e' diritto */
+    const piega = Math.min(1, Math.abs(ax*cy - ay*cx) + Math.max(0, -(ax*cx+ay*cy))*.7);
+    if(piega < .1) continue;
+    const dx = (ax+cx), dy = (ay+cy);
+    const l = Math.hypot(dx,dy) || 1;
+    const ux = dx/l, uy = dy/l;                 /* lungo il dito */
+    const r = largh[i]*b[3]*(.62 + piega*.2);
+    /* la corda attraverso il dito, e un controllo spostato verso il lato
+       convesso: la piega e' un arco, non un taglio */
+    const k = r*.5*piega;
+    s += '<path d="M '+n2(b[0]-uy*r)+' '+n2(b[1]+ux*r)+' Q '+
+         n2(b[0]-ux*k)+' '+n2(b[1]-uy*k)+' '+
+         n2(b[0]+uy*r)+' '+n2(b[1]-ux*r)+'" fill="none" '+
+         'stroke="var(--bordo-pelle)" stroke-width="'+n2(.9*MANO.scala*2.9)+
+         '" stroke-linecap="round" opacity="'+n2(.16+piega*.26)+'"/>';
+  }
+  /* 7. l'unghia: si vede solo se il dorso guarda chi legge. Non si sceglie. */
+  if(versoNoi > .12 && opt.unghie !== false){
+    const q = pt[u], p = pt[u-1];
+    let dx = q[0]-p[0], dy = q[1]-p[1];
+    const l = Math.hypot(dx,dy) || 1; dx/=l; dy/=l;
+    const cx = q[0]-dx*largh[u]*q[3]*.55, cy = q[1]-dy*largh[u]*q[3]*.55;
+    const ux = largh[u]*q[3]*.56, uy = largh[u]*q[3]*.78*Math.min(1, versoNoi+.35);
+    const ang = Math.atan2(dy,dx)*180/Math.PI - 90;
+    s += '<ellipse cx="'+n2(cx)+'" cy="'+n2(cy)+'" rx="'+n2(ux)+'" ry="'+n2(uy)+'" '+
           'transform="rotate('+n2(ang)+' '+n2(cx)+' '+n2(cy)+')" fill="var(--unghia)" '+
           'stroke="var(--bordo-pelle)" stroke-width="'+n2(.75)+'" opacity="'+
           n2(Math.min(1, .45+versoNoi))+'"/>';
@@ -1433,9 +1632,18 @@ function palmoSolido(pose, B, opt){
                                     return [b[0], b[1]-5, b[2]]; });
   /* Il palmo arriva fino alla base del pollice: quel cuscinetto — l'eminenza
      tenar — è quello che rende il pollice parte della mano. Senza, restava un
-     dito appoggiato di fianco. */
+     dito appoggiato di fianco.
+     E il cuscinetto SI GONFIA: quando il pollice si oppone, i muscoli tenar si
+     contraggono e la mano cambia forma. È l'unico muscolo della mano che si
+     vede lavorare a occhio nudo, e si ottiene spingendo in fuori il punto del
+     tenar in proporzione all'angolo di opposizione — la stessa idea delle
+     forme guidate dall'angolo dell'osso, senza la mesh da deformare. */
   const cat = catenaPollice(pose.pol);
-  const base = MANO.carpo.concat(nocche).concat([MANO.pollice.base,
+  const opp = Math.max(0, Math.min(1, (pose.pol[1]||0)/45));
+  const gonfio = 1 + opp*.17;
+  const ten = [MANO.pollice.base[0]*gonfio - opp*3,
+               MANO.pollice.base[1], MANO.pollice.base[2] - opp*5];
+  const base = MANO.carpo.concat(nocche).concat([ten,
                  [cat[1][0]*.82, cat[1][1]*.82, cat[1][2]*.82]]);
   const vert = [];
   base.forEach(p=>{
@@ -1451,7 +1659,10 @@ function palmoSolido(pose, B, opt){
   const versoNoi = dorso[2];
   const cen = h.reduce((a,p)=>[a[0]+p[0]/h.length, a[1]+p[1]/h.length],[0,0]);
 
-  let s = '<path d="'+d+'" fill="var(--pelle)" stroke="var(--bordo-pelle)" '+
+  /* il buio di contatto anche qui: è quello che stacca le dita dal palmo
+     quando un pugno le ripiega davanti */
+  let s = occlusione(d, 1.35);
+  s += '<path d="'+d+'" fill="var(--pelle)" stroke="var(--bordo-pelle)" '+
             'stroke-width="'+n2(ORLO)+'" stroke-linejoin="round"/>';
   /* La faccia che guarda la luce si schiarisce; quella in ombra prende una
      fascia sul bordo lontano dalla luce, non un velo piatto — un velo spegneva
@@ -1465,7 +1676,31 @@ function palmoSolido(pose, B, opt){
         n2(-luce[1]*1.3)+')"/>';
   if(versoNoi > .12) s += nocchePalmo(pose, B);
   else if(versoNoi < -.12) s += pieghePalmo(cen);
+  s += membrane(pose, B);
   return {svg:s, z: mondo.reduce((a,p)=>a+p[2],0)/mondo.length};
+}
+/* Le membrane fra le dita. Sono la parte più sottile della mano, e in
+   controluce sono la prima cosa che si accende: chiunque abbia guardato la
+   propria mano davanti a una finestra le ha viste rosse. Qui sono un piccolo
+   cuneo caldo alla radice di ogni coppia di dita — e quando le dita si
+   stringono i cunei si restringono da sé, perché sono le basi a muoversi. */
+function membrane(pose, B){
+  let s = '';
+  for(let i=0;i<MANO.dita.length-1;i++){
+    const a = catenaDito(MANO.dita[i],   pose[MANO.dita[i].id]   || TESO);
+    const b = catenaDito(MANO.dita[i+1], pose[MANO.dita[i+1].id] || TESO);
+    const p0 = proietta(appM3(B, a[0])), p1 = proietta(appM3(B, b[0]));
+    const q0 = proietta(appM3(B, a[1])), q1 = proietta(appM3(B, b[1]));
+    /* il vertice del cuneo sta fra i due primi giunti, quello basso fra le
+       due nocche: è l'incavo vero */
+    const vx = (q0[0]+q1[0])/2, vy = (q0[1]+q1[1])/2;
+    const largo = Math.hypot(p1[0]-p0[0], p1[1]-p0[1]);
+    if(largo < 1.2) continue;
+    s += '<path d="M '+n2(p0[0])+' '+n2(p0[1])+' Q '+n2(vx)+' '+n2(vy)+' '+
+         n2(p1[0])+' '+n2(p1[1])+' Z" fill="var(--carne)" opacity="'+
+         n2(Math.min(.42, .12 + largo*.022))+'"/>';
+  }
+  return s;
 }
 function nocchePalmo(pose, B){
   let s = '<g fill="var(--bordo-pelle)" opacity=".34">';
@@ -1487,7 +1722,7 @@ function pieghePalmo(cen){
 }
 
 /* il polsino: dove la mano incontra il braccio */
-function polsinoSolido(B){
+function polsinoSolido(B, opt){
   const vert = [];
   [[-22,-44,0],[22,-44,0],[21,-29,0],[-21,-29,0]].forEach(p=>{
     vert.push([p[0], p[1], p[2] + MANO.spess*1.1]);
@@ -1495,8 +1730,20 @@ function polsinoSolido(B){
   });
   const mondo = vert.map(p=>appM3(B,p));
   const h = inviluppo(mondo.map(p=>{ const q = proietta(p); return [q[0],q[1]]; }));
-  return {svg:'<path d="'+contornoMorbido(h, 1.6)+'" fill="'+grad('Polsino')+
-               '" stroke="#1B4E5C" stroke-width="1" stroke-linejoin="round" opacity=".9"/>',
+  const d = contornoMorbido(h, 1.6);
+  const luce = (opt && opt.luce) || LUCE;
+  /* Anche il polsino e' un volume: accanto a una mano che ha occlusione,
+     traslucenza e fasce, una lastra piatta salta all'occhio. Prende l'alone
+     caldo dal lato in ombra e una falda scura dall'altro, come tutto il
+     resto della figura. */
+  return {svg:'<g transform="translate('+n2(-luce[0]*RIM*.5)+','+n2(luce[1]*RIM*.5)+')">'+
+               '<path d="'+d+'" fill="var(--orlo)" stroke="var(--orlo)" stroke-width="'+
+               n2(RIM*.8)+'" stroke-linejoin="round" opacity=".4"/></g>'+
+               '<path d="'+d+'" fill="'+grad('Polsino')+
+               '" stroke="#1B4E5C" stroke-width="1" stroke-linejoin="round" opacity=".92"/>'+
+               '<path d="'+d+'" fill="none" stroke="#0E3B47" stroke-width="'+n2(RIM*1.4)+
+               '" opacity=".34" transform="translate('+n2(luce[0]*1.2)+','+
+               n2(-luce[1]*1.2)+')"/>',
           z: mondo.reduce((a,p)=>a+p[2],0)/mondo.length - 6};
 }
 
@@ -1510,7 +1757,7 @@ function manoSVG(nomeConfig, B, opt){
   opt = Object.assign({luce: LUCE}, opt);
 
   const parti = [];
-  parti.push(polsinoSolido(B));
+  parti.push(polsinoSolido(B, opt));
   parti.push(palmoSolido(pose, B, opt));
   MANO.dita.forEach(d=>{
     const cat = catenaDito(d, pose[d.id] || TESO).map(p=>appM3(B,p));
@@ -1633,6 +1880,10 @@ const PERSONAGGI = {
     /* l'alone caldo controluce: è un colore del personaggio, non della mano,
        perché deve valere su tutta la figura — pelle, capelli, abito */
     orlo:'#FFD9A0',
+    /* la carne vista in controluce: piu' rossa dell'alone, perche' e' sangue.
+       E' il colore con cui si accendono i bordi delle dita, le punte e le
+       membrane — le parti dove il volume e' sottile. */
+    carne:'#F2A578',
     ali:true
   }
 };
@@ -1647,7 +1898,7 @@ function tavolozzaCSS(p){
          ';--bordo-pelle:'+p.bordo+';--unghia:'+p.unghia+';--guance:'+p.guance+
          ';--occhi:'+p.occhi+';--tratti:'+p.tratti+';--capelli:'+p.capelli+
          ';--capelli-bordo:'+p.capelliBordo+';--capelli-luce:'+p.capelliLuce+
-         ';--orlo:'+(p.orlo||'#FFD9A0');
+         ';--orlo:'+(p.orlo||'#FFD9A0')+';--carne:'+(p.carne||'#F2A578');
 }
 
 /* ================= IL NON MANUALE, A CANALI =================
@@ -1894,58 +2145,86 @@ function braccioRiposo(){
      chiuso   il percorso torna da solo al punto di partenza (un cerchio):
               non si ripercorre all'indietro
      durata   millisecondi di un ciclo
-     ritmo    accelerazione fra una tappa e l'altra
+     dinamica come accelera: 'contatto' | 'trasporto' | 'pendolo' | 'allontana'
+              (vedi DINAMICHE) — è la massa del braccio, e cambia il senso
+     ritmo    via di fuga: una curva di accelerazione scritta a mano
      perno    origine della rotazione, se non è il centro della mano
      freccia  forza la freccia: 'una' | 'due' | 'coppia' | 'nessuna'
      fotogrammi  via di fuga: fotogrammi espliciti, per quello che non è
               un movimento della mano nello spazio (una scia, una fase) */
 
+/* ---------- la massa del braccio ----------
+   Un movimento a velocità costante è un movimento di macchina. Un braccio ha
+   massa: parte piano, prende velocità, e per fermarsi deve frenare — tranne
+   quando finisce contro qualcosa, e allora si ferma di colpo. Queste quattro
+   curve sono quelle quattro storie, e non sono decorazione: in LIS la
+   dinamica del movimento è portatrice di significato, e un gesto che arriva
+   e si ferma di colpo dice una cosa diversa da uno che scivola. Un
+   movimento senza massa si legge come sbagliato anche quando la traiettoria
+   è giusta — ed è quello che si chiama, in gergo, moto robotico.
+
+     contatto    accelera e si schianta: la mano arriva sul corpo e si ferma.
+                 TAP, FAME che colpisce il fianco, MANGIARE alla bocca.
+     trasporto   parte piano e frena piano: la mano porta se stessa da un
+                 luogo a un altro. NOME che scorre, NON ADESSO che scende.
+     pendolo     sinusoidale: non si ferma mai davvero, inverte. NO che
+                 scuote, SÌ che annuisce, PESCE che nuota.
+     allontana   accelera e non frena, perché il fermo è fuori dal ciclo.
+                 ACQUA che si stacca dalla guancia. */
+const DINAMICHE = {
+  contatto:  'cubic-bezier(.62,.02,.98,.5)',
+  trasporto: 'cubic-bezier(.42,.02,.58,.98)',
+  pendolo:   'cubic-bezier(.37,0,.63,1)',
+  allontana: 'cubic-bezier(.5,.02,.9,.7)'
+};
+
 const MOVIMENTI = {
   /* --- contatti --- */
-  tap:          {tappe:[[0,0],[7,2]], attesa:.12, durata:1500},
-  doppioTap:    {tappe:[[0,0],[6,1]], volte:2, attesa:.2, durata:1800},
+  tap:          {tappe:[[0,0],[7,2]], attesa:.12, durata:1500, dinamica:'contatto'},
+  doppioTap:    {tappe:[[0,0],[6,1]], volte:2, attesa:.2, durata:1800, dinamica:'contatto'},
   /* FAME colpisce il fianco: viene dall'alto e scende, non va di lato. Di
      lato la freccia raccontava una mano che scorre lungo la vita. */
-  colpisce:     {tappe:[[0,-7,-4],[0,3,3]], volte:2, attesa:.25, durata:1800},
+  colpisce:     {tappe:[[0,-7,-4],[0,3,3]], volte:2, attesa:.25, durata:1800, dinamica:'contatto'},
 
   /* --- traslazioni --- */
-  giu:          {tappe:[[0,-11,-3],[0,10,4]], durata:1600},
-  su:           {tappe:[[0,11],[0,-10]], durata:1600},
-  suDue:        {tappe:[[0,7,0,.98],[0,-6,0,1.03]], volte:2, durata:2000},
-  scorriFuori:  {tappe:[[3,0],[-15,1,-5,1.03]], attesa:.22, durata:2200},
-  avvicina:     {tappe:[[-4,4,0,.96],[5,-3,0,1.04]], volte:2, durata:2000},
+  giu:          {tappe:[[0,-11,-3],[0,10,4]], durata:1600, dinamica:'trasporto'},
+  su:           {tappe:[[0,11],[0,-10]], durata:1600, dinamica:'trasporto'},
+  suDue:        {tappe:[[0,7,0,.98],[0,-6,0,1.03]], volte:2, durata:2000, dinamica:'contatto'},
+  scorriFuori:  {tappe:[[3,0],[-15,1,-5,1.03]], attesa:.22, durata:2200, dinamica:'trasporto'},
+  avvicina:     {tappe:[[-4,4,0,.96],[5,-3,0,1.04]], volte:2, durata:2000, dinamica:'contatto'},
 
   /* --- verso chi guarda: la mano cresce --- */
-  avanti:       {tappe:[[0,0],[-4,0,0,1.2]], durata:1500},
-  staccaAvanti: {tappe:[[0,0],[-7,-1,0,1.14]], attesa:.3, durata:2100},
-  chiudi:       {tappe:[[0,0,0,1.14],[0,0,0,.86]], durata:1800, freccia:'coppia'},
+  avanti:       {tappe:[[0,0],[-4,0,0,1.2]], durata:1500, dinamica:'allontana'},
+  staccaAvanti: {tappe:[[0,0],[-7,-1,0,1.14]], attesa:.3, durata:2100, dinamica:'allontana'},
+  chiudi:       {tappe:[[0,0,0,1.14],[0,0,0,.86]], durata:1800, freccia:'coppia', dinamica:'trasporto'},
 
   /* --- rotazioni --- */
-  oscilla:      {tappe:[[0,0,-15],[0,0,15]], durata:1100},
+  oscilla:      {tappe:[[0,0,-15],[0,0,15]], durata:1100, dinamica:'pendolo'},
   /* la mano a riposo non sta segnando: niente freccia, o sembrerebbe un segno */
-  riposo:       {tappe:[[0,0,-8],[0,0,8]], durata:2600, freccia:'nessuna'},
+  riposo:       {tappe:[[0,0,-8],[0,0,8]], durata:2600, freccia:'nessuna', dinamica:'pendolo'},
   /* va da una parte all'altra e torna: qui la punta doppia e' giusta */
-  scuoti:       {tappe:[[-6,0,-12],[6,0,12]], durata:1300, freccia:'due'},
-  ruota:        {tappe:[[0,0,0],[0,0,-78]], durata:1900},
+  scuoti:       {tappe:[[-6,0,-12],[6,0,12]], durata:1300, freccia:'due', dinamica:'pendolo'},
+  ruota:        {tappe:[[0,0,0],[0,0,-78]], durata:1900, dinamica:'trasporto'},
   /* SÌ: il perno sta sul polso, non al centro della mano: è quello che lo
      rende un cenno invece di un'oscillazione */
-  annuisce:     {tappe:[[0,0,-7],[0,0,23]], volte:2, attesa:.15, durata:1900, perno:'50% 88%'},
+  annuisce:     {tappe:[[0,0,-7],[0,0,23]], volte:2, attesa:.15, durata:1900,
+                 perno:'50% 88%', dinamica:'pendolo'},
 
   /* --- percorsi --- */
-  nuota:        {tappe:[[-10,4,7],[0,-3,-6],[10,3,6]], durata:1900},
+  nuota:        {tappe:[[-10,4,7],[0,-3,-6],[10,3,6]], durata:1900, dinamica:'pendolo'},
   cerchio:      {tappe:[[8,0],[0,8],[-8,0],[0,-8]], chiuso:true, durata:2000, ritmo:'linear'},
 
   /* --- il capo: in LIS il cenno e lo scuotimento sono grammatica, non un
          vezzo dell'animazione, e vanno sullo stesso orologio delle mani --- */
-  capoScuote:   {tappe:[[0,0,-7],[0,0,7]], volte:2, attesa:.2, durata:1700},
-  capoAnnuisce: {tappe:[[0,0,0],[0,3,4]], volte:2, attesa:.2, durata:1600},
-  capoInclina:  {tappe:[[0,0,0],[0,0,-3]], attesa:.5, durata:2600},
+  capoScuote:   {tappe:[[0,0,-7],[0,0,7]], volte:2, attesa:.2, durata:1700, dinamica:'pendolo'},
+  capoAnnuisce: {tappe:[[0,0,0],[0,3,4]], volte:2, attesa:.2, durata:1600, dinamica:'pendolo'},
+  capoInclina:  {tappe:[[0,0,0],[0,0,-3]], attesa:.5, durata:2600, dinamica:'trasporto'},
 
   /* --- le lettere in cui il movimento fa parte della lettera --- */
-  letteraGancio:{tappe:[[0,0,0],[4,7,14]], attesa:.22, durata:2400},
-  letteraScatto:{tappe:[[0,0],[0,5]], attesa:.6, durata:1800},
-  letteraSecco: {tappe:[[0,0],[0,6]], attesa:.65, durata:1600},
-  letteraOnda:  {tappe:[[0,0,-8],[0,0,8]], durata:1900},
+  letteraGancio:{tappe:[[0,0,0],[4,7,14]], attesa:.22, durata:2400, dinamica:'trasporto'},
+  letteraScatto:{tappe:[[0,0],[0,5]], attesa:.6, durata:1800, dinamica:'contatto'},
+  letteraSecco: {tappe:[[0,0],[0,6]], attesa:.65, durata:1600, dinamica:'contatto'},
+  letteraOnda:  {tappe:[[0,0,-8],[0,0,8]], durata:1900, dinamica:'pendolo'},
 
   /* --- vie di fuga: non sono la mano che si muove nello spazio --- */
   scia:         {durata:1900, ritmo:'linear',
@@ -1955,12 +2234,33 @@ const MOVIMENTI = {
                              {offset:.55,strokeDashoffset:0,opacity:.9},
                              {offset:.86,strokeDashoffset:0,opacity:.9},
                              {offset:1,strokeDashoffset:0,opacity:0}]},
-  faseUno:      {durata:4800, ritmo:'linear',
-                 fotogrammi:[{offset:0,opacity:1},{offset:.4,opacity:1},{offset:.48,opacity:0},
-                             {offset:.9,opacity:0},{offset:.98,opacity:1},{offset:1,opacity:1}]},
-  faseDue:      {durata:4800, ritmo:'linear',
-                 fotogrammi:[{offset:0,opacity:0},{offset:.4,opacity:0},{offset:.48,opacity:1},
-                             {offset:.9,opacity:1},{offset:.98,opacity:0},{offset:1,opacity:0}]}
+  /* Le due fasi di un segno composto. Non si dissolvono l'una nell'altra: la
+     prima ESCE e la seconda ARRIVA. Un segno composto, segnato, non è una
+     dissolvenza — è una mano che si sposta e cambia forma mentre si sposta, e
+     quel passaggio ha un nome: coarticolazione. Il modo in cui una fase
+     scivola nella successiva fa parte del segno, non è un effetto di
+     transizione, e una dissolvenza incrociata racconta due immagini
+     sovrapposte invece di un movimento.
+     Qui il passaggio è breve e ha una direzione: la prima fase si ritira
+     verso il basso mentre si spegne, la seconda entra da sotto. Sono gli
+     stessi gradi di libertà del resto — traslazione e opacità — quindi il
+     rallentatore e il fermo immagine valgono anche su questo. */
+  faseUno:      {durata:5200, ritmo:'linear',
+                 fotogrammi:[
+                   {offset:0,   opacity:1, transform:'translateY(0px) scale(1)'},
+                   {offset:.40, opacity:1, transform:'translateY(0px) scale(1)'},
+                   {offset:.50, opacity:0, transform:'translateY(5px) scale(.97)'},
+                   {offset:.90, opacity:0, transform:'translateY(5px) scale(.97)'},
+                   {offset:.97, opacity:1, transform:'translateY(0px) scale(1)'},
+                   {offset:1,   opacity:1, transform:'translateY(0px) scale(1)'}]},
+  faseDue:      {durata:5200, ritmo:'linear',
+                 fotogrammi:[
+                   {offset:0,   opacity:0, transform:'translateY(6px) scale(.97)'},
+                   {offset:.40, opacity:0, transform:'translateY(6px) scale(.97)'},
+                   {offset:.52, opacity:1, transform:'translateY(0px) scale(1)'},
+                   {offset:.90, opacity:1, transform:'translateY(0px) scale(1)'},
+                   {offset:.97, opacity:0, transform:'translateY(6px) scale(.97)'},
+                   {offset:1,   opacity:0, transform:'translateY(6px) scale(.97)'}]}
 };
 
 /* una tappa completa: quello che manca prende il valore di riposo */
@@ -2000,7 +2300,7 @@ function fotogrammiDi(m){
     return {
       offset: +(q.length>1 ? (i/(q.length-1))*utile : 0).toFixed(4),
       transform: 'translate('+n2(p[0])+'px,'+n2(p[1])+'px) rotate('+n2(p[2])+'deg) scale('+n2(p[3])+')',
-      easing: m.ritmo || 'ease-in-out'
+      easing: m.ritmo || DINAMICHE[m.dinamica] || DINAMICHE.trasporto
     };
   });
   /* la pausa: la posa di partenza tenuta fino in fondo al ciclo */
@@ -2331,21 +2631,31 @@ function riquadroSuMano(punti, tocca){
     x0 = Math.min(x0, p[0]-RIQUADRO_MANO); x1 = Math.max(x1, p[0]+RIQUADRO_MANO);
     y0 = Math.min(y0, p[1]-RIQUADRO_MANO); y1 = Math.max(y1, p[1]+RIQUADRO_MANO);
   });
-  if(!tocca){
-    /* Il taglio sta sotto il mento: mezza testa sarebbe peggio del non
-       ritagliare. E il riquadro tiene la sua forma — allargarlo per farlo
-       quadrato vorrebbe dire riempirlo di niente, e il contenitore lo centra
-       benissimo da sé. */
-    y0 = Math.max(y0, RIQUADRO_TESTA[3]);
-    return n2(x0-6)+' '+n2(y0)+' '+n2(x1-x0+12)+' '+n2(y1-y0+6);
+  /* La testa si puo' lasciare fuori solo se la mano ci sta TUTTA sotto il
+     mento. Se no, per togliere la testa bisognerebbe tagliare la mano, e
+     allora tanto vale tenere la testa: fra il mento e una mano all'altezza
+     del petto non c'e' spazio per un taglio, e i segni nello spazio neutro
+     stanno quasi tutti all'altezza del petto. E' il motivo per cui questo
+     ritaglio, alla fine, tiene la testa quasi sempre — il guadagno sulla
+     dimensione della mano c'e' comunque, perche' il riquadro resta la meta'
+     della figura intera, ma non si finge un ritaglio che non ci sta. */
+  const staSotto = y0 >= RIQUADRO_TESTA[3];
+  if(tocca || !staSotto){
+    x0 = Math.min(x0, RIQUADRO_TESTA[0]); y0 = Math.min(y0, RIQUADRO_TESTA[1]);
+    x1 = Math.max(x1, RIQUADRO_TESTA[2]); y1 = Math.max(y1, RIQUADRO_TESTA[3]);
+    tocca = true;
   }
-  /* Con la testa dentro, il riquadro si fa quadrato: i segni del viso stanno
-     uno accanto all'altro nei mini-giochi e nel dizionario, e riquadri di
-     forma diversa li farebbero saltare di misura l'uno rispetto all'altro. */
-  x0 = Math.min(x0, RIQUADRO_TESTA[0]); y0 = Math.min(y0, RIQUADRO_TESTA[1]);
-  x1 = Math.max(x1, RIQUADRO_TESTA[2]); y1 = Math.max(y1, RIQUADRO_TESTA[3]);
+  /* Il riquadro e' sempre QUADRATO. I contenitori che lo ospitano — le
+     caselle dei mini-giochi, le carte del dizionario — sono quadrati, e un
+     riquadro largo e basso dentro un quadrato si impagina al centro con due
+     bande vuote sopra e sotto: la mano non diventa piu' grande, e la figura
+     diventa una striscia. Quello che conta, per la dimensione della mano, e'
+     solo il LATO MAGGIORE del riquadro; il resto si pareggia. */
   const w = x1-x0, h = y1-y0, lato = Math.max(w,h);
-  x0 -= (lato-w)/2; y0 -= (lato-h)/2;
+  x0 -= (lato-w)/2;
+  /* l'altezza che manca si aggiunge in basso quando la testa e' fuori, cosi'
+     il pareggio non se la riprende dentro */
+  y0 -= tocca ? (lato-h)/2 : 0;
   return n2(x0-6)+' '+n2(y0-6)+' '+n2(lato+12)+' '+n2(lato+12);
 }
 
@@ -2462,6 +2772,10 @@ MOVE_CSS.textContent = `
    l'orologio dei segni (MOTO). Restano soltanto i perni — da dove gira una
    mano, un capo, una lettera — perche' quelli sono geometria, non movimento. */
 .mv{transform-box:fill-box;transform-origin:50% 60%}
+/* le fasi di un segno composto: il perno sta nel loro riquadro, se no la
+   scala del passaggio le sposta verso l'origine del disegno, che e' fuori
+   campo */
+.fase{transform-box:fill-box;transform-origin:50% 55%}
 .lm{transform-box:fill-box;transform-origin:50% 85%}
 .testa{transform-box:view-box;transform-origin:107px 84px}
 /* il tratto in aria della J e della Z: nascosto da fermo, si ricalca quando

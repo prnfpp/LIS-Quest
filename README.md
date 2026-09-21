@@ -120,6 +120,10 @@ nessuna funzione.
 - [x] Mano modellata in tre dimensioni: venti giunti, scorcio, occlusione e orientamento ricavati, non scelti a mano
 - [x] Alfabeto e segni disegnati dallo stesso modello: ventisei lettere che non sono più ventisei disegni a sé
 - [x] Una sola luce per tutta la figura, con alone controluce e falda d'ombra: la mano non è più incollata sopra a un altro disegno
+- [x] Occlusione ambientale nelle fessure fra le dita: quattro dita accostate restano quattro anche in miniatura
+- [x] Traslucenza ricavata dallo spessore, e le membrane fra le dita: la mano è piena di sangue, non di gesso
+- [x] Movimento con massa inerziale: quattro dinamiche — contatto, trasporto, pendolo, allontanamento — invece di una curva per tutti
+- [x] Un dito molto flesso si disegna come massa e non come profilo: il pugno non è più un fascio di stecchi
 - [x] Movimento descritto come dato: freccia ricavata dal percorso, non piazzata a occhio
 - [x] Rallentatore, fermo immagine e passo a passo su ogni segno, lettere comprese
 - [x] Non manuale a canali indipendenti: il capo scuote e annuisce come vuole la grammatica

@@ -162,6 +162,33 @@ mezz'aria. Gli angoli delle forme che devono *chiudere* non sono indovinati: si
 dichiara dove deve arrivare la punta, rispetto alla punta del dito che incontra,
 e si cercano gli angoli che ce la portano.
 
+#### La pelle: occlusione, traslucenza, albedo, rugosità
+
+Quattro cose che il modello **ricava**, non che qualcuno scrive:
+
+| Funzione | Cosa fa e perché |
+|---|---|
+| `occlusione(d, k)` | il buio nelle fessure, con tre passate di contorno invece di un filtro gaussiano — un filtro su quaranta pezzi per mano è una rasterizzazione per pezzo, e su un telefono si paga. Va tenuto **stretto**: allargato diventa un'ombra portata e la mano finisce in una nuvola grigia |
+| `traslucenza(mezzaLargh)` | quanto brilla un pezzo in controluce, dal suo spessore. Un dito sottile molto, il palmo niente |
+| `membrane(pose, B)` | i cunei caldi alle radici delle dita. Si restringono da sé quando le dita si stringono, perché sono le basi a muoversi |
+| `fascia(..., colore, opac)` | la luce lungo la catena. Il colore lo dice chi chiama: prima lo decideva il *segno* dello spostamento, e per cambiare la luce senza cambiare il lato non c'era modo |
+
+#### Un dito chiuso è una massa, non tre cilindri
+
+A pugno chiuso le tre falangi girano di più di mezzo giro. La catena diventa una spirale, e la sagoma
+che la fascia **si auto-interseca**: il pieno tiene, ma il contorno disegna le proprie intersezioni e il
+pugno viene fuori come un fascio di stecchi incrociati. È la compenetrazione poligonale, nella nostra
+versione.
+
+Spezzare il dito in tre volumi separati non funziona — provato: dodici falangi con dodici contorni sono
+un graticcio peggiore della spirale. Un dito chiuso, guardato, non è tre cilindri: è **una** massa
+compatta con le pieghe dentro. Quindi oltre `PIEGA_ROTTURA` gradi di flessione la sagoma diventa
+l'inviluppo del dito intero — un solo contorno, che non si può auto-intersecare perché un inviluppo è
+convesso — e le pieghe dei giunti si disegnano dentro.
+
+Così le separazioni che si vedono sono quelle fra un **dito** e l'altro, che sono quelle che contano:
+quante dita ci sono è l'informazione, dove finisce una falange no.
+
 #### La messa in scena
 
 Un orientamento vero può essere illeggibile. Una mano con il palmo verso la
@@ -205,9 +232,11 @@ scorriFuori: {tappe:[[3,0],[-15,1,-5,1.03]], attesa:.22, durata:2200},
 | `volte` | quante volte ripete l'andata e il ritorno in un ciclo |
 | `attesa` | frazione di ciclo tenuta ferma alla fine, come una pausa |
 | `chiuso` | il percorso torna da sé al punto di partenza (un cerchio): non si ripercorre all'indietro |
-| `durata` · `ritmo` | millisecondi di un ciclo, e l'accelerazione fra le tappe |
+| `durata` | millisecondi di un ciclo |
 | `perno` | origine della rotazione, se non è il centro della mano (SÌ gira sul polso) |
+| `dinamica` | come accelera: `contatto` \| `trasporto` \| `pendolo` \| `allontana`. È la **massa del braccio**, e cambia il senso: un braccio parte piano, prende velocità e per fermarsi frena — tranne quando finisce contro qualcosa, e allora si ferma di colpo. In LIS la dinamica è portatrice di significato, e un movimento a velocità costante si legge come sbagliato anche quando la traiettoria è giusta. Le curve stanno in `DINAMICHE` |
 | `freccia` | forza la freccia: `una`, `due`, `coppia`, `nessuna` |
+| `ritmo` | via di fuga: una curva di accelerazione scritta a mano, quando nessuna delle quattro dinamiche va bene |
 | `fotogrammi` | via di fuga, per quello che non è una mano che si muove nello spazio: una scia, una fase |
 
 **La freccia si ricava, non si disegna.** Lo spostamento vero è di pochi punti e
@@ -267,6 +296,54 @@ nm: {sopracciglia:'alzate', bocca:'stretta', capo:'inclinato'}
 Il capo è l'unico canale che si muove, ed è giusto che si muova: lo scuotimento
 del capo **è** la negazione e il cenno **è** l'affermazione, quindi NO e SÌ ce
 l'hanno, e stanno sullo stesso orologio delle mani.
+
+### Il rapporto di ricerca sulla resa delle mani, e cosa ne è stato preso
+
+Esiste un rapporto di ricerca commissionato su come rendere realisticamente le mani in LIS Quest.
+Raccomanda uno stack preciso: Three.js con `WebGPURenderer`, shader in TSL con compute shader, materiali
+PBR con texture 2K/4K, Subsurface Scattering in due passaggi, un avatar glTF 2.0/VRM con ventuno giunti
+per mano e Dual Quaternion Skinning, acquisizione da webcam con MediaPipe, retargeting con Kalidokit e
+un filtro One Euro sul segnale.
+
+**Lo stack non è stato adottato, e la ragione non è pigrizia.**
+
+Rompe la promessa scritta in cima al `README`: un file HTML, niente build, niente dipendenze, niente
+server, si apre con due clic. Non è una preferenza di stile — è la condizione per cui una maestra o un
+genitore possono aprire questo gioco su un computer di scuola senza chiedere niente a nessuno. WebGPU
+non funziona su `file://`; un modello VRM con le sue texture è decine di megabyte di binari che nessuno
+può leggere né correggere; MediaPipe scarica i pesi via `fetch`, che su `file://` falla. Prendere quello
+stack vuol dire diventare un'altra cosa, e quella cosa va decisa, non subita.
+
+Inoltre metà del rapporto descrive **un prodotto che non esiste**. MediaPipe, Kalidokit e il filtro One
+Euro servono a catturare le mani *dell'utente* dalla webcam e rispecchiarle sull'avatar. Qui non c'è
+input da webcam: chi gioca tocca e trascina. Lo stesso per VRM, Dual Quaternion Skinning e le blend
+shape, che deformano una *mesh*: qui non c'è una mesh, c'è SVG generato a ogni fotogramma.
+
+C'è anche un argomento del rapporto che va contro la sua stessa conclusione. Le pagine sui neuroni
+specchio e sulla Uncanny Valley dicono che una rappresentazione *quasi* umana costa fatica cognitiva.
+Un disegno dichiaratamente stilizzato ma anatomicamente e cinematicamente vero non entra in quella
+valle; una mesh mezza realistica sì. La strada di questo progetto è più difendibile di quanto il
+documento ammetta.
+
+**Quello che invece è stato preso, tutto, tradotto nel nostro mezzo.** Il rapporto è un ottimo elenco di
+difetti veri, e ognuno di questi era un difetto nostro:
+
+| Il rapporto chiede | Qui è diventato |
+|---|---|
+| Ambient Occlusion, «essenziale per definire gli spazi interdigitali» | `occlusione()`: un alone scuro fuori da ogni sagoma. L'ordine di profondità fa il resto — dove due dita si toccano i due aloni si sommano e la fessura si scurisce da sé. Serve a **contare le dita**, che in LIS è l'informazione |
+| Subsurface Scattering, «in controluce i bordi delle dita e le membrane interdigitali diventano traslucidi» | `traslucenza()`: l'alone caldo non è uniforme, la sua intensità viene dallo **spessore** del pezzo. Un mignolo brilla, il palmo no. Più i cunei caldi alle radici delle dita (`membrane()`), che sono la parte più sottile della mano |
+| Albedo non omogeneo: caldo dove c'è sangue, freddo dove ci sono tendini | una scia calda dentro l'ultima falange, più marcata dal lato del palmo che dal dorso |
+| Roughness: palmo 0.2–0.4, dorso 0.4–0.6 | la fascia di luce è **più stretta e più accesa** sulla faccia del palmo, più larga e smorzata sul dorso. Quale faccia vediamo lo dice la normale |
+| Blend shape guidate dall'angolo dell'osso (l'eminenza tenar che si gonfia) | il punto del tenar nell'inviluppo del palmo si sposta in proporzione all'angolo di opposizione del pollice |
+| Interpolazione non lineare, massa inerziale, «evitando movimenti robotici» | `DINAMICHE`: quattro curve — contatto, trasporto, pendolo, allontana — una per ogni storia che un braccio può raccontare, assegnate a ogni movimento |
+| Coarticolazione: l'influenza di un segno su quelli adiacenti | le fasi di un segno composto **entrano ed escono** invece di dissolversi l'una nell'altra |
+| Topologia che non perde volume sulle flessioni estreme, senza compenetrazione | un dito molto flesso non si disegna come un profilo unico (si auto-interseca: il pugno diventava un fascio di stecchi) ma come **una massa**, l'inviluppo del dito, con le pieghe dentro |
+| Quaternioni per evitare il Gimbal Lock | non serviva: l'orientamento non passa da angoli di Eulero, è una base ortonormale costruita da due direzioni, e una base non ha blocchi cardanici |
+| Ventuno giunti per mano | ci sono, e sono in millimetri veri |
+
+Il filo è sempre lo stesso: quegli algoritmi consumano lo **spessore**, la **profondità** e la
+**normale** di ogni pezzo. Noi quei tre numeri li abbiamo, perché la mano è un modello e non un disegno.
+Quello che serviva era usarli — non una GPU.
 
 ### Una sola luce per tutta la figura
 
