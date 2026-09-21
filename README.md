@@ -27,6 +27,7 @@ Questa è la cosa più importante di tutto il repository, e va letta prima di fa
 **L'alfabeto manuale è quasi corretto, e non ancora validato.** Le 26 lettere sono disegnate sulle
 descrizioni della dattilologia italiana — configurazione delle dita, posizione del pollice,
 orientamento del palmo, e il movimento per J, K, X, Y e Z, dove il movimento fa parte della lettera.
+Sono le stesse mani dei segni: un modello della mano in tre dimensioni, non ventisei disegni a sé.
 È un'approssimazione ragionata, non una fonte. Una descrizione scritta non dice quanto le dita sono
 ricurve nella E, che angolo esatto prende il pollice nella T, quanto è ampio il gancio della J: è lì
 che si nascondono gli errori, e servono **occhi sordi madrelingua** per trovarli. Finché non succede,
@@ -47,6 +48,19 @@ quanto sono curve le dita di una mano a tazza, né cosa fa il viso mentre la man
 
 Nima è destra ed è vista di fronte: la sua mano destra sta a sinistra di chi guarda, come quando si
 è seduti davanti a una persona che segna.
+
+**Le mani sono guardate di tre quarti, non di fronte, ed è una scelta.** Un orientamento vero può
+essere illeggibile: una mano con il palmo verso la propria destra, vista esattamente di fronte, è
+una lama, e non si vede quale dito è teso né quanti sono. I dizionari di LIS non la fotografano di
+fronte — la fotografano di tre quarti. Qui la scena è girata di tre quarti e presa da trenta gradi
+più in alto, **una volta sola e uguale per tutte le mani**: il segno non cambia, cambia il posto da
+cui lo si guarda, e siccome il posto è lo stesso per tutti due segni restano confrontabili fra loro.
+L'alternativa era mentire sull'orientamento del palmo di un segno per volta per renderlo leggibile,
+e quella sì avrebbe insegnato qualcosa di falso.
+
+Dove un segno è un **contatto** — FAME che colpisce il fianco, MANGIARE che arriva alla bocca — la
+figura ferma mostra l'avvicinamento, non il tocco, e la freccia dice dove va: al momento del tocco
+la mano è schiacciata contro il corpo e non si legge.
 
 Insegnare un segno sbagliato è peggio che non insegnarne nessuno: resta addosso e poi va
 disimparato. Il lessico reale va ancora girato con **segnanti e/o interpreti** e validato da loro prima
@@ -103,12 +117,15 @@ nessuna funzione.
 - [ ] Scene 3–6 del capitolo 1
 - [x] Dialoghi separati dal motore, modificabili senza toccare il codice
 - [x] Dieci segni ridisegnati su descrizioni di chi segna, con orientamento del palmo, seconda mano e segni composti
-- [x] Mani con volume, unghie, pieghe, ombra portata e freccia del movimento: il disegno è il contenuto finale
+- [x] Mano modellata in tre dimensioni: venti giunti, scorcio, occlusione e orientamento ricavati, non scelti a mano
+- [x] Alfabeto e segni disegnati dallo stesso modello: ventisei lettere che non sono più ventisei disegni a sé
+- [x] Una sola luce per tutta la figura, con alone controluce e falda d'ombra: la mano non è più incollata sopra a un altro disegno
 - [x] Movimento descritto come dato: freccia ricavata dal percorso, non piazzata a occhio
 - [x] Rallentatore, fermo immagine e passo a passo su ogni segno, lettere comprese
 - [x] Non manuale a canali indipendenti: il capo scuote e annuisce come vuole la grammatica
 - [x] Tavolozza dei personaggi separata dal disegno, per i capitoli che vengono
 - [x] Passaggio grafico: isola a strati (giorno e notte), Nima ridisegnata, mani leggibili nelle prove
+- [ ] Geometria dei personaggi oltre Nima: oggi un secondo personaggio è Nima con un'altra tavolozza
 - [ ] Passaggio a struttura modulare per capitoli (una scena per file)
 - [ ] Capitolo 2: il viaggio in nave
 

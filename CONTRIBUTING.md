@@ -20,23 +20,42 @@ formazionali:
 
 ```js
 mela: {
-  g:  'MELA',       // glossa, in maiuscolo
-  h:  'coppa',      // configurazione della mano (chiave di HAND)
-  or: 'dorso',      // orientamento del palmo: 'dorso' | 'palmo' | 'taglio'
-  l:  'bocca',      // luogo sul corpo (chiave di LOC)
-  m:  'suDue',      // movimento (una delle animazioni .mv-*)
-  r:  -6,           // rotazione della mano nel piano, in gradi
-  nm: 'neutro'      // componente non manuale: la faccia
+  g:     'MELA',       // glossa, in maiuscolo
+  h:     'coppa',      // configurazione della mano (chiave di CONFIG)
+  dita:  'dentro',     // dove puntano le punte delle dita
+  palmo: 'indietro',   // dove guarda il palmo
+  l:     'bocca',      // luogo sul corpo (chiave di LOC)
+  m:     'suDue',      // movimento (chiave di MOVIMENTI)
+  nm:    'neutro'      // componente non manuale: la faccia
 }
 ```
 
-Tre parametri in più, che servono a segni che senza non si possono scrivere:
+**L'orientamento sono due direzioni, e solo due.** Si scrivono con dei nomi, nel
+mondo dello schermo:
+
+| Nome | Dove punta |
+|---|---|
+| `su` / `giu` | in alto / in basso |
+| `avanti` / `indietro` | verso chi guarda / dentro lo schermo |
+| `fuori` / `dentro` | verso la destra di Nima / verso la sua sinistra |
+
+Una lista somma le direzioni (`['su','fuori']` è a metà fra le due) e un nome
+ripetuto pesa di più (`['avanti','avanti','fuori']` è quasi in avanti).
+
+Prima al posto di `dita` c'erano una **rotazione nel piano** (`r`) e uno
+**scorcio**, e quella coppia si poteva contraddire col palmo: «dita in basso» più
+«palmo in basso» non è una mano, è una degenerazione, e da lì venivano le mani
+ridotte a stecco. Due direzioni non si contraddicono: se non sono perpendicolari
+il modello raddrizza il palmo attorno alle dita, che è il grado di libertà che
+una mano ha davvero. L'angolo sullo schermo, quello che serve alle frecce, si
+**ricava** proiettando `dita` (`angoloDita`), quindi non può più dire una cosa
+diversa dal disegno.
+
+Due parametri in più, che servono a segni che senza non si possono scrivere:
 
 | Parametro | A cosa serve |
 |---|---|
-| `or` | che faccia della mano vediamo. `dorso` = il palmo guarda Nima; `palmo` = guarda avanti, verso chi legge; `taglio` = guarda di lato o verso terra, e la mano si vede di costa; `trequarti` = a metà fra le due, quando di costa pura due dita finirebbero una dietro l'altra |
-| `scorcio` | la mano vista di punta, fra 0 e 1: accorcia le dita lungo il loro asse. Senza, «palmo verso il basso, dita in avanti» diventerebbe una mano che punta in giù, che è un altro segno |
-| `due` | la seconda mano: `{h, or, l, r, m}`. Il disegno viene specchiato, perché una mano sinistra non è una destra girata di lato |
+| `due` | la seconda mano: `{h, dita, palmo, l, m}`. Il disegno viene specchiato, perché una mano sinistra non è una destra girata di lato — e l'orientamento e la luce vengono dati già riflessi, così quello che si chiede è quello che si vede anche dopo lo specchio |
 | `fasi` | un segno composto da più momenti, ciascuno con i suoi parametri: si disegnano tutti e si alternano. NON ADESSO è così — le mani che scendono, poi il segno NO |
 
 ### I personaggi
@@ -61,7 +80,7 @@ colore di pelle. Serve chi la disegna — e quando ci sarà, il posto dove mette
 Nima è destra ed è vista **di fronte**: la sua mano destra sta perciò a **sinistra** di chi guarda.
 Nel disegno la testa è centrata in `x=107`, quindi le x che crescono vanno verso la *sinistra* di
 Nima e le x che calano verso la sua *destra*. «Verso il fuori», per la sua mano destra, vuol dire
-verso le x che calano — ed è così che è scritta l'animazione `.mv-scorriFuori`. Chi impara si trova
+verso le x che calano — ed è così che è scritto il movimento `scorriFuori`. Chi impara si trova
 davanti a una persona che segna e la rispecchia: è quello che succede anche in aula.
 
 E la voce corrispondente nel dizionario, che però sta in **`dialoghi.js`**, dentro `parole`:
@@ -73,27 +92,93 @@ mela: {cerca:'Mela', testo:'Il frutto. La prima cosa che la marea ti ha lasciato
 `cerca` è la parola con cui il gioco cerca il segno su Spread the Sign; `testo` è quello che il
 giocatore legge nel Guscio.
 
-I valori disponibili per `l` (il luogo) e per `m` (il movimento) sono le chiavi di `LOC` e le classi
-`.mv-*` in cima allo stesso file: si aggiungono lì, con un nome che dica dove sta la mano o cosa fa,
-non come si chiama l'animazione. Per esempio `sottoMento` + `scorriFuori` sono il luogo e il
-movimento di NOME: due dita appoggiate sotto il mento che scorrono verso l'esterno.
+I valori disponibili per `h`, `l` e `m` sono le chiavi di `CONFIG`, `LOC` e `MOVIMENTI` nello stesso
+file: si aggiungono lì, con un nome che dica com'è fatta la mano, dove sta o cosa fa — non come si
+chiama l'animazione. Per esempio `sottoMento` + `scorriFuori` sono il luogo e il movimento di NOME:
+due dita appoggiate sotto il mento che scorrono verso l'esterno.
+
+### L'alfabeto manuale è una tabella
+
+Una lettera è tre dati — quale forma, dove puntano le dita, dove guarda il palmo —
+e chi la disegna è il modello:
+
+```js
+C: {h:'c', dita:'su', palmo:'fuori'},
+Z: {h:'indice', dita:'su', palmo:'avanti', m:'tap',
+    tratto:'M -26 -33 L -6 -33 L -26 -17 L -6 -17'}
+```
+
+`m` è il movimento, dove il movimento **fa parte della lettera** (J, K, X, Y);
+`tratto` è il disegno in aria di J e Z, nascosto da fermo e ricalcato dal
+movimento `traccia`, che è la stessa idea della freccia dei segni.
+
+Prima erano ventisei disegni piatti scritti a mano uno per uno, con il loro
+spessore, il loro contorno e i loro errori: ognuno andava corretto da solo e
+nessuno assomigliava all'altro. Adesso una lettera sbagliata si corregge
+cambiando un nome, e la qualità del disegno è la stessa per tutte e ventisei,
+perché il disegno è lo stesso codice.
+
+Il riquadro (`ALFA_RIQUADRO`) è **uno per tutte e ventisei**, misurato
+sull'unione delle sagome: chi compita il proprio nome vede le lettere una dopo
+l'altra, e devono stare ferme invece di saltare di posto e di misura.
 
 ### Come sono disegnate le mani
 
-Un segno non è un'illustrazione fissa: è composto a partire dai parametri, con gli stessi mattoni
-usati per l'alfabeto manuale — un tratto di bordo sotto e uno di pelle sopra, così due dita
-accostate restano due anche a 40 px.
+La mano è un **oggetto in tre dimensioni**, non un disegno: uno scheletro di venti
+giunti in millimetri veri, una posa fatta di angoli, un orientamento fatto di due
+direzioni, e **una** proiezione che decide il resto. Le mani dei segni e le
+ventisei lettere dell'alfabeto sono lo stesso codice.
+
+Da lì escono da sé le tre cose che prima si scrivevano a mano e sbagliavano:
+
+- **lo scorcio** — un dito che punta verso chi guarda si accorcia e si allarga;
+- **l'occlusione** — le parti si ordinano in profondità, e la mano davanti copre
+  quella dietro invece di essere disegnata sopra per caso;
+- **l'orientamento** — le unghie si vedono quando il dorso guarda la telecamera,
+  le pieghe del palmo quando lo guarda il palmo. Non si scelgono più.
 
 | Funzione | Cosa fa |
 |---|---|
-| `dito(percorso, spessore)` | un dito, in quattro passate: bordo, pelle, ombra da un lato, luce dall'altro |
-| `piegaDito` / `unghiaDito` | il solco della falange e l'unghia: dicono quante dita ci sono e da che parte guardano |
-| `ditoSegno(i, stato, apertura, k, vista)` | un dito: `0` chiuso sul palmo, `1` teso, `2` ricurvo, `3` (solo pollice) di traverso |
-| `palmoSegno(vista)` | la sagoma del palmo, sfumata, con nocche e tendini (dorso), pieghe e cuscinetto (palmo) o la costa (taglio) |
-| `manoSegno(nome, vista)` | palmo, polsino, dita e pollice per una configurazione di `HAND` |
+| `catenaDito(dito, angoli)` / `catenaPollice(angoli)` | i giunti di un dito, dalla nocca alla punta |
+| `posa({ind, med, anu, mig, pol})` | una configurazione: solo angoli, nessun disegno |
+| `baseOrientata(dita, palmo, specchio)` | la base della mano nel mondo, messa in scena |
+| `manoSVG(config, base, opzioni)` | la mano intera: parti ordinate in profondità e disegnate dal fondo in avanti |
+| `handSVG(config, dita, palmo, movimento, specchio)` | la mano nel gruppo che l'orologio dei segni fa muovere |
 | `braccio(spalla, x, y, fuori)` | il braccio dalla spalla al **polso**, con il gomito calcolato |
-| `polsoDi(x, y, r, scorcio)` | dove cade il polso, data la posa della mano |
-| `tracciaMov(movimento)` | la freccia del movimento, presa da `TRACCE` |
+| `polsoDi(x, y, dita, palmo, specchio)` | dove cade il polso: si proietta il punto del carpo |
+| `tracciaMov(movimento, angolo, x, y)` | la freccia del movimento, ricavata dal percorso |
+
+#### Il pollice si oppone, e non è un dettaglio
+
+Il pollice ha due angoli alla radice, e sono due cose diverse: l'**abduzione** lo
+allontana dall'indice restando nel piano del palmo, l'**opposizione** lo porta
+*davanti* al palmo, dove le sue punte possono incontrare quelle delle altre dita.
+È l'opposizione che rende una mano una mano, e una C una C.
+
+Si misura dalla sua radice vera — l'articolazione alla base del palmo — non dalla
+nocca: senza i suoi quarantacinque millimetri di metacarpo la punta non arriva
+alle altre dita, e le mani a pinza, a cerchio e a becco restano aperte a
+mezz'aria. Gli angoli delle forme che devono *chiudere* non sono indovinati: si
+dichiara dove deve arrivare la punta, rispetto alla punta del dito che incontra,
+e si cercano gli angoli che ce la portano.
+
+#### La messa in scena
+
+Un orientamento vero può essere illeggibile. Una mano con il palmo verso la
+propria destra, vista esattamente di fronte, è una lama: non si vede quale dito è
+teso né quanti sono. I dizionari di LIS non la fotografano di fronte — la
+fotografano di tre quarti, perché di tre quarti si legge.
+
+Qui succede lo stesso, ma **una volta sola e per tutte le mani**: `SCENA_GIRO` e
+`SCENA_ALTO` girano la scena di tre quarti e la prendono da trenta gradi più in
+alto. Il segno non cambia — cambia il posto da cui lo si guarda, e il posto è lo
+stesso per tutti, quindi due segni restano confrontabili fra loro.
+
+I trenta gradi dall'alto sono quelli che salvano le mani col palmo a terra —
+FAME, NON ADESSO. E costano poco alle altre: una mano frontale guardata da trenta
+gradi si accorcia di un ottavo, e nient'altro. Era la scelta giusta contro
+l'alternativa, che era **mentire sull'orientamento del palmo** per renderlo
+leggibile.
 
 ### Il movimento è un dato, non un'animazione
 
@@ -183,18 +268,33 @@ Il capo è l'unico canale che si muove, ed è giusto che si muova: lo scuotiment
 del capo **è** la negazione e il cenno **è** l'affermazione, quindi NO e SÌ ce
 l'hanno, e stanno sullo stesso orologio delle mani.
 
-### Perché la mano ha un volume
+### Una sola luce per tutta la figura
 
-Non ci sarà una versione con i video: questo disegno è il contenuto finale, e
-deve dire da che parte guarda una mano. Lo fa con quattro indizi che si sommano,
-e conviene non toglierne nessuno:
+Non ci sarà una versione con i video: questo disegno è il contenuto finale.
 
-- **il tubo** — ogni dito è disegnato quattro volte sullo stesso percorso (bordo,
-  pelle, ombra, luce): è quello che lo fa leggere come un volume e non una linea;
-- **l'unghia** — si vede da dorso e da tre quarti, mai dal palmo: è il segnale
-  più rapido di quale faccia stiamo guardando;
-- **nocche e tendini** contro **pieghe e cuscinetto del pollice** — il dorso e il
-  palmo hanno due superfici diverse, e si riconoscono anche in miniatura;
+La mano è illuminata in tre dimensioni da `LUCE`. Il resto — viso, capelli,
+abito, braccia — è disegnato in piatto, e finché la sua luce non era la stessa la
+mano sembrava incollata sopra a un altro disegno: due qualità diverse nella stessa
+figura, che è la cosa che si nota per prima. Adesso la direzione di `LUCE` si
+proietta sullo schermo una volta sola (`LUCE_XY`) e la usano tutti. Cambiare la
+luce della scena vuol dire cambiare un vettore.
+
+Gli indizi che dicono da che parte guarda una mano si sommano, e conviene non
+toglierne nessuno:
+
+- **le fasce** — luce, mezza luce, ombra lungo il profilo di ogni dito: è quello
+  che lo fa leggere come un volume e non una linea;
+- **l'unghia** — la disegna la normale della superficie, non una scelta: si vede
+  quando il dorso guarda chi legge, mai dal palmo;
+- **nocche** contro **pieghe del palmo** — due superfici diverse, e si riconoscono
+  anche in miniatura;
+- **l'alone caldo controluce** (`orlatura`) — la stessa sagoma, spostata dalla
+  parte opposta alla luce e tinta di caldo, disegnata *prima* della forma così
+  sbuca solo sul contorno. È quello che stacca Nima dal fondale: senza, è una
+  decalcomania sul cielo;
+- **la falda d'ombra** (`faldaOmbra`) — la forma ritagliata su se stessa e
+  spostata verso la luce: quello che resta fuori è l'ombra, e segue il contorno
+  senza che nessuno la disegni;
 - **l'ombra portata** (`.hand{filter:drop-shadow(...)}`) — dice quale delle due,
   mano o viso, sta davanti. Senza, una mano sulla guancia sembra disegnata sulla
   guancia.
@@ -205,11 +305,15 @@ Due cose da non rompere:
 
 - **La mano si disegna dopo il volto.** Nei segni che stanno sulla guancia, sul mento o sulla fronte
   la mano è davanti alla faccia: invertire l'ordine la fa sparire dietro la testa.
-- **Il braccio finisce al polso, non al centro del palmo.** `polsoDi()` lo calcola dalla rotazione
-  della mano; saltarlo lascia la manica staccata dall'avambraccio.
+- **Il braccio finisce al polso, non al centro del palmo.** `polsoDi()` proietta il punto del carpo
+  del modello; saltarlo lascia la manica staccata dall'avambraccio.
 - **`{compatto:true}` è quello che si usa nei mini-giochi e nel dizionario.** Lì conta vedere com'è
-  fatta la mano, non quanto è graziosa la fata: il riquadro si calcola sul luogo del segno, così la
-  mano è grande qualunque cosa stia facendo.
+  fatta la mano, non quanto è graziosa la fata. La testa entra nel riquadro solo se **il viso porta
+  informazione**: o il segno lo tocca (la guancia di ACQUA, il mento di NOME), o il segno ha un non
+  manuale suo, e allora il viso è grammatica — NO si nega con la testa, SÌ si afferma, e tagliare la
+  faccia butterebbe via metà del segno. Quando il viso non porta niente si ritaglia sulla mano e la
+  mano viene grande, che è tutto quello che lì serve. Un riquadro che deve contenere la testa *e* una
+  mano al fianco non ritaglia niente: viene grande quasi come la figura intera.
 
 ### Come è disegnata l'isola
 
