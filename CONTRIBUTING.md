@@ -39,6 +39,23 @@ Tre parametri in più, che servono a segni che senza non si possono scrivere:
 | `due` | la seconda mano: `{h, or, l, r, m}`. Il disegno viene specchiato, perché una mano sinistra non è una destra girata di lato |
 | `fasi` | un segno composto da più momenti, ciascuno con i suoi parametri: si disegnano tutti e si alternano. NON ADESSO è così — le mani che scendono, poi il segno NO |
 
+### I personaggi
+
+Nima non resterà sola: i capitoli che vengono portano altri personaggi, e tutti
+devono segnare con le stesse mani, leggibili nello stesso modo. Quello che cambia
+da un personaggio all'altro è la **tavolozza**, e sta in `PERSONAGGI`; il modo di
+disegnare una mano non cambia mai.
+
+I colori pieni passano da variabili CSS (`--pelle`, `--bordo-pelle`, `--capelli`
+…), quindi le funzioni di disegno non sanno chi stanno disegnando. Le sfumature,
+che le variabili CSS non possono attraversare, sono generate una per personaggio.
+Si sceglie con `renderSign(segno, {chi:'nima'})`, o con `chi:` sul segno.
+
+**Cosa manca ancora:** la *geometria* di testa, capelli, orecchie e abito è
+ancora quella di Nima. Un secondo personaggio, oggi, sarebbe Nima con un altro
+colore di pelle. Serve chi la disegna — e quando ci sarà, il posto dove metterla
+è `PERSONAGGI`, non una copia di `faceSVG`.
+
 ### Da che parte segna Nima
 
 Nima è destra ed è vista **di fronte**: la sua mano destra sta perciò a **sinistra** di chi guarda.
@@ -78,18 +95,93 @@ accostate restano due anche a 40 px.
 | `polsoDi(x, y, r, scorcio)` | dove cade il polso, data la posa della mano |
 | `tracciaMov(movimento)` | la freccia del movimento, presa da `TRACCE` |
 
-### Le frecce del movimento
+### Il movimento è un dato, non un'animazione
 
-Un disegno fermo non distingue un tocco da uno scorrimento, né una mano che va
-avanti da una che va in basso: per questo ogni movimento ha il suo percorso in
-`TRACCE`, disegnato intorno al palmo e in parte coperto dalla mano, con la punta
-che sporge. Le coordinate sono **relative al centro del palmo e allineate allo
-schermo**: è il movimento visto da chi guarda, non dalla mano.
+Un movimento non è il nome di un'animazione scritta a mano: è la descrizione di
+quello che la mano fa, e sta in `MOVIMENTI`. Da quel dato si ricavano **due**
+cose che prima erano scritte separatamente — e che quindi uscivano dall'accordo
+ogni volta che si cambiava un segno:
 
-Sopra la freccia corre una scia luminosa nel verso dell'andata. La punta doppia
-si usa solo dove il movimento è davvero simmetrico — un dondolio, una scossa da
-un lato all'altro: dove la mano va e poi torna, la punta è una sola, altrimenti
-il verso diventa ambiguo.
+- i fotogrammi, che suona l'orologio dei segni;
+- la **freccia**, generata dal percorso invece di essere piazzata a occhio.
+
+Un movimento è un elenco di **tappe**. Ogni tappa è `[dx, dy, gradi, scala]`:
+dove va la mano, di quanto gira, e quanto si avvicina a chi guarda; gradi e
+scala si possono omettere. Le coordinate sono **relative al centro del palmo e
+allineate allo schermo** — è il movimento visto da chi guarda, non dalla mano.
+
+```js
+/* NOME: parte al contatto sotto il mento e scorre verso il fuori, poi aspetta */
+scorriFuori: {tappe:[[3,0],[-15,1,-5,1.03]], attesa:.22, durata:2200},
+```
+
+| Campo | Cosa fa |
+|---|---|
+| `volte` | quante volte ripete l'andata e il ritorno in un ciclo |
+| `attesa` | frazione di ciclo tenuta ferma alla fine, come una pausa |
+| `chiuso` | il percorso torna da sé al punto di partenza (un cerchio): non si ripercorre all'indietro |
+| `durata` · `ritmo` | millisecondi di un ciclo, e l'accelerazione fra le tappe |
+| `perno` | origine della rotazione, se non è il centro della mano (SÌ gira sul polso) |
+| `freccia` | forza la freccia: `una`, `due`, `coppia`, `nessuna` |
+| `fotogrammi` | via di fuga, per quello che non è una mano che si muove nello spazio: una scia, una fase |
+
+**La freccia si ricava, non si disegna.** Lo spostamento vero è di pochi punti e
+finirebbe sempre sotto la mano, quindi la forma del percorso viene ingrandita a
+una lunghezza leggibile e scostata di fianco, dalla parte in cui la mano non
+c'è — che si calcola da dove puntano le dita. Una rotazione diventa un arco
+appena oltre le punte; se le dita puntano verso la testa l'arco passa dalla
+parte opposta, perché sull'occhio coprirebbe l'espressione. Un movimento in
+profondità non si può disegnare di fronte e si indica di sbieco.
+
+La punta è **singola** su una traslazione: di un movimento che va e torna conta
+il verso dell'andata, e due punte lo renderebbero ambiguo. È doppia solo sulle
+vere alternanze — un dondolio fra due estremi in un colpo solo. Sotto la freccia
+c'è un orlo scuro: dorata su un viso chiaro, sparirebbe.
+
+### L'orologio dei segni
+
+Tutte le mani stanno su un orologio solo, tenuto dalla **Web Animations API**
+(`MOTO`) invece che da classi CSS. Serve a tre cose che prima non si potevano
+fare: rallentare davvero, fermare l'immagine, e andare **avanti a passi** — che
+per imparare un segno conta più del rallentatore.
+
+```js
+MOTO.velocizza(.3);   // rallentatore
+MOTO.ferma();         // fermo immagine
+MOTO.passo(.08);      // un passo avanti, a immagine ferma
+```
+
+`comandoMoto()` restituisce la barra di comandi già collegata: sta nel Guscio,
+che è la superficie dove un segno si studia — e dove lo guarda chi lo valida.
+
+Due regole:
+
+- **Ogni battuta rifà il suo pezzo di pagina da zero**, quindi dopo aver scritto
+  dei segni in un contenitore va chiamato `MOTO.accendi(contenitore)`. Chi non lo
+  chiama ottiene un segno fermo.
+- **Il contorno del gioco resta su CSS.** Onde, lucciole, ali e stelle non
+  entrano nell'orologio: sono decorazione, e non devono rallentare con i segni.
+  È la stessa distinzione che regge la regola su `prefers-reduced-motion`.
+
+### Il non manuale è a canali
+
+In LIS l'espressione non è un'emozione: è grammatica. E i suoi canali sono
+indipendenti — le sopracciglia segnano la domanda, la bocca l'intensità, il capo
+l'affermazione o la negazione — e si combinano fra loro.
+
+Per questo stanno separati in `SOPRACCIGLIA`, `BOCCA`, `OCCHI` e `CAPO`. Un
+volto con un nome (`VOLTI`) è una **combinazione** di canali, non un disegno a
+sé: aggiungere una domanda negativa non vuol dire disegnare una settima faccia,
+vuol dire mettere insieme due canali che già esistono. Un segno può anche
+scriverseli sul posto:
+
+```js
+nm: {sopracciglia:'alzate', bocca:'stretta', capo:'inclinato'}
+```
+
+Il capo è l'unico canale che si muove, ed è giusto che si muova: lo scuotimento
+del capo **è** la negazione e il cenno **è** l'affermazione, quindi NO e SÌ ce
+l'hanno, e stanno sullo stesso orologio delle mani.
 
 ### Perché la mano ha un volume
 

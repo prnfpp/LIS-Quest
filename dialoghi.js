@@ -193,8 +193,9 @@ window.DIALOGHI = {
       tempoFinito:   'La luce si è spenta, e non è successo niente. Nima ripete più piano.',
       bottoneAvanti: 'Continua ▸',
       bottoneArreso: 'Ho capito ▸',
-      bottoneRallenta:'🔍 Fermo immagine (Occhio di Lince)',
-      rallentato:    'Rallentato'
+      bottoneRallenta:'🔍 Guarda piano (Occhio di Lince)',
+      rallentato:    '🐢 Rallentato — tocca per fermare',
+      fermato:       '⏸ Fermo — tocca per ripartire'
     },
 
     frase: {
