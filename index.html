@@ -518,23 +518,6 @@ input[type=text]:focus{border-color:var(--nima);outline:none}
 .blocco .gl,.slot .gl{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.09em;color:var(--nima)}
 .blocco.faccia svg,.slot.faccia svg{width:80px;height:80px}
 
-/* dove il movimento fa parte della lettera, la lettera si muove */
-.lm{transform-box:fill-box;transform-origin:50% 85%}
-.lm-gancio{animation:lmGancio 2.4s ease-in-out infinite}
-@keyframes lmGancio{0%,20%{transform:translate(0,0) rotate(0deg)}55%{transform:translate(4px,7px) rotate(14deg)}90%,100%{transform:translate(0,0) rotate(0deg)}}
-.lm-scatto{animation:lmScatto 1.8s ease-in-out infinite}
-@keyframes lmScatto{0%,62%,100%{transform:translate(0,0)}74%{transform:translate(0,5px)}84%{transform:translate(0,1px)}}
-.lm-secco{animation:lmSecco 1.6s ease-in-out infinite}
-@keyframes lmSecco{0%,70%,100%{transform:translate(0,0)}78%{transform:translate(0,6px)}86%{transform:translate(0,1px)}}
-.lm-onda{animation:lmOnda 1.9s ease-in-out infinite}
-@keyframes lmOnda{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
-.tratto-j{stroke-dasharray:72;stroke-dashoffset:72;animation:tracciaJ 2.4s ease-in-out infinite}
-@keyframes tracciaJ{0%,18%{stroke-dashoffset:72;opacity:.9}58%,86%{stroke-dashoffset:0;opacity:.9}100%{stroke-dashoffset:0;opacity:0}}
-
-/* la Z si disegna nell'aria: il tratto fa parte della lettera */
-.tratto-z{stroke-dasharray:90;stroke-dashoffset:90;animation:tracciaZ 2.4s ease-in-out infinite}
-@keyframes tracciaZ{0%{stroke-dashoffset:90;opacity:.9}55%,84%{stroke-dashoffset:0;opacity:.9}100%{stroke-dashoffset:0;opacity:0}}
-
 /* ---------- trascinamento (mouse, dito, penna) ---------- */
 .trascinabile{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .trascinabile.in-mano{opacity:.3}
@@ -585,7 +568,7 @@ dialog::backdrop{background:rgba(3,11,17,.82);backdrop-filter:blur(3px)}
 .alfaGrid.spenta a{opacity:.32}
 .alfaGrid.spenta a.vista{opacity:1;border-color:var(--nima-2);box-shadow:0 0 0 2px rgba(75,185,168,.16)}
 
-.voce{display:grid;grid-template-columns:116px 1fr;gap:16px;align-items:center;padding:16px 0;border-bottom:1px solid var(--bordo)}
+.voce{display:grid;grid-template-columns:142px 1fr;gap:16px;align-items:center;padding:16px 0;border-bottom:1px solid var(--bordo)}
 .voce:last-child{border-bottom:none}
 .voce .art{background:radial-gradient(circle at 50% 36%,rgba(255,193,94,.12),var(--pannello-2) 72%);
   border:1px solid var(--bordo);border-radius:12px;padding:5px;box-shadow:var(--om-1)}
@@ -599,6 +582,22 @@ dialog::backdrop{background:rgba(3,11,17,.82);backdrop-filter:blur(3px)}
 }
 .sts:hover{background:#A5EFE2}
 .vuoto{color:var(--testo-3);font-size:14px;padding:18px 0;text-align:center}
+
+/* ---------- comando del moto ---------- */
+.moto-riga{display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  margin:0 0 14px;padding-bottom:14px;border-bottom:1px solid var(--bordo)}
+.moto-et{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--testo-3)}
+.moto-barra{display:inline-flex;gap:6px;flex-wrap:wrap}
+.moto-b{
+  display:inline-flex;align-items:center;gap:6px;min-height:44px;
+  background:rgba(18,48,63,.7);border:2px solid var(--bordo);border-radius:999px;
+  color:var(--testo-2);font-family:"Baloo 2",sans-serif;font-weight:700;font-size:13px;
+  padding:6px 14px;transition:border-color .12s,background .12s,color .12s;
+}
+.moto-b:hover{border-color:var(--nima);color:var(--testo)}
+.moto-b.on{background:var(--luce);border-color:var(--luce);color:#25160A}
+@media (max-width:420px){ .moto-b span{display:none} .moto-b{padding:6px 12px} }
 
 /* ---------- finale ---------- */
 .finale h2{font-size:clamp(26px,5vw,38px);margin:0 0 6px}
@@ -633,7 +632,7 @@ footer a{color:var(--testo-2)}
   .titolo{min-height:min(60vh,420px);padding-left:20px;padding-right:20px}
   .dialogo{padding:15px 16px 16px}
   .card{padding:16px}
-  .voce{grid-template-columns:94px 1fr;gap:12px}
+  .voce{grid-template-columns:108px 1fr;gap:12px}
   .sc-capanna{right:4%}
 }
 @media (max-width:420px){
@@ -647,8 +646,11 @@ footer a{color:var(--testo-2)}
   .screen{animation:none}
   .ogg,.blocco,.settore,.btn{transition:none}
   .fantasma{filter:none}
+  /* Si ferma il contorno. I segni no: stanno sull'orologio dei segni (MOTO),
+     che e' Web Animations e non risponde a questa regola — voluto, perche' un
+     segno fermo non e' un segno. Chi vuole fermarli ha il comando del moto. */
   .sc-onda,.sc-scia,.sc-astro,.stella,.briciola,.volante,.nuvola,.sc-palma,.sigillo,
-  .nima-wrap,.nima-wrap::after,.glow,.tap-hint i,dialog[open]{animation:none}
+  .ali,.nima-wrap,.nima-wrap::after,.glow,.tap-hint i,dialog[open]{animation:none}
   .nuvola{transform:none}
 }
 </style>
@@ -799,6 +801,10 @@ footer a{color:var(--testo-2)}
   <div class="tabs">
     <button class="tb on" data-tab="alfa" type="button">Alfabeto manuale</button>
     <button class="tb" data-tab="parole" type="button">Parole <b id="nParole">0</b></button>
+  </div>
+  <div class="moto-riga">
+    <span class="moto-et">Come guardare i segni</span>
+    <span id="motoQui"></span>
   </div>
   <div id="tabAlfa">
     <p style="font-size:13px;margin-bottom:10px">Le 21 lettere italiane, sempre tutte disponibili. Quelle che hai già usato sono accese. <strong>Tocca una lettera</strong> per cercarla su Spread the Sign.</p>
@@ -1050,7 +1056,7 @@ function beccoSegno(k){
     s += dito('M '+n2(x*1.3)+' -4 Q '+n2(x*.5)+' -16 0 -26', SEG_W*k-1);
   });
   s += dito('M -8.5 1 Q -6 -14 -1.5 -24', 6.2*k-0.6);
-  return s + '<circle cx="0" cy="-26.5" r="'+n2(4.4*k)+'" fill="url(#gPelle)'+
+  return s + '<circle cx="0" cy="-26.5" r="'+n2(4.4*k)+'" fill="'+grad('Pelle')+''+
              '" stroke="'+BORDO+'" stroke-width="1.8"/>'+
              '<circle cx="-1.4" cy="-27.8" r="'+n2(1.7*k)+'" fill="'+LUCE_PELLE+'" opacity=".6"/>';
 }
@@ -1077,11 +1083,11 @@ const PALMO_D =
   'C -6 18.9 -10.8 14.6 -10.8 6.4 Z';
 
 function palmoSegno(vista){
-  const grad = vista === 'palmo' ? 'url(#gPalmo)' : 'url(#gPelle)';
+  const sfuma = vista === 'palmo' ? grad('Palmo') : grad('Pelle');
   const costa = '<path d="M 5.6 -14.3 C 9.2 -14.3 12.1 -12.2 11.2 -7.4 '+
       'L 10.6 6.4 C 10.6 13.8 6.6 17.8 1.6 18.7" fill="none" stroke="'+OMBRA_PELLE+
       '" stroke-width="3.4" stroke-linecap="round" opacity=".55"/>';
-  let s = '<path d="'+PALMO_D+'" fill="'+grad+'" stroke="'+BORDO+'" '+
+  let s = '<path d="'+PALMO_D+'" fill="'+sfuma+'" stroke="'+BORDO+'" '+
           'stroke-width="1.9" stroke-linejoin="round"/>';
 
   if(vista === 'palmo'){
@@ -1116,7 +1122,7 @@ function palmoSegno(vista){
 }
 function polsinoSegno(){
   return '<path d="M -9.4 13.6 q 9.4 4.2 18.8 0 l 2.2 9.6 q -11.6 5.2 -23.2 0 z" '+
-         'fill="url(#gPolsino)" stroke="#1B4E5C" stroke-width="1.5" stroke-linejoin="round"/>'+
+         'fill="'+grad('Polsino')+'" stroke="#1B4E5C" stroke-width="1.5" stroke-linejoin="round"/>'+
          '<path d="M -8.6 15.4 q 8.6 3.6 17.2 0" fill="none" stroke="#6FC4CE" '+
          'stroke-width="1.1" stroke-linecap="round" opacity=".45"/>';
 }
@@ -1141,85 +1147,166 @@ function manoSegno(handName, vista){
 /* `scorcio` è la mano vista di punta: le dita puntano verso chi guarda e si
    accorciano. Senza, «palmo verso il basso, dita in avanti» non si può
    disegnare di fronte — verrebbe una mano che punta in giù, che è un'altra cosa. */
-function handSVG(handName, rot, moveClass, or, scorcio){
+function handSVG(handName, rot, mov, or, scorcio){
   const vista = or || 'dorso';
   const posa = vista === 'palmo'     ? 'scale(-1,1)'
              : vista === 'taglio'    ? 'scale(.7,1)'
              : vista === 'trequarti' ? 'scale(.86,1)'
              : 'translate(0,0)';
   const corto = scorcio && scorcio < 1 ? ' scale(1,'+scorcio+')' : '';
-  return '<g class="mv '+(moveClass||'')+'">'+
+  const m = MOVIMENTI[mov];
+  const perno = m && m.perno ? ' style="transform-origin:'+m.perno+'"' : '';
+  return '<g class="mv" data-mov="'+(mov||'tap')+'"'+perno+'>'+
     '<g transform="rotate('+(rot||0)+') scale(1.2)'+corto+'">'+
       '<g transform="'+posa+'">'+ manoSegno(handName, vista) +'</g>'+
     '</g></g>';
 }
 
-/* ---------- il volto ----------
-   In LIS l'espressione è grammatica, non decorazione: per questo ha uno slot
-   suo nei mini-giochi e per questo qui ogni stato cambia sopracciglia, occhi,
-   bocca e inclinazione del capo insieme. */
-function faceSVG(nm){
-  let brow, mouth, occhi = null, tilt = 0, palpebra = '';
-  const occhioBase = (cx, ry) =>
-    '<ellipse cx="'+cx+'" cy="53" rx="5.4" ry="'+ry+'" fill="#FFFDF6" stroke="#2A3E46" stroke-width="1.3"/>'+
-    '<circle cx="'+cx+'" cy="53.6" r="3.1" fill="#1E3138"/>'+
-    '<circle cx="'+(cx+1.5)+'" cy="52" r="1.15" fill="#FFFFFF"/>';
-
-  switch(nm){
-    case 'domanda':
-      brow  = '<path d="M83 38 q8 -7 16 -3"/><path d="M116 35 q8 -5 16 3"/>';
-      mouth = '<path d="M97 69 q9 5 18 -1" fill="none"/>';
-      tilt  = -4; break;
-    case 'nega':
-      brow  = '<path d="M83 43 q8 4 16 1"/><path d="M116 44 q8 -3 16 -1"/>';
-      mouth = '<path d="M97 71 q9 -5 18 -1" fill="none"/>';
-      tilt  = 6; break;
-    case 'affermativo':
-      brow  = '<path d="M84 41 q7 -2 15 0"/><path d="M116 41 q8 -2 15 0"/>';
-      mouth = '<path d="M95 65 q12 10 23 -1" fill="none"/>';
-      occhi = occhioBase(95,4.2)+occhioBase(120,4.2); break;
-    case 'intenso':
-      brow  = '<path d="M83 45 q8 -6 16 -1"/><path d="M116 44 q8 -5 16 1"/>';
-      mouth = '<ellipse cx="106" cy="70" rx="7.5" ry="5.4" fill="#8A4038" stroke="none"/>'+
-              '<path d="M100 69 q6 3 12 0" fill="none" stroke="#C97A6A" stroke-width="1.6"/>';
-      break;
-    case 'sorriso':
-      brow  = '<path d="M84 39 q7 -4 15 -1"/><path d="M116 38 q8 -3 15 1"/>';
-      mouth = '<path d="M94 64 q12 12 24 -1" fill="none"/>'+
-              '<path d="M97 66 q9 7 18 0" fill="#C4635C" stroke="none"/>';
-      occhi = '<path d="M90 54 q5 -6 10 0" fill="none" stroke="#1E3138" stroke-width="2.8" stroke-linecap="round"/>'+
-              '<path d="M115 54 q5 -6 10 0" fill="none" stroke="#1E3138" stroke-width="2.8" stroke-linecap="round"/>';
-      break;
-    default:
-      brow  = '<path d="M84 42 q7.5 -2.5 15 -.5"/><path d="M116 41.5 q7.5 -2 15 .5"/>';
-      mouth = '<path d="M98 68 q8 3 16 0" fill="none"/>';
+/* ================= I PERSONAGGI =================
+   Nima non resterà sola: i capitoli che vengono portano altri personaggi, e
+   tutti devono segnare con le stesse mani, leggibili nello stesso modo. Quello
+   che cambia da un personaggio all'altro è la tavolozza, e sta qui; il modo di
+   disegnare una mano non cambia mai.
+   I colori pieni passano da variabili CSS, quindi le funzioni di disegno non
+   sanno chi stanno disegnando. Le sfumature, che le variabili non possono
+   attraversare, sono generate una per personaggio.
+   Resta da fare, quando un secondo personaggio esisterà davvero: la GEOMETRIA
+   di testa, capelli e abito è ancora quella di Nima. Serve chi la disegna. */
+const PERSONAGGI = {
+  nima: {
+    pelle:'#F2DAB2', pelleLuce:'#FFF7E6', pelleOmbra:'#D9B385', bordo:'#A8803F',
+    pelleA:'#FFEDCC', pelleB:'#F2DAB2', pelleC:'#D6AE78',      /* la sfumatura */
+    palmoA:'#FCE3CC', palmoB:'#F4D2B1', palmoC:'#DDB48D',
+    unghia:'#FFF4E4', guance:'#EF9E8E', occhi:'#1E3138', tratti:'#2A3E46',
+    capelli:'#2F6E7C', capelliBordo:'#21525E', capelliLuce:'#4C93A0',
+    abitoA:'#3E8C99', abitoB:'#215C6C', polsinoA:'#3D8895', polsinoB:'#1F5867',
+    ali:true
   }
-  if(occhi === null) occhi = occhioBase(95,5.6)+occhioBase(120,5.6);
+};
+let PGID = 'nima';
+const PG = () => PERSONAGGI[PGID] || PERSONAGGI.nima;
+/* le sfumature sono per personaggio: una variabile CSS non entra in un <defs> */
+const grad = nome => 'url(#g'+nome+'-'+PGID+')';
 
-  return '<g class="testa" transform="rotate('+tilt+' 107 56)">'+
+/* le variabili di tavolozza di un personaggio, da mettere sul suo disegno */
+function tavolozzaCSS(p){
+  return '--pelle:'+p.pelle+';--pelle-luce:'+p.pelleLuce+';--pelle-ombra:'+p.pelleOmbra+
+         ';--bordo-pelle:'+p.bordo+';--unghia:'+p.unghia+';--guance:'+p.guance+
+         ';--occhi:'+p.occhi+';--tratti:'+p.tratti+';--capelli:'+p.capelli+
+         ';--capelli-bordo:'+p.capelliBordo+';--capelli-luce:'+p.capelliLuce;
+}
+
+/* ================= IL NON MANUALE, A CANALI =================
+   In LIS l'espressione non è un'emozione: è grammatica. E i suoi canali sono
+   indipendenti — le sopracciglia segnano la domanda, la bocca l'intensità, il
+   capo l'affermazione o la negazione — e si combinano fra loro.
+   Per questo stanno separati. Un volto con un nome è una COMBINAZIONE di
+   canali, non un disegno a sé: aggiungere una domanda negativa non vuol dire
+   disegnare una settima faccia, vuol dire mettere insieme due canali che già
+   esistono. Un segno può anche scriverli a mano:
+     nm:{sopracciglia:'alzate', bocca:'stretta', capo:'inclinato'}
+   Il capo è l'unico canale che si muove, ed è giusto che si muova: in LIS lo
+   scuotimento del capo è la negazione, e il cenno è l'affermazione. */
+
+const SOPRACCIGLIA = {
+  neutre:    ['M84 42 q7.5 -2.5 15 -.5','M116 41.5 q7.5 -2 15 .5'],
+  alzate:    ['M83 38 q8 -7 16 -3','M116 35 q8 -5 16 3'],
+  alte:      ['M84 39 q7 -4 15 -1','M116 38 q8 -3 15 1'],
+  corrugate: ['M83 45 q8 -6 16 -1','M116 44 q8 -5 16 1'],
+  abbassate: ['M83 43 q8 4 16 1','M116 44 q8 -3 16 -1']
+};
+const BOCCA = {
+  chiusa:        {d:'M98 68 q8 3 16 0'},
+  stretta:       {d:'M97 69 q9 5 18 -1'},
+  giu:           {d:'M97 71 q9 -5 18 -1'},
+  sorriso:       {d:'M95 65 q12 10 23 -1'},
+  sorrisoGrande: {d:'M94 64 q12 12 24 -1', dentro:'M97 66 q9 7 18 0'},
+  aperta:        {ovale:true}
+};
+const OCCHI = {
+  aperti:    5.6,
+  socchiusi: 4.2,
+  chiusi:    'chiusi'
+};
+const CAPO = {
+  dritto:    {incl:0},
+  inclinato: {incl:-4},
+  indietro:  {incl:6},
+  scuote:    {incl:0, mov:'capoScuote'},
+  annuisce:  {incl:0, mov:'capoAnnuisce'}
+};
+/* i volti con un nome: combinazioni, non disegni */
+const VOLTI = {
+  neutro:      {},
+  domanda:     {sopracciglia:'alzate',    bocca:'stretta',       capo:'inclinato'},
+  nega:        {sopracciglia:'abbassate', bocca:'giu',           capo:'scuote'},
+  affermativo: {sopracciglia:'neutre',    bocca:'sorriso',       occhi:'socchiusi', capo:'annuisce'},
+  intenso:     {sopracciglia:'corrugate', bocca:'aperta'},
+  sorriso:     {sopracciglia:'alte',      bocca:'sorrisoGrande', occhi:'chiusi'}
+};
+const VOLTO_BASE = {sopracciglia:'neutre', bocca:'chiusa', occhi:'aperti', capo:'dritto'};
+
+function occhioSVG(cx, ry){
+  return '<ellipse cx="'+cx+'" cy="53" rx="5.4" ry="'+ry+'" fill="#FFFDF6" '+
+           'stroke="var(--tratti)" stroke-width="1.3"/>'+
+         '<circle cx="'+cx+'" cy="53.6" r="3.1" fill="var(--occhi)"/>'+
+         '<circle cx="'+(cx+1.5)+'" cy="52" r="1.15" fill="#FFFFFF"/>';
+}
+function occhiSVG(quale){
+  const v = OCCHI[quale];
+  if(v === 'chiusi')
+    return '<g fill="none" stroke="var(--occhi)" stroke-width="2.8" stroke-linecap="round">'+
+             '<path d="M90 54 q5 -6 10 0"/><path d="M115 54 q5 -6 10 0"/></g>';
+  return occhioSVG(95, v) + occhioSVG(120, v);
+}
+function boccaSVG(quale){
+  const b = BOCCA[quale] || BOCCA.chiusa;
+  if(b.ovale)
+    return '<ellipse cx="106" cy="70" rx="7.5" ry="5.4" fill="#8A4038"/>'+
+           '<path d="M100 69 q6 3 12 0" fill="none" stroke="#C97A6A" stroke-width="1.6"/>';
+  return (b.dentro ? '<path d="'+b.dentro+'" fill="#C4635C"/>' : '')+
+         '<path d="'+b.d+'" fill="none" stroke="var(--tratti)" stroke-width="2.6" '+
+           'stroke-linecap="round" stroke-linejoin="round"/>';
+}
+
+function faceSVG(nm){
+  /* un nome è una combinazione già scritta; un oggetto la scrive sul posto */
+  const scelte = Object.assign({}, VOLTO_BASE,
+    typeof nm === 'string' ? (VOLTI[nm] || {}) : (nm || {}));
+  const capo = CAPO[scelte.capo] || CAPO.dritto;
+  const cigli = SOPRACCIGLIA[scelte.sopracciglia] || SOPRACCIGLIA.neutre;
+
+  const disegno =
     /* orecchie a punta */
-    '<path d="M78 50 l -8 -6 3 14 z" fill="'+PELLE+'" stroke="'+BORDO+'" stroke-width="1.8" stroke-linejoin="round"/>'+
-    '<path d="M136 50 l 8 -6 -3 14 z" fill="'+PELLE+'" stroke="'+BORDO+'" stroke-width="1.8" stroke-linejoin="round"/>'+
+    '<path d="M78 50 l -8 -6 3 14 z" fill="var(--pelle)" stroke="var(--bordo-pelle)" stroke-width="1.8" stroke-linejoin="round"/>'+
+    '<path d="M136 50 l 8 -6 -3 14 z" fill="var(--pelle)" stroke="var(--bordo-pelle)" stroke-width="1.8" stroke-linejoin="round"/>'+
     /* viso */
-    '<ellipse cx="107" cy="53" rx="30" ry="32" fill="'+PELLE+'"/>'+
-    '<ellipse cx="107" cy="53" rx="30" ry="32" fill="none" stroke="'+BORDO+'" stroke-width="1.8" opacity=".7"/>'+
-    '<ellipse cx="107" cy="66" rx="20" ry="16" fill="#FBEBD0" opacity=".55"/>'+
+    '<ellipse cx="107" cy="53" rx="30" ry="32" fill="var(--pelle)"/>'+
+    '<ellipse cx="107" cy="53" rx="30" ry="32" fill="none" stroke="var(--bordo-pelle)" stroke-width="1.8" opacity=".7"/>'+
+    '<ellipse cx="107" cy="66" rx="20" ry="16" fill="var(--pelle-luce)" opacity=".4"/>'+
     /* guance */
-    '<ellipse cx="88" cy="63" rx="6" ry="3.6" fill="#EF9E8E" opacity=".45"/>'+
-    '<ellipse cx="126" cy="63" rx="6" ry="3.6" fill="#EF9E8E" opacity=".45"/>'+
-    occhi +
-    '<g stroke="#2A3E46" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none">'+brow+mouth+'</g>'+
+    '<ellipse cx="88" cy="63" rx="6" ry="3.6" fill="var(--guance)" opacity=".45"/>'+
+    '<ellipse cx="126" cy="63" rx="6" ry="3.6" fill="var(--guance)" opacity=".45"/>'+
+    occhiSVG(scelte.occhi) +
+    '<g stroke="var(--tratti)" stroke-width="2.6" stroke-linecap="round" fill="none">'+
+      '<path d="'+cigli[0]+'"/><path d="'+cigli[1]+'"/></g>'+
+    boccaSVG(scelte.bocca)+
     /* capelli: caschetto con ciuffo e conchiglia fermacapelli */
-    '<path d="M76 52 q-3 -35 31 -35 q34 0 31 35 q-5 -15 -13 -20 q-8 7 -18 7 q-10 0 -18 -7 q-8 5 -13 20 z" fill="#2F6E7C"/>'+
-    '<path d="M76 52 q-3 -35 31 -35 q34 0 31 35 q-5 -15 -13 -20 q-8 7 -18 7 q-10 0 -18 -7 q-8 5 -13 20 z" fill="none" stroke="#21525E" stroke-width="1.6"/>'+
-    '<path d="M92 22 q12 9 28 4" fill="none" stroke="#4C93A0" stroke-width="2.4" stroke-linecap="round" opacity=".8"/>'+
-    '<path d="M83 34 q6 -10 16 -13" fill="none" stroke="#4C93A0" stroke-width="2" stroke-linecap="round" opacity=".6"/>'+
-    '<path d="M131 40 q4 -12 -2 -18" fill="none" stroke="#4C93A0" stroke-width="2" stroke-linecap="round" opacity=".55"/>'+
+    '<path d="M76 52 q-3 -35 31 -35 q34 0 31 35 q-5 -15 -13 -20 q-8 7 -18 7 q-10 0 -18 -7 q-8 5 -13 20 z" fill="var(--capelli)"/>'+
+    '<path d="M76 52 q-3 -35 31 -35 q34 0 31 35 q-5 -15 -13 -20 q-8 7 -18 7 q-10 0 -18 -7 q-8 5 -13 20 z" fill="none" stroke="var(--capelli-bordo)" stroke-width="1.6"/>'+
+    '<g fill="none" stroke="var(--capelli-luce)" stroke-linecap="round">'+
+      '<path d="M92 22 q12 9 28 4" stroke-width="2.4" opacity=".8"/>'+
+      '<path d="M83 34 q6 -10 16 -13" stroke-width="2" opacity=".6"/>'+
+      '<path d="M131 40 q4 -12 -2 -18" stroke-width="2" opacity=".55"/></g>'+
     '<g transform="translate(132,32) rotate(18) scale(.42)">'+
       '<path d="M0 14 C -14 6 -16 -8 -8 -14 C 2 -20 14 -14 14 -2 C 14 6 8 12 0 14 z" fill="#F5C9B4" stroke="#C98B72" stroke-width="3"/>'+
       '<g stroke="#C98B72" stroke-width="2.4" fill="none"><path d="M0 14 L -2 -14"/><path d="M0 14 L -11 -8"/><path d="M0 14 L 11 -6"/></g>'+
-    '</g>'+
     '</g>';
+
+  /* il movimento del capo sta su un gruppo suo, cosi' l'inclinazione fissa
+     resta un attributo e non viene sovrascritta dall'animazione */
+  return '<g class="testa"'+(capo.mov ? ' data-mov="'+capo.mov+'"' : '')+'>'+
+    '<g transform="rotate('+capo.incl+' 107 56)">'+ disegno +'</g></g>';
 }
 
 /* ---------- Nima ----------
@@ -1248,7 +1335,7 @@ function corpoSVG(){
     /* collo */
     '<path d="M99 78 h16 v12 q-8 4 -16 0 z" fill="'+OMBRA+'"/>'+
     /* abito a foglia */
-    '<path d="M95 84 q12 -6 24 0 l7 30 q3 11 8 19 q-27 11 -54 0 q5 -8 8 -19 z" fill="url(#gAbito)"/>'+
+    '<path d="M95 84 q12 -6 24 0 l7 30 q3 11 8 19 q-27 11 -54 0 q5 -8 8 -19 z" fill="'+grad('Abito')+'"/>'+
     '<path d="M87 133 q14 6 27 6 q13 0 27 -6" fill="none" stroke="#1E5361" stroke-width="2" opacity=".5"/>'+
     '<path d="M107 88 v48" fill="none" stroke="#1E5361" stroke-width="1.4" opacity=".35"/>'+
     /* cintura con conchiglia */
@@ -1277,7 +1364,7 @@ function braccio(spalla, px, py, fuori){
 /* il braccio sinistro, quando il segno usa una mano sola: sta giù, rilassato */
 function braccioRiposo(){
   return tuboBraccio('M121 96 C 129 106 133 118 131 129', 7.2) +
-    '<circle cx="131" cy="132" r="6.4" fill="url(#gPelle)" stroke="'+BORDO+'" stroke-width="1.6"/>';
+    '<circle cx="131" cy="132" r="6.4" fill="'+grad('Pelle')+'" stroke="'+BORDO+'" stroke-width="1.6"/>';
 }
 /* Dove cade il polso, data la posizione del palmo e la rotazione della mano.
    Il braccio deve arrivare lì e non al centro del palmo: altrimenti la manica
@@ -1288,51 +1375,325 @@ function polsoDi(px, py, r, scorcio){
   return [n2(px - d*Math.sin(a)), n2(py + d*Math.cos(a))];
 }
 
-/* ---------- la traccia del movimento ----------
-   Nei dizionari dei segni le frecce sono notazione, non decorazione: un disegno
-   fermo non distingue un tocco da uno scorrimento, e una mano che si muove
-   avanti da una che si muove in basso. Ogni movimento ha quindi il suo
-   percorso, disegnato intorno al palmo e in parte coperto dalla mano, con la
-   punta che sporge: si vede da dove parte e dove arriva.
-   Il percorso e' in coordinate relative al centro del palmo, allineate allo
-   schermo — e' il movimento visto da chi guarda, non dalla mano. */
-/* La punta doppia si usa SOLO dove il movimento e' davvero simmetrico — un
-   dondolio, una scossa da un lato all'altro. Dove la mano va in una direzione
-   e poi torna, la punta e' una sola: il verso che conta e' quello dell'andata,
-   e due punte lo renderebbero ambiguo. */
-const TRACCE = {
-  tap:          {d:'M -38 20 L -16 20'},
-  doppioTap:    {d:'M -38 20 L -16 20'},
-  giu:          {d:'M 30 -18 L 30 24'},
-  su:           {d:'M 30 24 L 30 -18'},
-  suDue:        {d:'M 44 24 L 44 -18'},   /* MELA: la mano e' coricata e larga, la freccia sta piu' in fuori */
-  avanti:       {d:'M -30 30 L -10 16'},
-  staccaAvanti: {d:'M 8 34 L -24 28'},
-  oscilla:      {d:'M -26 28 A 28 28 0 0 0 26 28', due:1},
-  scuoti:       {d:'M -30 26 L 30 26', due:1},
-  ruota:        {d:'M -28 18 A 32 32 0 0 1 10 34'},
-  cerchio:      {d:'M 0 -32 A 32 32 0 1 1 -1.2 -32'},
-  nuota:        {d:'M -36 28 q 9 -10 18 0 t 18 0 t 13 -5'},
-  chiudi:       {d:'M -36 24 L -17 24 M 36 24 L 17 24'},
-  scorriFuori:  {d:'M 20 26 L -30 26'},
-  colpisce:     {d:'M -32 -26 L -8 -26'},
-  avvicina:     {d:'M -30 28 Q -8 24 10 6'},
-  annuisce:     {d:'M 30 -18 A 30 30 0 0 1 33 16', due:1}
+/* ================= IL MOVIMENTO, COME DATO =================
+   Un movimento non è più il nome di un'animazione scritta a mano: è la
+   descrizione di quello che la mano fa. Da quel dato si ricavano DUE cose che
+   prima erano scritte separatamente — e che quindi uscivano dall'accordo ogni
+   volta che si cambiava un segno:
+     · i fotogrammi dell'animazione, suonati dall'orologio dei segni;
+     · la freccia, generata dal percorso invece di essere piazzata a occhio.
+   È il motivo per cui spostare la rotazione di MELA aveva lasciato la sua
+   freccia sotto la mano: erano due verità separate.
+
+   Un movimento è un elenco di TAPPE. Ogni tappa è [dx, dy, gradi, scala]:
+   dove va la mano, di quanto gira, e quanto si avvicina a chi guarda.
+   Gradi e scala si possono omettere. Le coordinate sono relative al centro del
+   palmo e allineate allo schermo: è il movimento visto da chi guarda.
+
+     volte    quante volte ripete l'andata e il ritorno in un ciclo
+     attesa   frazione di ciclo tenuta ferma alla fine, come una pausa
+     chiuso   il percorso torna da solo al punto di partenza (un cerchio):
+              non si ripercorre all'indietro
+     durata   millisecondi di un ciclo
+     ritmo    accelerazione fra una tappa e l'altra
+     perno    origine della rotazione, se non è il centro della mano
+     freccia  forza la freccia: 'una' | 'due' | 'coppia' | 'nessuna'
+     fotogrammi  via di fuga: fotogrammi espliciti, per quello che non è
+              un movimento della mano nello spazio (una scia, una fase) */
+
+const MOVIMENTI = {
+  /* --- contatti --- */
+  tap:          {tappe:[[0,0],[7,2]], attesa:.12, durata:1500},
+  doppioTap:    {tappe:[[0,0],[6,1]], volte:2, attesa:.2, durata:1800},
+  colpisce:     {tappe:[[-5,0,-4],[2,0,3]], volte:2, attesa:.25, durata:1800},
+
+  /* --- traslazioni --- */
+  giu:          {tappe:[[0,-11,-3],[0,10,4]], durata:1600},
+  su:           {tappe:[[0,11],[0,-10]], durata:1600},
+  suDue:        {tappe:[[0,7,0,.98],[0,-6,0,1.03]], volte:2, durata:2000},
+  scorriFuori:  {tappe:[[3,0],[-15,1,-5,1.03]], attesa:.22, durata:2200},
+  avvicina:     {tappe:[[-4,4,0,.96],[5,-3,0,1.04]], volte:2, durata:2000},
+
+  /* --- verso chi guarda: la mano cresce --- */
+  avanti:       {tappe:[[0,0],[-4,0,0,1.2]], durata:1500},
+  staccaAvanti: {tappe:[[0,0],[-7,-1,0,1.14]], attesa:.3, durata:2100},
+  chiudi:       {tappe:[[0,0,0,1.14],[0,0,0,.86]], durata:1800, freccia:'coppia'},
+
+  /* --- rotazioni --- */
+  oscilla:      {tappe:[[0,0,-15],[0,0,15]], durata:1100},
+  /* la mano a riposo non sta segnando: niente freccia, o sembrerebbe un segno */
+  riposo:       {tappe:[[0,0,-8],[0,0,8]], durata:2600, freccia:'nessuna'},
+  /* va da una parte all'altra e torna: qui la punta doppia e' giusta */
+  scuoti:       {tappe:[[-6,0,-12],[6,0,12]], durata:1300, freccia:'due'},
+  ruota:        {tappe:[[0,0,0],[0,0,-78]], durata:1900},
+  /* SÌ: il perno sta sul polso, non al centro della mano: è quello che lo
+     rende un cenno invece di un'oscillazione */
+  annuisce:     {tappe:[[0,0,-7],[0,0,23]], volte:2, attesa:.15, durata:1900, perno:'50% 88%'},
+
+  /* --- percorsi --- */
+  nuota:        {tappe:[[-10,4,7],[0,-3,-6],[10,3,6]], durata:1900},
+  cerchio:      {tappe:[[8,0],[0,8],[-8,0],[0,-8]], chiuso:true, durata:2000, ritmo:'linear'},
+
+  /* --- il capo: in LIS il cenno e lo scuotimento sono grammatica, non un
+         vezzo dell'animazione, e vanno sullo stesso orologio delle mani --- */
+  capoScuote:   {tappe:[[0,0,-7],[0,0,7]], volte:2, attesa:.2, durata:1700},
+  capoAnnuisce: {tappe:[[0,0,0],[0,3,4]], volte:2, attesa:.2, durata:1600},
+  capoInclina:  {tappe:[[0,0,0],[0,0,-3]], attesa:.5, durata:2600},
+
+  /* --- le lettere in cui il movimento fa parte della lettera --- */
+  letteraGancio:{tappe:[[0,0,0],[4,7,14]], attesa:.22, durata:2400},
+  letteraScatto:{tappe:[[0,0],[0,5]], attesa:.6, durata:1800},
+  letteraSecco: {tappe:[[0,0],[0,6]], attesa:.65, durata:1600},
+  letteraOnda:  {tappe:[[0,0,-8],[0,0,8]], durata:1900},
+
+  /* --- vie di fuga: non sono la mano che si muove nello spazio --- */
+  scia:         {durata:1900, ritmo:'linear',
+                 fotogrammi:[{offset:0,strokeDashoffset:9},{offset:1,strokeDashoffset:-200}]},
+  traccia:      {durata:2400, ritmo:'ease-in-out',
+                 fotogrammi:[{offset:0,strokeDashoffset:96,opacity:.9},
+                             {offset:.55,strokeDashoffset:0,opacity:.9},
+                             {offset:.86,strokeDashoffset:0,opacity:.9},
+                             {offset:1,strokeDashoffset:0,opacity:0}]},
+  faseUno:      {durata:4800, ritmo:'linear',
+                 fotogrammi:[{offset:0,opacity:1},{offset:.4,opacity:1},{offset:.48,opacity:0},
+                             {offset:.9,opacity:0},{offset:.98,opacity:1},{offset:1,opacity:1}]},
+  faseDue:      {durata:4800, ritmo:'linear',
+                 fotogrammi:[{offset:0,opacity:0},{offset:.4,opacity:0},{offset:.48,opacity:1},
+                             {offset:.9,opacity:1},{offset:.98,opacity:0},{offset:1,opacity:0}]}
 };
-function tracciaMov(m){
-  const t = TRACCE[m];
-  if(!t) return '';
-  const punte = ' marker-end="url(#pFreccia)"' + (t.due ? ' marker-start="url(#pFreccia)"' : '');
+
+/* una tappa completa: quello che manca prende il valore di riposo */
+function tappaPiena(t){
+  return [t[0]||0, t[1]||0, t[2]||0, t[3]===undefined ? 1 : t[3]];
+}
+/* la posa a un istante `q` fra 0 e 1 lungo l'elenco delle tappe */
+function posaDi(tappe, q){
+  const n = tappe.length - 1;
+  if(n <= 0) return tappaPiena(tappe[0] || [0,0]);
+  const x = Math.max(0, Math.min(1, q)) * n;
+  const i = Math.min(n - 1, Math.floor(x)), f = x - i;
+  const a = tappaPiena(tappe[i]), b = tappaPiena(tappe[i+1]);
+  return a.map((v,k)=> v + (b[k]-v)*f);
+}
+/* i fotogrammi di un ciclo: andata, ritorno, ripetizioni, pausa */
+function fotogrammiDi(m){
+  if(m.fotogrammi) return m.fotogrammi;
+  const tappe = m.tappe || [[0,0]];
+  const n = tappe.length - 1;
+  const volte = m.volte || 1;
+  const attesa = m.attesa || 0;
+
+  /* una passata lungo il percorso: avanti e, se non è chiuso, indietro */
+  const passata = [];
+  for(let i=0;i<=n;i++) passata.push(i/Math.max(n,1));
+  if(!m.chiuso) for(let i=n-1;i>=0;i--) passata.push(i/Math.max(n,1));
+  else passata.push(0);
+
+  const q = [];
+  for(let v=0; v<volte; v++)
+    passata.forEach((t,i)=>{ if(v>0 && i===0) return; q.push(t); });
+
+  const utile = 1 - attesa;
+  const frames = q.map((t,i)=>{
+    const p = posaDi(tappe, t);
+    return {
+      offset: +(q.length>1 ? (i/(q.length-1))*utile : 0).toFixed(4),
+      transform: 'translate('+n2(p[0])+'px,'+n2(p[1])+'px) rotate('+n2(p[2])+'deg) scale('+n2(p[3])+')',
+      easing: m.ritmo || 'ease-in-out'
+    };
+  });
+  /* la pausa: la posa di partenza tenuta fino in fondo al ciclo */
+  if(attesa > 0) frames.push(Object.assign({}, frames[0], {offset:1}));
+  return frames;
+}
+
+/* Comando del moto, da attaccare dove serve guardare un segno con calma:
+   rallentatore, fermo immagine e passo a passo. Prima il rallentatore era un
+   trucco che riscriveva `animationDuration` su un nodo trovato a tentoni: si
+   poteva usare una volta sola, e non toccava ne' le lettere ne' le fasi di un
+   segno composto. Adesso e' l'orologio dei segni, e vale per tutto. */
+function comandoMoto(){
+  const barra = document.createElement('div');
+  barra.className = 'moto-barra';
+  barra.innerHTML =
+    '<button class="moto-b" type="button" data-fa="lento">🐢 <span>Lento</span></button>'+
+    '<button class="moto-b on" type="button" data-fa="normale">▶ <span>Normale</span></button>'+
+    '<button class="moto-b" type="button" data-fa="ferma">⏸ <span>Fermo</span></button>'+
+    '<button class="moto-b" type="button" data-fa="indietro" aria-label="un passo indietro">⏪</button>'+
+    '<button class="moto-b" type="button" data-fa="avanti" aria-label="un passo avanti">⏩</button>';
+  barra.addEventListener('click', e=>{
+    const b = e.target.closest('.moto-b'); if(!b) return;
+    const fa = b.dataset.fa;
+    if(fa==='lento')        MOTO.velocizza(.3);
+    else if(fa==='normale') MOTO.velocizza(1);
+    else if(fa==='ferma')   MOTO.ferma();
+    else if(fa==='avanti')  MOTO.passo(.08);
+    else                    MOTO.passo(-.08);
+    if(fa==='avanti' || fa==='indietro') return;
+    barra.querySelectorAll('.moto-b').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+  });
+  return barra;
+}
+
+/* ---------- la freccia, ricavata dal percorso ----------
+   Nei dizionari dei segni le frecce sono notazione. Qui non si disegnano a
+   mano: si leggono dalle tappe. Lo spostamento vero è di pochi punti e
+   finirebbe sempre sotto la mano, quindi la forma del percorso viene
+   ingrandita a una lunghezza leggibile e spostata di fianco, dalla parte in
+   cui la mano non c'è — che si ricava da dove puntano le dita. */
+const FRECCIA_LUNG = 46;   /* lunghezza leggibile */
+const FRECCIA_FUORI = 31;  /* quanto si scosta dal palmo */
+const FRECCIA_ARCO = 50;   /* raggio dell'arco: appena oltre le punte delle dita */
+
+function frecciaDi(m, r, px, py){
+  if(!m || m.fotogrammi || m.freccia === 'nessuna') return null;
+  const tappe = (m.tappe || []).map(tappaPiena);
+  if(tappe.length < 2) return null;
+  const a = tappe[0];
+
+  /* quanto conta lo spostamento, quanto la rotazione, quanto la profondità */
+  let lontano = a, dist = 0;
+  tappe.forEach(t=>{
+    const d = Math.hypot(t[0]-a[0], t[1]-a[1]);
+    if(d > dist){ dist = d; lontano = t; }
+  });
+  let giroMin = a[2], giroMax = a[2], scalaMax = 0;
+  tappe.forEach(t=>{
+    giroMin = Math.min(giroMin, t[2]); giroMax = Math.max(giroMax, t[2]);
+    scalaMax = Math.max(scalaMax, Math.abs(t[3]-1));
+  });
+  const giro = giroMax - giroMin;
+
+  /* le dita: servono a scegliere da che parte scostare la freccia */
+  const rad = (r||0)*Math.PI/180, fx = Math.sin(rad), fy = -Math.cos(rad);
+
+  /* L'ordine dei casi è l'ordine di importanza. La profondità viene prima
+     della traslazione: ACQUA si sposta di sette punti ma il suo movimento è
+     «in avanti», e una freccia laterale racconterebbe la cosa sbagliata. */
+  if(m.freccia === 'coppia'){
+    /* si stringe o si allarga: due frecce che convergono */
+    return {d:'M -36 26 L -17 26 M 36 26 L 17 26', due:false};
+  }
+  if(scalaMax > .08){
+    /* verso chi guarda: non si può disegnare di fronte, si indica di sbieco */
+    return {d:'M -30 30 L -10 16', due:false};
+  }
+  if(dist >= 3){
+    /* Traslazione: la forma del percorso, ingrandita a una lunghezza
+       leggibile e scostata di fianco, dalla parte in cui la mano non c'è —
+       che si ricava da dove puntano le dita.
+       Punta singola: di un movimento che va e torna conta il verso
+       dell'andata, e due punte lo renderebbero ambiguo. */
+    const ux = (lontano[0]-a[0])/dist, uy = (lontano[1]-a[1])/dist;
+    const s1 = -uy*fx + ux*fy, s2 = uy*fx - ux*fy;   /* due perpendicolari */
+    const px = s1 < s2 ? -uy : uy, py = s1 < s2 ? ux : -ux;
+    const k = FRECCIA_LUNG/dist;
+    const cx = px*FRECCIA_FUORI - ux*FRECCIA_LUNG/2;
+    const cy = py*FRECCIA_FUORI - uy*FRECCIA_LUNG/2;
+    const punti = tappe.map(t=>[ (t[0]-a[0])*k + cx, (t[1]-a[1])*k + cy ]);
+    return {d:'M '+punti.map(p=>n2(p[0])+' '+n2(p[1])).join(' L '), due:false};
+  }
+  if(giro >= 4){
+    /* Rotazione: un arco appena oltre le punte delle dita, dalla parte in cui
+       girano. Punta doppia solo per le vere alternanze — una mano che oscilla
+       fra due estremi in un colpo solo.
+       Se le dita puntano verso la testa, l'arco si sposta dalla parte opposta:
+       sull'occhio coprirebbe l'espressione, che in LIS è grammatica. */
+    const R = FRECCIA_ARCO;
+    let base = r || 0;
+    if(px !== undefined){
+      const tx = 107-px, ty = 53-py, tl = Math.hypot(tx,ty) || 1;
+      if((fx*tx + fy*ty)/tl > .25) base += 180;
+    }
+    const p = g => {
+      const b = (base+g)*Math.PI/180;
+      return n2(R*Math.sin(b))+' '+n2(-R*Math.cos(b));
+    };
+    const verso = giroMax > giroMin ? 1 : 0;
+    const alternanza = (m.volte || 1) === 1 &&
+                       Math.abs(giroMin+giroMax) < 0.55*giro;
+    return {d:'M '+p(giroMin)+' A '+R+' '+R+' 0 0 '+verso+' '+p(giroMax),
+            due: alternanza};
+  }
+  return null;
+}
+
+function tracciaMov(nome, r, px, py){
+  const m = MOVIMENTI[nome];
+  const f = frecciaDi(m, r, px, py);
+  if(!f) return '';
+  const due = m.freccia === 'due' ? true : m.freccia === 'una' ? false : f.due;
+  const punte  = ' marker-end="url(#pFreccia)"' + (due ? ' marker-start="url(#pFreccia)"' : '');
+  const orli   = ' marker-end="url(#pFrecciaOrlo)"' + (due ? ' marker-start="url(#pFrecciaOrlo)"' : '');
   return '<g class="traccia" aria-hidden="true">'+
-    '<path class="mov-guida" d="'+t.d+'"'+punte+'/>'+
-    '<path class="mov-scia" d="'+t.d+'"/>'+
+    '<path class="mov-orlo" d="'+f.d+'"'+orli+'/>'+
+    '<path class="mov-guida" d="'+f.d+'"'+punte+'/>'+
+    '<path class="mov-scia" d="'+f.d+'" data-mov="scia"/>'+
     '</g>';
 }
+
+/* ================= L'OROLOGIO DEI SEGNI =================
+   Un orologio solo per tutte le mani, tenuto dalla Web Animations API invece
+   che da classi CSS. Serve a tre cose che prima non si potevano fare:
+   rallentare davvero, fermare l'immagine, e andare avanti a passi — che per
+   imparare un segno conta più del rallentatore.
+   Il contorno del gioco — onde, lucciole, ali — resta su animazioni CSS e non
+   entra qui: quello è decorazione, e non deve rallentare con i segni. */
+const MOTO = {
+  vive: [],
+  velocita: 1,
+  fermo: false,
+
+  /* accende quello che è appena stato disegnato, e dimentica quello che non
+     c'è più: ogni battuta rifà il suo pezzo di pagina da zero */
+  accendi(radice){
+    this.vive = this.vive.filter(a => a.effect && a.effect.target &&
+                                      a.effect.target.isConnected);
+    (radice || document).querySelectorAll('[data-mov]').forEach(n=>{
+      if(n.__moto) return;
+      const m = MOVIMENTI[n.dataset.mov];
+      if(!m) return;
+      let a;
+      try{
+        a = n.animate(fotogrammiDi(m), {duration:m.durata || 1800,
+                                        iterations:Infinity, easing:'linear'});
+      }catch(e){ return; }          /* browser senza Web Animations: resta fermo */
+      a.playbackRate = this.velocita;
+      if(this.fermo) a.pause();
+      n.__moto = a;
+      this.vive.push(a);
+    });
+    return this;
+  },
+  velocizza(v){
+    this.velocita = v; this.fermo = false;
+    this.vive.forEach(a=>{ a.playbackRate = v; a.play(); });
+    return this;
+  },
+  ferma(){
+    this.fermo = true;
+    this.vive.forEach(a=>a.pause());
+    return this;
+  },
+  riprendi(){ return this.velocizza(this.velocita || 1); },
+  /* avanti o indietro di una frazione di ciclo, a immagine ferma */
+  passo(frazione){
+    this.ferma();
+    this.vive.forEach(a=>{
+      const d = (a.effect.getTiming().duration) || 1800;
+      let t = (a.currentTime || 0) + d*frazione;
+      t = ((t % d) + d) % d;
+      a.currentTime = t;
+    });
+    return this;
+  }
+};
 
 /* una mano posata nel suo luogo. `sinistra` ribalta il disegno: è l'altra mano,
    e una mano sinistra non è una destra girata di lato, è il suo specchio. */
 function manoPosata(px, py, h, r, m, or, sinistra, scorcio){
-  const dentro = handSVG(h, sinistra ? -(r||0) : (r||0), 'mv-'+(m||'tap'), or, scorcio);
+  const dentro = handSVG(h, sinistra ? -(r||0) : (r||0), m || 'tap', or, scorcio);
   return '<g class="hand" style="transform:translate('+px+'px,'+py+'px)">'+
     (sinistra ? '<g transform="scale(-1,1)">'+dentro+'</g>' : dentro)+
     '</g>';
@@ -1363,7 +1724,7 @@ function figuraSegno(f){
     const wq = polsoDi(q[0], q[1], f.due.r, sq);
     corpo  += braccio(SPALLA_SINISTRA, wq[0], wq[1], 14);
     tracce += '<g transform="translate('+q[0]+','+q[1]+') scale(-1,1)">'+
-                tracciaMov(f.due.m || f.m)+'</g>';
+                tracciaMov(f.due.m || f.m, f.due.r, q[0], q[1])+'</g>';
     mani   += manoPosata(q[0], q[1], f.due.h || f.h, f.due.r, f.due.m || f.m,
                          f.due.or || f.or, true, sq);
   }else{
@@ -1371,7 +1732,7 @@ function figuraSegno(f){
   }
   const w = polsoDi(px, py, f.r, f.scorcio);
   corpo  += braccio(SPALLA_DESTRA, w[0], w[1], -14);
-  tracce += '<g transform="translate('+px+','+py+')">'+tracciaMov(f.m)+'</g>';
+  tracce += '<g transform="translate('+px+','+py+')">'+tracciaMov(f.m, f.r, px, py)+'</g>';
   mani   += manoPosata(px, py, f.h, f.r, f.m, f.or, false, f.scorcio);
 
   return corpo + faceSVG(nm) + tracce + mani;
@@ -1385,6 +1746,8 @@ function figuraSegno(f){
 function renderSign(sign, opts){
   if(!sign) return '';
   opts = opts || {};
+  PGID = (opts.chi && PERSONAGGI[opts.chi]) ? opts.chi
+       : (sign.chi && PERSONAGGI[sign.chi]) ? sign.chi : 'nima';
   const fasi = sign.fasi || [sign];
   const piuFasi = fasi.length > 1;
 
@@ -1395,22 +1758,25 @@ function renderSign(sign, opts){
 
   const corpo = fasi.map((f,i)=>{
     const dentro = figuraSegno(Object.assign({nm:sign.nm}, f));
-    return piuFasi ? '<g class="fase fase-'+(i+1)+'">'+dentro+'</g>' : dentro;
+    return piuFasi ? '<g class="fase" data-mov="fase'+(i?'Due':'Uno')+'">'+dentro+'</g>' : dentro;
   }).join('');
 
   return '<svg viewBox="'+vb+'" xmlns="http://www.w3.org/2000/svg" role="img" '+
-    'class="segno'+(piuFasi?' segno-fasi':'')+'" '+
+    'class="segno pg-'+PGID+(piuFasi?' segno-fasi':'')+'" '+
     'aria-label="segno segnaposto: '+(sign.g||'')+'">'+
-    (opts.compatto||sign.faceOnly ? '' : aliSVG()) +
+    (opts.compatto || sign.faceOnly || !PG().ali ? '' : aliSVG()) +
     corpo + '</svg>';
 }
 
-/* riquadro che tiene dentro la testa e tutte le mani del segno */
+/* Riquadro che tiene dentro la testa, tutte le mani del segno e le loro
+   frecce: la freccia arriva a una cinquantina di punti dal palmo, e con un
+   margine più stretto veniva tagliata via — e la freccia è contenuto. */
+const RIQUADRO_MANO = 48;
 function riquadroSuMano(punti){
   let x0 = 72, x1 = 142, y0 = 12, y1 = 96;
   (punti||[]).forEach(p=>{
-    x0 = Math.min(x0, p[0]-30); x1 = Math.max(x1, p[0]+30);
-    y0 = Math.min(y0, p[1]-30); y1 = Math.max(y1, p[1]+30);
+    x0 = Math.min(x0, p[0]-RIQUADRO_MANO); x1 = Math.max(x1, p[0]+RIQUADRO_MANO);
+    y0 = Math.min(y0, p[1]-RIQUADRO_MANO); y1 = Math.max(y1, p[1]+RIQUADRO_MANO);
   });
   const w = x1-x0, h = y1-y0, lato = Math.max(w,h);
   x0 -= (lato-w)/2; y0 -= (lato-h)/2;
@@ -1423,8 +1789,12 @@ function riquadroSuMano(punti){
    come tutto il resto: una descrizione scritta non sostituisce una persona che segna.
    Mano destra, vista come la vede chi la esegue: palmo in avanti, pollice a sinistra. */
 
-const PELLE='#F5DFBB', OMBRA='#E7CDA2', BORDO='#A8803F',
-      LUCE_PELLE='#FFF7E6', OMBRA_PELLE='#D9B385', UNGHIA='#FFF4E4';
+/* I colori passano da variabili CSS: così le funzioni di disegno non sanno
+   quale personaggio stanno disegnando, e un personaggio nuovo è una voce in
+   PERSONAGGI invece di una copia del codice. */
+const PELLE='var(--pelle)', OMBRA='var(--pelle-ombra)', BORDO='var(--bordo-pelle)',
+      LUCE_PELLE='var(--pelle-luce)', OMBRA_PELLE='var(--pelle-ombra)',
+      UNGHIA='var(--unghia)';
 
 /* Un dito e' un tratto spesso arrotondato, disegnato in quattro passate:
    bordo, pelle, ombra da un lato, luce dall'altro. Le due passate interne
@@ -1464,18 +1834,18 @@ function unghiaDito(cx, cy, ang, w){
 function palmo(x,y,w,h,rx){
   rx = rx || 13;
   return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="'+rx+'" '+
-           'fill="url(#gPelle)" stroke="'+BORDO+'" stroke-width="2.3"/>'+
+           'fill="'+grad('Pelle')+'" stroke="'+BORDO+'" stroke-width="2.3"/>'+
          '<path d="M '+(x+rx*0.5)+' '+(y+2.4)+' h '+(w-rx)+'" fill="none" stroke="'+LUCE_PELLE+'" '+
            'stroke-width="2.6" stroke-linecap="round" opacity=".5"/>'+
          '<path d="M '+(x+rx*0.6)+' '+(y+h-2.6)+' h '+(w-rx*1.2)+'" fill="none" stroke="'+OMBRA_PELLE+'" '+
            'stroke-width="2.6" stroke-linecap="round" opacity=".4"/>';
 }
 function polso(){
-  return '<path d="M -13 28 L -13 44 q13 5 26 0 L 13 28 z" fill="url(#gPelle)" stroke="'+BORDO+'" stroke-width="2.3" stroke-linejoin="round"/>'+
+  return '<path d="M -13 28 L -13 44 q13 5 26 0 L 13 28 z" fill="'+grad('Pelle')+'" stroke="'+BORDO+'" stroke-width="2.3" stroke-linejoin="round"/>'+
          '<path d="M -10 42 q10 3.4 20 0" fill="none" stroke="'+OMBRA_PELLE+'" stroke-width="2.4" stroke-linecap="round" opacity=".45"/>';
 }
 function polsoSu(){
-  return '<path d="M -13 -28 L -13 -44 q13 -5 26 0 L 13 -28 z" fill="url(#gPelle)" stroke="'+BORDO+'" stroke-width="2.3" stroke-linejoin="round"/>'+
+  return '<path d="M -13 -28 L -13 -44 q13 -5 26 0 L 13 -28 z" fill="'+grad('Pelle')+'" stroke="'+BORDO+'" stroke-width="2.3" stroke-linejoin="round"/>'+
          '<path d="M -10 -42 q10 -3.4 20 0" fill="none" stroke="'+LUCE_PELLE+'" stroke-width="2.4" stroke-linecap="round" opacity=".45"/>';
 }
 /* dita ripiegate sul palmo: si vedono le nocche, non le dita intere */
@@ -1484,7 +1854,7 @@ function nocche(x0, x1, alto, basso){
   basso = basso===undefined ? -2 : basso;
   const w = x1-x0, h = basso-alto;
   let s = '<rect x="'+x0+'" y="'+alto+'" width="'+w+'" height="'+h+'" rx="6" '+
-            'fill="url(#gPelle)" stroke="'+BORDO+'" stroke-width="2.3"/>'+
+            'fill="'+grad('Pelle')+'" stroke="'+BORDO+'" stroke-width="2.3"/>'+
           '<path d="M '+(x0+3.4)+' '+(alto+2.4)+' h '+(w-6.8)+'" fill="none" stroke="'+LUCE_PELLE+'" '+
             'stroke-width="2.2" stroke-linecap="round" opacity=".5"/>';
   const n = Math.round(w/9);
@@ -1518,7 +1888,9 @@ function suAperte(quali, ang){
 }
 
 /* alcune lettere non sono solo una forma: il movimento fa parte della lettera */
-function mov(nome, contenuto){ return '<g class="lm lm-'+nome+'">'+contenuto+'</g>'; }
+function mov(nome, contenuto){
+  return '<g class="lm" data-mov="lettera'+nome[0].toUpperCase()+nome.slice(1)+'">'+contenuto+'</g>';
+}
 
 /* ---- le lettere dell'alfabeto manuale ---- */
 const ALFA_DIS = {
@@ -1639,7 +2011,7 @@ const ALFA_DIS = {
  Z: ()=> polso()+palmo(-18,-6,36,34)+nocche(-2,16)+
          dito('M -13 -2 L -13 -36')+
          dito('M -19 8 L -7 3', 11)+
-         '<path class="tratto-z" d="M -34 -40 L -8 -40 L -34 -20 L -8 -20" fill="none" '+
+         '<path class="tratto-z" data-mov="traccia" d="M -34 -40 L -8 -40 L -34 -20 L -8 -20" fill="none" '+
          'stroke="#FFC15E" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" opacity=".85"/>',
 
  /* --- cinque lettere per i nomi e le parole straniere --- */
@@ -1648,7 +2020,7 @@ const ALFA_DIS = {
  J: ()=> mov('gancio', polso()+palmo(-20,-6,40,34)+nocche(-18,9)+
          dito('M 15 -6 L 15 -36', 9)+
          dito('M -20 9 L -7 4', 11))+
-         '<path class="tratto-j" d="M 26 -30 L 26 -2 q 0 12 -13 12 q -10 0 -12 -8" fill="none" '+
+         '<path class="tratto-j" data-mov="traccia" d="M 26 -30 L 26 -2 q 0 12 -13 12 q -10 0 -12 -8" fill="none" '+
          'stroke="#FFC15E" stroke-width="3.2" stroke-linecap="round" opacity=".85"/>',
 
  /* Indice e medio tesi e aperti, pollice teso in mezzo alle due dita; scatto del polso. */
@@ -1690,107 +2062,29 @@ MOVE_CSS.textContent = `
    sta davanti: senza, una mano sulla guancia sembra disegnata sulla guancia. */
 .hand{transform-box:view-box;transform-origin:0 0;
   filter:drop-shadow(2.2px 3px 2.2px rgba(38,20,4,.34))}
+/* Qui non ci sono piu' fotogrammi: i movimenti stanno in MOVIMENTI e li suona
+   l'orologio dei segni (MOTO). Restano soltanto i perni — da dove gira una
+   mano, un capo, una lettera — perche' quelli sono geometria, non movimento. */
 .mv{transform-box:fill-box;transform-origin:50% 60%}
+.lm{transform-box:fill-box;transform-origin:50% 85%}
+.testa{transform-box:view-box;transform-origin:107px 84px}
+.tratto-j{stroke-dasharray:72;stroke-dashoffset:72}
+.tratto-z{stroke-dasharray:90;stroke-dashoffset:90}
 /* la traccia del movimento: percorso tenue, punta piena, e una scia che corre
    lungo il percorso nel verso in cui va la mano */
 .traccia{pointer-events:none}
-.mov-guida{fill:none;stroke:#FFC76E;stroke-width:2.2;stroke-linecap:round;opacity:.6}
+/* l'orlo scuro sotto la freccia: dorata su un viso chiaro, senza, sparisce */
+.mov-orlo{fill:none;stroke:#3A2408;stroke-width:5;stroke-linecap:round;
+  stroke-linejoin:round;opacity:.42}
+.mov-guida{fill:none;stroke:#FFCF82;stroke-width:2.4;stroke-linecap:round;
+  stroke-linejoin:round;opacity:.92}
 .mov-scia{fill:none;stroke:#FFF8E4;stroke-width:3.1;stroke-linecap:round;
-  stroke-dasharray:9 200;animation:scia 1.9s linear infinite}
-@keyframes scia{from{stroke-dashoffset:9}to{stroke-dashoffset:-200}}
-/* I movimenti sono descritti nel piano dello schermo: x che cresce va verso
-   destra di chi guarda, cioe' verso la SINISTRA di Nima. «Fuori», per la sua
-   mano destra, e' quindi verso le x che calano. */
-.mv-tap{animation:mTap 1.5s ease-in-out infinite}
-.mv-doppioTap{animation:mDT 1.8s ease-in-out infinite}
-.mv-giu{animation:mGiu 1.6s ease-in-out infinite}
-.mv-su{animation:mSu 1.6s ease-in-out infinite}
-.mv-avanti{animation:mAv 1.5s ease-in-out infinite}
-.mv-oscilla{animation:mOsc 1.1s ease-in-out infinite}
-.mv-ruota{animation:mRot 1.9s ease-in-out infinite}
-.mv-cerchio{animation:mCer 2s linear infinite}
-.mv-nuota{animation:mNuo 1.9s ease-in-out infinite}
-.mv-chiudi{animation:mChi 1.8s ease-in-out infinite}
-/* NOME: contatto sotto il mento, poi scorrimento verso il fuori */
-.mv-scorriFuori{animation:mScorri 2.2s ease-in-out infinite}
-/* FAME: due colpi sul fianco, verso il corpo */
-.mv-colpisce{animation:mColpo 1.8s ease-in-out infinite}
-/* MANGIARE, BERE: la mano sale verso la bocca e torna */
-.mv-avvicina{animation:mAvvic 2s ease-in-out infinite}
-/* MELA: due passate verso l'alto davanti alla bocca */
-.mv-suDue{animation:mSuDue 2s ease-in-out infinite}
-/* ACQUA: dal contatto sulla guancia, in avanti */
-.mv-staccaAvanti{animation:mStacca 2.1s ease-in-out infinite}
-/* NO: l'indice va e torna, da un lato all'altro */
-.mv-scuoti{animation:mScuoti 1.3s ease-in-out infinite}
-/* SI: la mano annuisce al polso, come fa la testa. Il perno sta in basso,
-   sul polso, non al centro della mano: e' quello che lo rende un cenno. */
-.mv-annuisce{transform-origin:50% 88%;animation:mAnnuisce 1.9s ease-in-out infinite}
-@keyframes mTap{0%,100%{transform:translate(0,0)}45%{transform:translate(7px,2px)}}
-@keyframes mDT{0%,100%{transform:translate(0,0)}20%{transform:translate(6px,1px)}40%{transform:translate(0,0)}60%{transform:translate(6px,1px)}80%{transform:translate(0,0)}}
-@keyframes mGiu{0%{transform:translate(0,-11px) rotate(-3deg)}55%{transform:translate(0,10px) rotate(4deg)}100%{transform:translate(0,-11px) rotate(-3deg)}}
-@keyframes mSu{0%{transform:translate(0,11px)}55%{transform:translate(0,-10px)}100%{transform:translate(0,11px)}}
-@keyframes mAv{0%,100%{transform:scale(1)}50%{transform:scale(1.2) translate(-4px,0)}}
-@keyframes mOsc{0%,100%{transform:rotate(-15deg)}50%{transform:rotate(15deg)}}
-@keyframes mRot{0%,100%{transform:rotate(0)}50%{transform:rotate(-78deg)}}
-@keyframes mCer{0%{transform:translate(8px,0)}25%{transform:translate(0,8px)}50%{transform:translate(-8px,0)}75%{transform:translate(0,-8px)}100%{transform:translate(8px,0)}}
-@keyframes mNuo{
-  0%,100%{transform:translate(-10px,4px) rotate(7deg)}
-  30%{transform:translate(0,-3px) rotate(-6deg)}
-  65%{transform:translate(10px,3px) rotate(6deg)}
-}
-@keyframes mChi{0%,100%{transform:scale(1.14)}50%{transform:scale(.86)}}
-@keyframes mScorri{
-  0%,16%{transform:translate(3px,0) rotate(0deg) scale(1)}
-  60%{transform:translate(-15px,1px) rotate(-5deg) scale(1.03)}
-  78%,100%{transform:translate(3px,0) rotate(0deg) scale(1)}
-}
-@keyframes mColpo{
-  0%,100%{transform:translate(-5px,0) rotate(-4deg)}
-  18%{transform:translate(2px,0) rotate(3deg)}
-  36%{transform:translate(-5px,0) rotate(-4deg)}
-  54%{transform:translate(2px,0) rotate(3deg)}
-  72%{transform:translate(-5px,0) rotate(-4deg)}
-}
-@keyframes mAvvic{
-  0%,100%{transform:translate(-4px,4px) scale(.96)}
-  24%{transform:translate(5px,-3px) scale(1.04)}
-  48%{transform:translate(-4px,4px) scale(.96)}
-  72%{transform:translate(5px,-3px) scale(1.04)}
-}
-@keyframes mSuDue{
-  0%,100%{transform:translate(0,7px) scale(.98)}
-  24%{transform:translate(0,-6px) scale(1.03)}
-  50%{transform:translate(0,7px) scale(.98)}
-  74%{transform:translate(0,-6px) scale(1.03)}
-}
-@keyframes mStacca{
-  0%,22%{transform:translate(0,0) scale(1)}
-  62%{transform:translate(-7px,-1px) scale(1.14)}
-  82%,100%{transform:translate(0,0) scale(1)}
-}
-@keyframes mScuoti{
-  0%,100%{transform:translate(-6px,0) rotate(-12deg)}
-  50%{transform:translate(6px,0) rotate(12deg)}
-}
-@keyframes mAnnuisce{
-  0%,8%{transform:rotate(-7deg)}
-  28%{transform:rotate(23deg)}
-  48%{transform:rotate(-7deg)}
-  68%{transform:rotate(23deg)}
-  88%,100%{transform:rotate(-7deg)}
-}
-/* Un segno composto si guarda per fasi: si alternano, perche' un disegno fermo
-   non puo' mostrare due momenti nello stesso istante. Non e' decorazione:
-   e' il segno, quindi non si ferma nemmeno con prefers-reduced-motion. */
-.segno-fasi .fase-1{animation:faseUno 4.8s ease-in-out infinite}
-.segno-fasi .fase-2{animation:faseDue 4.8s ease-in-out infinite}
-@keyframes faseUno{0%,40%{opacity:1}48%,90%{opacity:0}98%,100%{opacity:1}}
-@keyframes faseDue{0%,40%{opacity:0}48%,90%{opacity:1}98%,100%{opacity:0}}
-/* le ali battono: due colpi rapidi e una pausa, come un insetto */
+  stroke-linejoin:round;stroke-dasharray:9 200}
+/* le ali battono: due colpi rapidi e una pausa, come un insetto. Questa e'
+   decorazione, non un segno: resta su CSS e non rallenta con le mani. */
 .ali{animation:ali 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 55%}
 @keyframes ali{0%,100%{transform:scaleX(1) rotate(0deg)}18%{transform:scaleX(.82) rotate(-1.5deg)}36%{transform:scaleX(1.02) rotate(1deg)}54%{transform:scaleX(.88) rotate(-1deg)}}
-.corpo,.testa{transform-box:fill-box}
+.corpo{transform-box:fill-box}
 `;
 document.head.appendChild(MOVE_CSS);
 
@@ -1802,27 +2096,41 @@ DEFS.setAttribute('aria-hidden','true');
 DEFS.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden';
 DEFS.innerHTML =
   '<svg width="0" height="0" focusable="false"><defs>'+
-    /* volume della pelle: luce in alto a sinistra, ombra in basso a destra */
-    '<linearGradient id="gPelle" x1="0" y1="0" x2=".9" y2="1">'+
-      '<stop offset="0" stop-color="#FFEDCC"/><stop offset=".5" stop-color="#F2DAB2"/>'+
-      '<stop offset="1" stop-color="#D6AE78"/></linearGradient>'+
-    /* il palmo e\' piu\' rosato del dorso: e\' un indizio di orientamento */
-    '<linearGradient id="gPalmo" x1="0" y1="0" x2=".9" y2="1">'+
-      '<stop offset="0" stop-color="#FCE3CC"/><stop offset=".5" stop-color="#F4D2B1"/>'+
-      '<stop offset="1" stop-color="#DDB48D"/></linearGradient>'+
-    '<linearGradient id="gPolsino" x1="0" y1="0" x2="0" y2="1">'+
-      '<stop offset="0" stop-color="#3D8895"/><stop offset="1" stop-color="#1F5867"/></linearGradient>'+
+    /* una sfumatura per personaggio: una variabile CSS non entra in un <defs>,
+       quindi qui i colori vanno scritti, e si scrivono da PERSONAGGI */
+    Object.keys(PERSONAGGI).map(id=>{
+      const p = PERSONAGGI[id];
+      const sfuma = (nome, a, b, c) =>
+        '<linearGradient id="g'+nome+'-'+id+'" x1="0" y1="0" x2=".9" y2="1">'+
+          '<stop offset="0" stop-color="'+a+'"/><stop offset=".5" stop-color="'+b+'"/>'+
+          '<stop offset="1" stop-color="'+c+'"/></linearGradient>';
+      const ritto = (nome, a, b) =>
+        '<linearGradient id="g'+nome+'-'+id+'" x1="0" y1="0" x2="0" y2="1">'+
+          '<stop offset="0" stop-color="'+a+'"/><stop offset="1" stop-color="'+b+'"/></linearGradient>';
+      return sfuma('Pelle', p.pelleA, p.pelleB, p.pelleC)+
+             sfuma('Palmo', p.palmoA, p.palmoB, p.palmoC)+
+             ritto('Polsino', p.polsinoA, p.polsinoB)+
+             ritto('Abito', p.abitoA, p.abitoB);
+    }).join('')+
     '<linearGradient id="gAla" x1="0" y1="0" x2="1" y2="1">'+
       '<stop offset="0" stop-color="#C8FBF1" stop-opacity=".78"/>'+
       '<stop offset=".55" stop-color="#7FE0CE" stop-opacity=".44"/>'+
       '<stop offset="1" stop-color="#4BB9A8" stop-opacity=".22"/></linearGradient>'+
-    '<linearGradient id="gAbito" x1="0" y1="0" x2="0" y2="1">'+
-      '<stop offset="0" stop-color="#3E8C99"/><stop offset="1" stop-color="#215C6C"/></linearGradient>'+
-    /* la punta della freccia: una sola, che si gira da se\' anche in partenza */
+    /* la punta della freccia: una sola, che si gira da sé anche in partenza,
+       e il suo orlo scuro perché si veda anche sopra un viso chiaro */
     '<marker id="pFreccia" viewBox="0 0 10 10" refX="8.5" refY="5" '+
       'markerWidth="4.6" markerHeight="4.6" orient="auto-start-reverse">'+
-      '<path d="M0 1.2 L9 5 L0 8.8 z" fill="#FFC15E"/></marker>'+
+      '<path d="M0 1.2 L9 5 L0 8.8 z" fill="#FFCF82"/></marker>'+
+    '<marker id="pFrecciaOrlo" viewBox="-2 -2 14 14" refX="8.5" refY="5" '+
+      'markerWidth="4.6" markerHeight="4.6" orient="auto-start-reverse">'+
+      '<path d="M0 1.2 L9 5 L0 8.8 z" fill="none" stroke="#3A2408" '+
+      'stroke-width="3.4" stroke-linejoin="round" opacity=".42"/></marker>'+
   '</defs></svg>';
+/* e le tavolozze, una classe per personaggio */
+const TAV = document.createElement('style');
+TAV.textContent = ':root{'+tavolozzaCSS(PERSONAGGI.nima)+'}'+
+  Object.keys(PERSONAGGI).map(id=>'.pg-'+id+'{'+tavolozzaCSS(PERSONAGGI[id])+'}').join('');
+document.head.appendChild(TAV);
 document.body.appendChild(DEFS);
 
 /* ================= OGGETTI DI SCENA ================= */
@@ -2153,6 +2461,7 @@ function runBeat(){
     el.chi.textContent=V.guscio; el.testo.className=''; el.testo.textContent=b.text;
     el.nima.innerHTML='<div class="glow"></div>'+
       '<div style="width:62%;margin:0 auto">'+OGG.conchiglia+'</div>';
+    MOTO.accendi(el.nima);
     setGloss('IL GUSCIO');
     el.avanti.hidden=false; el.avanti.textContent=V.apri;
     waiting=false;
@@ -2180,6 +2489,7 @@ function next(){ bi++; S.beat=bi; save(); runBeat(); }
 /* Il palco sa se dentro c'e' una prova: da li' dipende se mostrare la scena o il gioco. */
 function mostraGioco(acceso){
   annullaTrascinamento();
+  if(!acceso) MOTO.velocizza(1);   /* fuori dalla prova i segni tornano a tempo */
   el.gioco.hidden = !acceso;
   el.stage.classList.toggle('in-gioco', acceso);
   if(acceso) portaInVista(el.stage);
@@ -2193,7 +2503,7 @@ function portaInVista(nodo){
 
 if(V.tocca) document.getElementById('tapTesto').textContent = V.tocca;
 
-const IDLE = {g:'', h:'piatta', or:'dorso', l:'neutroBasso', m:'oscilla', r:-4, nm:'neutro'};
+const IDLE = {g:'', h:'piatta', or:'dorso', l:'neutroBasso', m:'riposo', r:-4, nm:'neutro'};
 function setGloss(txt){
   el.gloss.textContent = txt || '';
   el.gloss.classList.toggle('on', !!txt);
@@ -2201,6 +2511,7 @@ function setGloss(txt){
 function mostraSegno(sign, gloss){
   if(!sign) return;
   el.nima.innerHTML = '<div class="glow"></div>' + renderSign(sign);
+  MOTO.accendi(el.nima);
   setGloss(gloss!==undefined ? gloss : (sign.g||''));
 }
 /* Nima compita: una lettera alla volta, dentro una tavoletta, con la parola
@@ -2222,6 +2533,7 @@ function mostraCompitato(word){
   function tick(){
     if(!document.body.contains(box)) return;
     box.innerHTML = letterGlyph(L[i]);
+    MOTO.accendi(box);
     riga.querySelectorAll('b').forEach(b=>b.classList.toggle('on', +b.dataset.k === i));
     setGloss(word + ' · ' + L[i]);
     i=(i+1)%L.length;
@@ -2361,6 +2673,7 @@ function giocoSpell(word, senzaTempo){
     '</div>';
   document.getElementById('apriGuscio2').onclick = apriTaccuino;
 
+  MOTO.accendi(el.gioco);
   const parola=document.getElementById('parola'), ruota=document.getElementById('ruota'),
         fb=document.getElementById('fb'), barra=document.getElementById('barra'), istr=document.getElementById('istr');
 
@@ -2371,6 +2684,7 @@ function giocoSpell(word, senzaTempo){
         (fase==='guarda'||fatta ? letterGlyph(L1) : '<span style="color:#43606E;font-size:22px">?</span>')+
         (fatta?'<b>'+L1+'</b>':'')+'</div>';
     }).join('');
+    accendi();
     /* la casella che tocca adesso accetta anche una forma trascinata dalla ruota */
     if(fase==='gioca'){
       const attiva = parola.querySelector('.slot-l.att');
@@ -2380,6 +2694,7 @@ function giocoSpell(word, senzaTempo){
       });
     }
   }
+  function accendi(){ MOTO.accendi(el.gioco); }
   function disegnaRuota(){
     const n=set.length, R=34;
     ruota.querySelectorAll('.settore').forEach(s=>s.remove());
@@ -2395,6 +2710,7 @@ function giocoSpell(word, senzaTempo){
       rendiTrascinabile(b, L1);
       ruota.appendChild(b);
     });
+    accendi();
   }
   function scegli(L1,b){
     if(fase!=='gioca' || !b) return;
@@ -2484,6 +2800,7 @@ function giocoRiddle(b){
     '<p class="feedback" id="fb"></p>'+
     '<div class="gioco-foot" id="foot"></div>';
 
+  MOTO.accendi(el.gioco);
   const cont=document.getElementById('ogg'), fb=document.getElementById('fb'),
         barra=document.getElementById('barra'), foot=document.getElementById('foot');
 
@@ -2524,6 +2841,7 @@ function giocoRiddle(b){
   });
 
   /* portare la cosa sul segno vale come toccarla */
+  MOTO.accendi(el.gioco);
   rendiBersaglio(document.getElementById('segnoBersaglio'), chiave => {
     const i = opts.indexOf(chiave);
     if(i>=0) rispondi(chiave, cont.children[i]);
@@ -2534,12 +2852,16 @@ function giocoRiddle(b){
   guscioBtn.onclick=apriTaccuino; foot.appendChild(guscioBtn);
 
   if(rallenta){
+    /* Occhio di Lince: il segno rallenta, poi si ferma davvero, e si torna a
+       guardarlo a velocita' normale. Prima si poteva usare una volta sola. */
     const r=document.createElement('button');
     r.className='btn ghost'; r.type='button'; r.textContent=P.indovina.bottoneRallenta;
+    let giro = 0;
     r.onclick=()=>{
-      const g=el.gioco.querySelector('.hand .mv');
-      if(g){ g.style.animationDuration='4.2s'; }
-      r.disabled=true; r.textContent=P.indovina.rallentato;
+      giro = (giro+1) % 3;
+      if(giro===1){ MOTO.velocizza(.3); r.textContent=P.indovina.rallentato; }
+      else if(giro===2){ MOTO.ferma(); r.textContent=P.indovina.fermato; }
+      else { MOTO.velocizza(1); r.textContent=P.indovina.bottoneRallenta; }
     };
     foot.appendChild(r);
   }
@@ -2550,7 +2872,7 @@ function giocoRiddle(b){
     if(tempo<=0){
       clearInterval(timer);
       fb.className='feedback'; fb.textContent=P.indovina.tempoFinito;
-      const g=el.gioco.querySelector('.hand .mv'); if(g) g.style.animationDuration='3.4s';
+      MOTO.velocizza(.45);      /* scaduto il tempo, Nima ripete piu' piano */
       barra.hidden=true;
     }
   },100);
@@ -2576,6 +2898,7 @@ function giocoSyntax(){
     '<p class="feedback" id="fb"></p>'+
     '<div class="gioco-foot" id="foot"></div>';
 
+  MOTO.accendi(el.gioco);
   const frase=document.getElementById('frase'), pool=document.getElementById('blocchi'),
         fb=document.getElementById('fb'), foot=document.getElementById('foot');
 
@@ -2619,6 +2942,7 @@ function giocoSyntax(){
       if(!usato) rendiTrascinabile(b, id);
       pool.appendChild(b);
     });
+    MOTO.accendi(el.gioco);
   }
   function controlla(){
     if(slots.indexOf(null)>=0){ fb.className='feedback'; fb.textContent=''; return; }
@@ -2679,6 +3003,7 @@ function disegnaAlfabeto(){
     'title="cerca la lettera '+L+' su Spread the Sign">'+letterGlyph(L)+'<b>'+L+'</b></a>';
   document.getElementById('alfaGrid').innerHTML = ALFA_IT.map(cella).join('');
   document.getElementById('alfaGridNomi').innerHTML = ALFA_NOMI.map(cella).join('');
+  MOTO.accendi(document.getElementById('tabAlfa'));
 }
 function disegnaParole(){
   const c=document.getElementById('tabParole');
@@ -2692,9 +3017,12 @@ function disegnaParole(){
       '<a class="sts" href="'+stsLink(u[0])+'" target="_blank" rel="noopener">▶ il segno vero su Spread the Sign</a></div>'+
     '</div>';
   }).join('');
+  MOTO.accendi(c);
 }
 function apriTaccuino(){
   disegnaAlfabeto(); disegnaParole();
+  const posto = document.getElementById('motoQui');
+  if(posto && !posto.firstChild) posto.appendChild(comandoMoto());
   document.getElementById('dlgTacc').showModal();
 }
 document.querySelectorAll('.tb').forEach(b=>{
@@ -2765,6 +3093,7 @@ function boot(hot){
   scenery(true, document.getElementById('sceneryTitolo'));
   /* sulla copertina Nima saluta: e' lei che si incontra per prima, non la spiaggia */
   document.getElementById('titoloNima').innerHTML = renderSign(SIGNS.ciao);
+  MOTO.accendi(document.getElementById('titoloNima'));
   const salvato = load();
   if(salvato && (salvato.xp>0 || salvato.scena>0)){
     Object.assign(S, salvato);

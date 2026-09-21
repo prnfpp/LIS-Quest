@@ -104,6 +104,10 @@ nessuna funzione.
 - [x] Dialoghi separati dal motore, modificabili senza toccare il codice
 - [x] Dieci segni ridisegnati su descrizioni di chi segna, con orientamento del palmo, seconda mano e segni composti
 - [x] Mani con volume, unghie, pieghe, ombra portata e freccia del movimento: il disegno è il contenuto finale
+- [x] Movimento descritto come dato: freccia ricavata dal percorso, non piazzata a occhio
+- [x] Rallentatore, fermo immagine e passo a passo su ogni segno, lettere comprese
+- [x] Non manuale a canali indipendenti: il capo scuote e annuisce come vuole la grammatica
+- [x] Tavolozza dei personaggi separata dal disegno, per i capitoli che vengono
 - [x] Passaggio grafico: isola a strati (giorno e notte), Nima ridisegnata, mani leggibili nelle prove
 - [ ] Passaggio a struttura modulare per capitoli (una scena per file)
 - [ ] Capitolo 2: il viaggio in nave
