@@ -1100,10 +1100,14 @@ const MANO = {
   carpo: [[-23,-32,0],[23,-32,0],[21,-12,0],[-21,-12,0]],
   spess: 8.5,                                   /* mezza altezza del palmo */
   dita: [
-    {id:'ind', base:[-16.5,26,1.5], ossa:[26,16,11], largh:[5.9,5.4,4.7,4.0], incl:-2},
-    {id:'med', base:[-5.5,29,2],    ossa:[28,18,11], largh:[6.0,5.5,4.8,4.0], incl:0},
-    {id:'anu', base:[ 5.0,26,2],    ossa:[26,17,11], largh:[5.6,5.2,4.5,3.8], incl:2},
-    {id:'mig', base:[14.5,20,1],    ossa:[21,13,9],  largh:[5.0,4.6,4.0,3.4], incl:5}
+    /* Le lunghezze stanno in rapporto col palmo, e il rapporto conta piu' dei
+       millimetri: in una mano vera un indice e' circa tre quarti del palmo,
+       non quanto il palmo. Con dita lunghe come il palmo la mano diventa un
+       rastrello; corte e grosse legge come una mano. */
+    {id:'ind', base:[-16.5,26,1.5], ossa:[23,14,10], largh:[7.4,6.8,6.0,5.2], incl:-2},
+    {id:'med', base:[-5.5,29,2],    ossa:[25,16,10], largh:[7.6,7.0,6.1,5.2], incl:0},
+    {id:'anu', base:[ 5.0,26,2],    ossa:[23,15,10], largh:[7.1,6.6,5.8,5.0], incl:2},
+    {id:'mig', base:[14.5,20,1],    ossa:[18,12,8],  largh:[6.4,5.9,5.2,4.5], incl:5}
   ],
   /* Il pollice non è un dito come gli altri: parte più in basso, guarda già
      verso il palmo, e la sua opposizione è quello che rende una mano una mano.
@@ -1117,7 +1121,15 @@ const MANO = {
      rimediare perché era una questione di lunghezza, non di angoli.
      Il primo osso resta in gran parte dentro la massa della mano — l'eminenza
      tenar, che il palmo disegna come parte di sé. */
-  pollice: {base:[-19,-25,-2], ossa:[34,24,20], largh:[7.6,6.6,5.6,4.7]},
+  /* Il pollice si misura dalla sua radice vera — l'articolazione alla base del
+     palmo — ma di quella radice NON si disegna niente: il metacarpo sta dentro
+     la massa della mano, e il palmo lo include nel proprio inviluppo (e' quel
+     cuscinetto che si chiama eminenza tenar). Di un pollice, guardandolo, si
+     vedono DUE falangi. Disegnarlo per intero lo faceva partire dal polso e
+     attraversare il palmo come un bastone.
+     Le due falangi visibili sono corte e grosse: un pollice lungo come un dito
+     e' la cosa che fa sembrare una mano una mano di cartone. */
+  pollice: {base:[-19,-26,-2], ossa:[38,23,17], largh:[8.2,7.4,6.4,5.4]},
   scala: 0.345,         /* da millimetri a unità del disegno */
   fuoco: 300            /* prospettiva gentile: le parti vicine crescono poco */
 };
@@ -1153,6 +1165,44 @@ function contornoMorbido(h, raggio){
     const p1 = [b[0]+va[0]*la, b[1]+va[1]*la], p2 = [b[0]+vc[0]*lc, b[1]+vc[1]*lc];
     d += (i===0 ? 'M ' : ' L ') + n2(p1[0])+' '+n2(p1[1]) +
          ' Q '+n2(b[0])+' '+n2(b[1])+' '+n2(p2[0])+' '+n2(p2[1]);
+  }
+  return d+' Z';
+}
+/* Da poligono a BLOB. `contornoMorbido` smussa gli angoli, ma un rettangolo
+   smussato resta un rettangolo smussato, e un palmo con gli angoli legge come
+   una fetta di pane. Qui la curva passa per i punti MEDI dei lati e usa i
+   vertici come controlli: il risultato non ha piu' un solo angolo, e un
+   quadrilatero diventa una forma tonda. E' quello che serve per la morbidezza
+   dei riferimenti, e costa una riga per vertice. */
+/* Smussa un poligono tagliandogli gli angoli, e ripete. A ogni passo ogni
+   vertice diventa due punti a un quarto e a tre quarti dei suoi lati: il
+   poligono si avvicina a una curva. Serve perche' l'inviluppo del palmo ha
+   sedici vertici — otto punti del solido, sdoppiati sul dorso e sul palmo — e
+   un poligono di sedici lati e' già quasi se stesso: passargli una curva sola
+   attraverso i punti medi non lo arrotonda di niente. Due passi bastano a
+   togliere ogni spigolo. */
+function arrotonda(h, passi){
+  let p = h;
+  for(let k=0;k<(passi||2);k++){
+    const q = [];
+    for(let i=0;i<p.length;i++){
+      const a = p[i], b = p[(i+1)%p.length];
+      q.push([a[0]*.75+b[0]*.25, a[1]*.75+b[1]*.25],
+             [a[0]*.25+b[0]*.75, a[1]*.25+b[1]*.75]);
+    }
+    p = q;
+  }
+  return p;
+}
+
+function blob(h){
+  if(h.length < 3) return '';
+  const m = i => { const a = h[i], b = h[(i+1)%h.length];
+                   return [(a[0]+b[0])/2, (a[1]+b[1])/2]; };
+  let d = 'M '+n2(m(0)[0])+' '+n2(m(0)[1]);
+  for(let i=1;i<=h.length;i++){
+    const c = h[i%h.length], e = m(i%h.length);
+    d += ' Q '+n2(c[0])+' '+n2(c[1])+' '+n2(e[0])+' '+n2(e[1]);
   }
   return d+' Z';
 }
@@ -1215,16 +1265,16 @@ function posa(o){
 }
 const CONFIG = {
   /* --- mani piatte e aperte --- */
-  piatta:  posa({ind:TESO, med:TESO, anu:TESO, mig:TESO, pol:[28,6,6,4,2]}),
+  piatta:  posa({ind:TESO, med:TESO, anu:TESO, mig:TESO, pol:[20,14,10,6,3]}),
   cinque:  posa({ind:[14,2,4,2], med:[5,2,4,2], anu:[-6,2,4,2], mig:[-16,3,6,3],
-                 pol:[46,10,6,4,2]}),
+                 pol:[34,16,10,6,3]}),
   b:       posa({ind:TESO, med:TESO, anu:TESO, mig:TESO, pol:[-18,10,45,70,45]}),
   quattro: posa({ind:[12,2,4,2], med:[4,2,4,2], anu:[-5,2,4,2], mig:[-14,3,6,3],
                  pol:[-18,10,45,70,45]}),
 
   /* --- pugni: cambia il pollice, e cambia la lettera --- */
   pugno:   posa({pol:[-6,16,40,70,40]}),
-  a:       posa({pol:[20,2,4,2,0]}),
+  a:       posa({pol:[14,10,6,3,2]}),
   s:       posa({pol:[-12,14,45,75,45]}),
   t:       posa({pol:[2,34,34,20,8]}),
 
@@ -1234,15 +1284,15 @@ const CONFIG = {
   v:       posa({ind:[15,2,4,2], med:[-13,2,4,2], pol:[6,30,42,28,12]}),
   r:       posa({ind:[-7,10,6,2], med:[9,14,10,4], pol:[6,30,42,28,12]}),
   mignolo: posa({mig:TESO, pol:[6,30,42,28,12]}),
-  y:       posa({mig:[-16,2,4,2], pol:[54,4,4,2,0]}),
+  y:       posa({mig:[-16,2,4,2], pol:[42,10,6,3,2]}),
   corna:   posa({ind:[16,2,4,2], mig:[-16,2,4,2], pol:[4,34,44,30,14]}),
-  elle:    posa({ind:TESO, pol:[66,2,4,2,0]}),
-  pollice: posa({pol:[42,2,4,2,0]}),
-  tre:     posa({ind:[14,2,4,2], med:[2,2,4,2], pol:[50,8,6,4,2]}),
+  elle:    posa({ind:TESO, pol:[52,8,6,3,2]}),
+  pollice: posa({pol:[30,10,6,3,2]}),
+  tre:     posa({ind:[14,2,4,2], med:[2,2,4,2], pol:[38,14,8,4,2]}),
   w:       posa({ind:[16,2,4,2], med:[4,2,4,2], anu:[-10,2,4,2],
                  pol:[-2,50,42,28,14]}),
-  g:       posa({ind:TESO, pol:[78,4,6,4,2]}),
-  q:       posa({ind:TESO, pol:[72,8,10,6,2]}),
+  g:       posa({ind:TESO, pol:[58,10,8,4,2]}),
+  q:       posa({ind:TESO, pol:[54,12,10,6,2]}),
   x:       posa({ind:[2,12,78,34], pol:[8,28,38,26,12]}),
 
   /* --- mani curve: quello che raccoglie, quello che stringe ---
@@ -1280,7 +1330,7 @@ const CONFIG = {
   f:       posa({ind:[4,34,50,26], med:[3,2,4,2], anu:[-6,2,4,2], mig:[-15,3,6,3],
                  pol:[-2,27,0,5,4]}),
   /* K: indice e medio tesi e aperti, pollice teso in mezzo alle due dita */
-  k:       posa({ind:[15,2,4,2], med:[-13,2,4,2], pol:[30,10,8,4,2]})
+  k:       posa({ind:[15,2,4,2], med:[-13,2,4,2], pol:[24,16,10,5,2]})
 };
 
 /* ---------- l'orientamento ----------
@@ -1396,9 +1446,9 @@ function traslucenza(mezzaLargh){
 function occlusione(d, k){
   const q = AO*(k||1);
   return '<g fill="none" stroke="var(--pelle-ombra)" stroke-linejoin="round">'+
-    '<path d="'+d+'" stroke-width="'+n2(q*2.4)+'" opacity=".07"/>'+
-    '<path d="'+d+'" stroke-width="'+n2(q*1.3)+'" opacity=".11"/>'+
-    '<path d="'+d+'" stroke-width="'+n2(q*0.6)+'" opacity=".15"/></g>';
+    '<path d="'+d+'" stroke-width="'+n2(q*2.6)+'" opacity=".10"/>'+
+    '<path d="'+d+'" stroke-width="'+n2(q*1.4)+'" opacity=".16"/>'+
+    '<path d="'+d+'" stroke-width="'+n2(q*0.6)+'" opacity=".22"/></g>';
 }
 
 /* la fascia: la stessa catena, più stretta e spostata di lato.
@@ -1455,24 +1505,18 @@ function ditoPiegato(pt3, largh, B, opt){
     nuvola.push([pt[i][0]-dy*r, pt[i][1]+dx*r], [pt[i][0]+dy*r, pt[i][1]-dx*r],
                 [pt[i][0]+dx*r, pt[i][1]+dy*r], [pt[i][0]-dx*r, pt[i][1]-dy*r]);
   }
-  const d = contornoMorbido(inviluppo(nuvola), 1.8);
+  const d = blob(arrotonda(inviluppo(nuvola), 2));
   const tr = traslucenza(largh.reduce((a,v)=>a+v,0)/largh.length);
   const rx = -luce[0]*RIM*.55, ry = luce[1]*RIM*.55;
 
-  let s = occlusione(d, 1.0);
-  s += '<g transform="translate('+n2(rx)+','+n2(ry)+')"><path d="'+d+
+  const alone = '<g transform="translate('+n2(rx)+','+n2(ry)+')"><path d="'+d+
        '" fill="var(--carne)" stroke="var(--carne)" stroke-width="'+
        n2(RIM*(.6+tr*.7))+'" stroke-linejoin="round" opacity="'+
        n2(.26+tr*.30)+'"/></g>';
-  s += '<path d="'+d+'" fill="var(--pelle)" stroke="var(--bordo-pelle)" '+
-       'stroke-width="'+n2(ORLO)+'" stroke-linejoin="round"/>';
-  /* la falda d'ombra dal lato lontano dalla luce, come sul palmo */
-  s += '<path d="'+d+'" fill="none" stroke="var(--pelle-ombra)" stroke-width="'+
-       n2(RIM*1.5)+'" opacity=".26" transform="translate('+n2(luce[0]*1.2)+','+
-       n2(-luce[1]*1.2)+')"/>';
+  const pieno = '<path d="'+d+'" fill="'+grad('Carne')+'"/>';
   /* la luce lungo la catena: dice da che parte si avvolge il dito */
-  s += fascia(pt3, largh, lat, palmoSu ? .5 : .42, palmoSu ? 1.5 : 2.2,
-              'var(--pelle-luce)', palmoSu ? .62 : .44);
+  let s = fascia(pt3, largh, lat, palmoSu ? .5 : .42, palmoSu ? 1.5 : 2.2,
+              'var(--pelle-luce)', palmoSu ? .56 : .4);
 
   /* le pieghe dei giunti, DENTRO la massa: sono loro a dire che la' c'e' una
      nocca e non un sasso */
@@ -1497,10 +1541,10 @@ function ditoPiegato(pt3, largh, B, opt){
     const ang = Math.atan2(dy,dx)*180/Math.PI - 90;
     s += '<ellipse cx="'+n2(cx)+'" cy="'+n2(cy)+'" rx="'+n2(ux)+'" ry="'+n2(uy)+'" '+
           'transform="rotate('+n2(ang)+' '+n2(cx)+' '+n2(cy)+')" fill="var(--unghia)" '+
-          'stroke="var(--bordo-pelle)" stroke-width="'+n2(.7)+'" opacity="'+
-          n2(Math.min(1, .45+versoNoi))+'"/>';
+          'opacity="'+n2(Math.min(.8, .3+versoNoi*.6))+'"/>';
   }
-  return {svg:s, z: pt3.reduce((a,p)=>a+p[2],0)/pt3.length};
+  return {d:d, alone:alone, ao:occlusione(d, 1.0), pieno:pieno, detta:s,
+          z: pt3.reduce((a,p)=>a+p[2],0)/pt3.length};
 }
 
 /* quanto piega di piu' questo dito, in gradi, fra due segmenti consecutivi */
@@ -1529,25 +1573,22 @@ function ditoSolido(pt3, largh, B, opt){
   const media = largh.reduce((a,v)=>a+v,0)/largh.length;
   const tr = traslucenza(media);
 
-  /* 1. il buio di contatto, sotto tutto */
-  let s = occlusione(pr.d, .9);
-
-  /* 2. la traslucenza. La sagoma spostata verso l'ombra e tinta di carne, che
+  /* la traslucenza. La sagoma spostata verso l'ombra e tinta di carne, che
      sbuca sul contorno: e' quella che dice che la mano e' piena di sangue e
      non di gesso, e che la stacca dal viso e dal fondale. L'intensita' viene
      dallo SPESSORE — un mignolo sottile brilla, il pollice grosso no — perche'
      e' quello che fa la luce che attraversa un dito in controluce. */
   const rx = -luce[0]*RIM*.55, ry = luce[1]*RIM*.55;
-  s += '<g transform="translate('+n2(rx)+','+n2(ry)+')"><path d="'+pr.d+
+  const alone = '<g transform="translate('+n2(rx)+','+n2(ry)+')"><path d="'+pr.d+
          '" fill="var(--carne)" stroke="var(--carne)" stroke-width="'+
          n2(RIM*(.6+tr*.7))+'" stroke-linejoin="round" opacity="'+
          n2(.26+tr*.30)+'"/></g>';
+  /* il pieno e' una sfumatura, non un colore: e' questa a dare il volume
+     morbido, e la sfumatura e' orientata come la luce della scena */
+  const pieno = '<path d="'+pr.d+'" fill="'+grad('Carne')+'"/>';
+  let s = '';
 
-  /* 3. il pieno e il contorno */
-  s += '<path d="'+pr.d+'" fill="var(--pelle)" stroke="var(--bordo-pelle)" '+
-            'stroke-width="'+n2(ORLO)+'" stroke-linejoin="round"/>';
-
-  /* 4. l'albedo: la punta e' piu' calda del resto, perche' il sangue del
+  /* l'albedo: la punta e' piu' calda del resto, perche' il sangue del
      polpastrello e' a un decimo di millimetro dalla superficie. Il dorso,
      dove sotto ci sono tendini e ossa, resta piu' freddo — e a farlo basta
      non scaldarlo. */
@@ -1562,15 +1603,15 @@ function ditoSolido(pt3, largh, B, opt){
        n2(largh[u]*pp[3]*1.05)+'" stroke-linecap="round" opacity="'+
        n2(versoNoi > 0 ? .14 : .22)+'"/>';
 
-  /* 5. le fasce, con la rugosita' giusta per la faccia che vediamo: il palmo
-     e' privo di peli e ricco di ghiandole, quindi riflette concentrato — luce
-     stretta e accesa; il dorso e' piu' ruvido — luce larga e smorzata. */
+  /* la fascia di luce, con la rugosita' giusta per la faccia che vediamo: il
+     palmo e' privo di peli e ricco di ghiandole, quindi riflette concentrato —
+     luce stretta e accesa; il dorso e' piu' ruvido — luce larga e smorzata.
+     L'ombra non serve piu': la fa la sfumatura del pieno. */
   const palmoSu = versoNoi < 0;
   s += fascia(pt3, largh,  lat, palmoSu ? .54 : .44,
-              palmoSu ? 1.6 : 2.4, 'var(--pelle-luce)', palmoSu ? .74 : .52);
-  s += fascia(pt3, largh, -lat, .5, 2.6, 'var(--pelle-ombra)', .42);
+              palmoSu ? 1.5 : 2.2, 'var(--pelle-luce)', palmoSu ? .6 : .4);
 
-  /* 6. Le pieghe dei giunti. Non una riga di traverso su ogni nocca: una riga
+  /* Le pieghe dei giunti. Non una riga di traverso su ogni nocca: una riga
      c'e' SOLO dove il dito e' piegato davvero, e curva dalla parte in cui si
      piega. Quanto e' piegato lo si misura fra i due segmenti, quindi un dito
      teso non prende nessuna piega e uno flesso la prende marcata.
@@ -1599,7 +1640,7 @@ function ditoSolido(pt3, largh, B, opt){
          'stroke="var(--bordo-pelle)" stroke-width="'+n2(.9*MANO.scala*2.9)+
          '" stroke-linecap="round" opacity="'+n2(.16+piega*.26)+'"/>';
   }
-  /* 7. l'unghia: si vede solo se il dorso guarda chi legge. Non si sceglie. */
+  /* l'unghia: si vede solo se il dorso guarda chi legge. Non si sceglie. */
   if(versoNoi > .12 && opt.unghie !== false){
     const q = pt[u], p = pt[u-1];
     let dx = q[0]-p[0], dy = q[1]-p[1];
@@ -1609,10 +1650,10 @@ function ditoSolido(pt3, largh, B, opt){
     const ang = Math.atan2(dy,dx)*180/Math.PI - 90;
     s += '<ellipse cx="'+n2(cx)+'" cy="'+n2(cy)+'" rx="'+n2(ux)+'" ry="'+n2(uy)+'" '+
           'transform="rotate('+n2(ang)+' '+n2(cx)+' '+n2(cy)+')" fill="var(--unghia)" '+
-          'stroke="var(--bordo-pelle)" stroke-width="'+n2(.75)+'" opacity="'+
-          n2(Math.min(1, .45+versoNoi))+'"/>';
+          'opacity="'+n2(Math.min(.8, .3+versoNoi*.6))+'"/>';
   }
-  return {svg:s, z: pt3.reduce((a,p)=>a+p[2],0)/pt3.length};
+  return {d:pr.d, alone:alone, ao:occlusione(pr.d, .9), pieno:pieno, detta:s,
+          z: pt3.reduce((a,p)=>a+p[2],0)/pt3.length};
 }
 function appM3(B, v){
   /* B è [X,Y,Z] per righe della base locale: porta un vettore locale nel mondo */
@@ -1629,7 +1670,7 @@ function palmoSolido(pose, B, opt){
      le prime falangi finiscono dietro e un pugno visto dal dorso diventa
      una paletta senza dita */
   const nocche = MANO.dita.map(d=>{ const b = catenaDito(d, pose[d.id] || TESO)[0];
-                                    return [b[0], b[1]-5, b[2]]; });
+                                    return [b[0], b[1]-2, b[2]]; });
   /* Il palmo arriva fino alla base del pollice: quel cuscinetto — l'eminenza
      tenar — è quello che rende il pollice parte della mano. Senza, restava un
      dito appoggiato di fianco.
@@ -1643,8 +1684,11 @@ function palmoSolido(pose, B, opt){
   const gonfio = 1 + opp*.17;
   const ten = [MANO.pollice.base[0]*gonfio - opp*3,
                MANO.pollice.base[1], MANO.pollice.base[2] - opp*5];
-  const base = MANO.carpo.concat(nocche).concat([ten,
-                 [cat[1][0]*.82, cat[1][1]*.82, cat[1][2]*.82]]);
+  /* Il metacarpo del pollice entra TUTTO nell'inviluppo del palmo: la radice,
+     il punto a metà e la nocca. E' così che la mano si mangia il metacarpo e
+     il pollice esce dal fianco del palmo invece che dal polso. */
+  const mezzo = [(ten[0]+cat[1][0])/2, (ten[1]+cat[1][1])/2, (ten[2]+cat[1][2])/2];
+  const base = MANO.carpo.concat(nocche).concat([ten, mezzo, cat[1]]);
   const vert = [];
   base.forEach(p=>{
     vert.push([p[0], p[1], p[2] + MANO.spess]);
@@ -1653,31 +1697,31 @@ function palmoSolido(pose, B, opt){
   const mondo = vert.map(p=>appM3(B,p));
   const pro = mondo.map(proietta);
   const h = inviluppo(pro.map(q=>[q[0],q[1]]));
-  const d = contornoMorbido(h, 2.2);
+  /* Il palmo si arrotonda molto: un inviluppo convesso ha spigoli, e un palmo
+     con gli spigoli legge come una fetta di pane. Il raggio e' grande quanto
+     lo consente la corda piu' corta (ci pensa `contornoMorbido`), quindi non
+     c'e' un valore da indovinare: si chiede il massimo. */
+  const d = blob(arrotonda(h, 2));
 
   const dorso = appM3(B,[0,0,1]);
   const versoNoi = dorso[2];
   const cen = h.reduce((a,p)=>[a[0]+p[0]/h.length, a[1]+p[1]/h.length],[0,0]);
 
-  /* il buio di contatto anche qui: è quello che stacca le dita dal palmo
-     quando un pugno le ripiega davanti */
-  let s = occlusione(d, 1.35);
-  s += '<path d="'+d+'" fill="var(--pelle)" stroke="var(--bordo-pelle)" '+
-            'stroke-width="'+n2(ORLO)+'" stroke-linejoin="round"/>';
-  /* La faccia che guarda la luce si schiarisce; quella in ombra prende una
-     fascia sul bordo lontano dalla luce, non un velo piatto — un velo spegneva
-     il palmo e lo faceva sembrare di cartone. */
   const luce = opt.luce || LUCE;
   const chiaro = pun(dorso, luce) >= 0;
-  s += '<path d="'+d+'" fill="'+(chiaro ? 'var(--pelle-luce)' : 'var(--pelle-ombra)')+
-        '" opacity="'+(chiaro ? '.22' : '.2')+'"/>';
-  s += '<path d="'+d+'" fill="none" stroke="var(--pelle-ombra)" stroke-width="'+
-        n2(RIM*1.5)+'" opacity=".3" transform="translate('+n2(luce[0]*1.3)+','+
-        n2(-luce[1]*1.3)+')"/>';
+  const alone = '<g transform="translate('+n2(-luce[0]*RIM*.5)+','+
+        n2(luce[1]*RIM*.5)+')"><path d="'+d+'" fill="var(--carne)" '+
+        'stroke="var(--carne)" stroke-width="'+n2(RIM*.6)+
+        '" stroke-linejoin="round" opacity=".2"/></g>';
+  /* il pieno e' la sfumatura: e' lei a fare il volume morbido del palmo, e
+     non ha bisogno ne' di un velo piatto ne' di una falda disegnata a parte */
+  const pieno = '<path d="'+d+'" fill="'+grad('Carne')+'"/>';
+  let s = chiaro ? '<path d="'+d+'" fill="var(--pelle-luce)" opacity=".16"/>' : '';
   if(versoNoi > .12) s += nocchePalmo(pose, B);
   else if(versoNoi < -.12) s += pieghePalmo(cen);
   s += membrane(pose, B);
-  return {svg:s, z: mondo.reduce((a,p)=>a+p[2],0)/mondo.length};
+  return {d:d, alone:alone, ao:occlusione(d, 1.35), pieno:pieno, detta:s,
+          z: mondo.reduce((a,p)=>a+p[2],0)/mondo.length};
 }
 /* Le membrane fra le dita. Sono la parte più sottile della mano, e in
    controluce sono la prima cosa che si accende: chiunque abbia guardato la
@@ -1703,7 +1747,7 @@ function membrane(pose, B){
   return s;
 }
 function nocchePalmo(pose, B){
-  let s = '<g fill="var(--bordo-pelle)" opacity=".34">';
+  let s = '<g fill="var(--pelle-ombra)" opacity=".3">';
   MANO.dita.forEach(d=>{
     const a = catenaDito(d, pose[d.id] || TESO);
     const q = proietta(appM3(B, a[0]));
@@ -1713,7 +1757,7 @@ function nocchePalmo(pose, B){
 }
 function pieghePalmo(cen){
   const r = 3.2;
-  return '<g fill="none" stroke="var(--bordo-pelle)" stroke-linecap="round" opacity=".38">'+
+  return '<g fill="none" stroke="var(--pelle-ombra)" stroke-linecap="round" opacity=".3">'+
     '<path d="M '+n2(cen[0]-r*1.7)+' '+n2(cen[1]-r*.3)+' Q '+n2(cen[0])+' '+n2(cen[1]+r*.8)+
       ' '+n2(cen[0]+r*1.6)+' '+n2(cen[1]-r*.5)+'" stroke-width="'+n2(.85)+'"/>'+
     '<path d="M '+n2(cen[0]-r*1.5)+' '+n2(cen[1]+r*.9)+' Q '+n2(cen[0])+' '+n2(cen[1]+r*2)+
@@ -1751,25 +1795,68 @@ function polsinoSolido(B, opt){
    Le parti si ordinano in profondità e si disegnano dal fondo in avanti: è
    l'ordinamento che fa l'occlusione, e l'occlusione è quello che fa capire
    quale dito passa davanti a quale. */
+/* ---------- la mano intera, in tre passate ----------
+   Una mano non e' cinque sagome accostate: e' UNA sagoma. Nei disegni che
+   funzionano — quelli morbidi, da emoji tridimensionale — palmo e dita sono un
+   volume continuo, e le dita si separano con valli d'ombra, non con contorni.
+   Disegnando ogni pezzo col suo contorno si ottiene l'opposto: cinque profili
+   che si incontrano sul palmo, e quattro dita accostate leggono come stecche
+   parallele invece che come una mano.
+   Qui il contorno si ottiene in tre passate, ed e' il contorno dell'UNIONE
+   senza che nessuno la calcoli:
+     1. l'alone caldo controluce, sotto tutto;
+     2. TUTTE le sagome tracciate con una linea grossa del colore del bordo;
+     3. TUTTI i pieni, in ordine di profondita', che coprono la meta' interna
+        di quelle linee.
+   Quello che resta visibile della seconda passata e' soltanto il bordo
+   esterno: dentro, ogni pieno ha coperto il proprio. Le separazioni interne
+   le fa l'occlusione ambientale — una valle morbida, come nei riferimenti.
+   E l'ordine di profondita' resta, perche' la terza passata lo rispetta. */
 function manoSVG(nomeConfig, B, opt){
   opt = opt || {};
   const pose = CONFIG[nomeConfig] || CONFIG.piatta;
   opt = Object.assign({luce: LUCE}, opt);
 
-  const parti = [];
-  parti.push(polsinoSolido(B, opt));
-  parti.push(palmoSolido(pose, B, opt));
+  const pelle = [];
   MANO.dita.forEach(d=>{
-    const cat = catenaDito(d, pose[d.id] || TESO).map(p=>appM3(B,p));
-    parti.push(ditoSolido(cat, d.largh, B, opt));
+    const cat = catenaDito(d, pose[d.id] || TESO);
+    /* La sagoma del dito comincia SOTTO la nocca, dentro il palmo. Senza
+       questo un dito si appoggia sul bordo del palmo come uno stecco
+       incollato: la sagoma unica salda i due profili solo se si
+       sovrappongono, e con la base esattamente sulla nocca si toccavano e
+       basta. Entrando di otto millimetri il raccordo e' continuo, e le valli
+       fra un dito e l'altro le scava l'occlusione. */
+    const u = nrm(dif(cat[1], cat[0]));
+    cat[0] = dif(cat[0], per(u, 8));
+    pelle.push(ditoSolido(cat.map(q=>appM3(B,q)), d.largh, B, opt));
   });
+  /* Del pollice si disegna solo la parte che SI VEDE: il metacarpo, che e'
+     lungo quasi quanto tutto il resto del dito, sta dentro la massa della mano
+     — l'eminenza tenar — e il palmo lo include nel proprio inviluppo. Prima
+     era disegnato per intero, e il pollice sembrava partire dal POLSO e
+     attraversare il palmo come un bastone storto: era la cosa piu' sbagliata
+     di tutta la mano. Di un pollice vero si vedono due falangi. */
   const cp = catenaPollice(pose.pol).map(p=>appM3(B,p));
-  parti.push(ditoSolido(cp, MANO.pollice.largh, B, opt));
+  pelle.push(ditoSolido(cp.slice(1), MANO.pollice.largh.slice(1), B, opt));
+  pelle.push(palmoSolido(pose, B, opt));
 
-  parti.sort((a,b)=> a.z - b.z);
-  /* la luce di bordo: un alone caldo dalla parte opposta alla luce, che è
-     quello che stacca la mano dal viso e dal fondale */
-  return '<g class="mano3d">'+ parti.map(p=>p.svg).join('') +'</g>';
+  /* Il bordo esterno e' MORBIDO e caldo, non un taglio di forbici. Con un
+     bruno pieno la mano leggeva come un adesivo ritagliato e appoggiato sopra
+     al disegno — e' il difetto che salta all'occhio confrontandola con i
+     disegni morbidi che si vogliono raggiungere, dove di contorno non ce n'e'
+     nessuno. Toglierlo del tutto, pero', costa troppo: su un fondale scuro e
+     a quaranta pixel la mano perde i suoi confini, e questa mano deve restare
+     leggibile piccola. Quindi resta, ma nel tono dell'ombra e trasparente. */
+  const fuori = pelle.map(p=>
+    '<path d="'+p.d+'" fill="none" stroke="var(--pelle-ombra)" stroke-width="'+
+    n2(ORLO*2.3)+'" stroke-linejoin="round" stroke-linecap="round" opacity=".6"/>').join('');
+
+  pelle.sort((a,b)=> a.z - b.z);
+  const alone = pelle.map(p=>p.alone).join('');
+  const dentro = pelle.map(p=> p.ao + p.pieno + p.detta).join('');
+
+  return '<g class="mano3d">'+ polsinoSolido(B, opt).svg +
+         alone + fuori + dentro + '</g>';
 }
 
 
@@ -2819,7 +2906,33 @@ DEFS.innerHTML =
       const ritto = (nome, a, b) =>
         '<linearGradient id="g'+nome+'-'+id+'" x1="0" y1="0" x2="0" y2="1">'+
           '<stop offset="0" stop-color="'+a+'"/><stop offset="1" stop-color="'+b+'"/></linearGradient>';
-      return sfuma('Pelle', p.pelleA, p.pelleB, p.pelleC)+
+      /* La sfumatura della carne. Serve a una cosa sola ma decisiva: la luce
+         di questo disegno e' FISSA nello spazio dello schermo, quindi una sola
+         sfumatura orientata come lei vale per ogni pezzo della mano, qualunque
+         forma abbia — le coordinate di un gradiente SVG sono relative al
+         riquadro della sagoma che lo usa. E' per questo che si puo' avere
+         l'ombreggiatura morbida dei riferimenti senza una sfumatura per
+         pezzo: ce n'e' bisogno di una, e sta qui. */
+      const carne = (()=>{
+        const L = nrm([LUCE[0], -LUCE[1], 0]);
+        const R = 34;                    /* mezza mano, in unita' di disegno */
+        const x1 = n2(-L[0]*R), y1 = n2(-L[1]*R);
+        const x2 = n2( L[0]*R), y2 = n2( L[1]*R);
+        /* userSpaceOnUse, non objectBoundingBox: la rampa deve valere per la
+           MANO INTERA, non per ogni sagoma. Con le coordinate relative al
+           riquadro di ciascun pezzo ogni dito si prendeva tutta la rampa, dal
+           chiaro allo scuro, lungo i suoi trenta millimetri — e una mano
+           diventava cinque dita slavate ognuna con la sua luce. Le coordinate
+           sono nello spazio locale della mano, che e' lo stesso per tutte le
+           mani perche' la posa la mette a posto una traslazione di gruppo. */
+        return '<linearGradient id="gCarne-'+id+'" gradientUnits="userSpaceOnUse" '+
+          'x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'">'+
+          '<stop offset="0" stop-color="'+p.pelleLuce+'"/>'+
+          '<stop offset=".38" stop-color="'+p.pelle+'"/>'+
+          '<stop offset="1" stop-color="'+p.pelleOmbra+'"/></linearGradient>';
+      })();
+      return carne+
+             sfuma('Pelle', p.pelleA, p.pelleB, p.pelleC)+
              sfuma('Palmo', p.palmoA, p.palmoB, p.palmoC)+
              ritto('Polsino', p.polsinoA, p.polsinoB)+
              ritto('Abito', p.abitoA, p.abitoB);

@@ -162,6 +162,62 @@ mezz'aria. Gli angoli delle forme che devono *chiudere* non sono indovinati: si
 dichiara dove deve arrivare la punta, rispetto alla punta del dito che incontra,
 e si cercano gli angoli che ce la portano.
 
+#### Una mano è UNA sagoma, non cinque accostate
+
+Nei disegni morbidi che questa mano vuole raggiungere — quelli da emoji tridimensionale — palmo e dita
+sono **un volume continuo**, e le dita si separano con valli d'ombra, non con contorni. Disegnando ogni
+pezzo col suo contorno si ottiene l'opposto: cinque profili che si incontrano sul palmo, e quattro dita
+accostate leggono come stecche parallele invece che come una mano.
+
+Il contorno dell'unione si ottiene in tre passate, senza che nessuno la calcoli:
+
+1. l'alone caldo controluce, sotto tutto;
+2. **tutte** le sagome tracciate con una linea grossa;
+3. **tutti** i pieni, in ordine di profondità, che coprono la metà interna di quelle linee.
+
+Quello che resta visibile della seconda passata è soltanto il bordo esterno: dentro, ogni pieno ha
+coperto il proprio. Le separazioni interne le fa l'occlusione ambientale. E l'ordine di profondità
+resta, perché la terza passata lo rispetta.
+
+Tre cose che vanno con questa scelta:
+
+- **Le dita cominciano sotto la nocca, dentro il palmo.** La sagoma unica salda due profili solo se si
+  sovrappongono: con la base esattamente sulla nocca si toccavano e basta, e un dito si appoggiava sul
+  bordo del palmo come uno stecco incollato. Entrano di otto millimetri.
+- **Il bordo è nel tono dell'ombra e trasparente, non un bruno pieno.** Con un bruno pieno la mano legge
+  come un adesivo ritagliato. Toglierlo del tutto costa troppo: su un fondale scuro e a quaranta pixel
+  la mano perde i suoi confini, e questa mano deve restare leggibile piccola.
+- **Palmo e masse sono blob, non poligoni smussati** (`arrotonda` + `blob`). Un inviluppo convesso ha
+  spigoli, e un palmo con gli spigoli legge come una fetta di pane. `contornoMorbido` da solo non basta:
+  l'inviluppo del palmo ha sedici vertici, e un poligono di sedici lati è già quasi se stesso.
+
+#### Il pollice si vede per metà, ed è giusto così
+
+Il pollice si misura dalla sua radice vera — l'articolazione alla base del palmo — ma di quella radice
+**non si disegna niente**: il metacarpo sta dentro la massa della mano, e il palmo lo include nel proprio
+inviluppo (la radice, il punto a metà e la nocca). È quel cuscinetto che si chiama eminenza tenar.
+
+Disegnandolo per intero il pollice sembrava partire dal **polso** e attraversare il palmo come un
+bastone storto: era la cosa più sbagliata di tutta la mano. Di un pollice, guardandolo, si vedono due
+falangi — corte e grosse.
+
+#### Le proporzioni contano più dei millimetri
+
+In una mano vera un indice è circa tre quarti del palmo, non quanto il palmo. Con dita lunghe come il
+palmo la mano diventa un rastrello; corte e grosse legge come una mano. Vale anche per la larghezza: le
+dita sottili fanno stecche, le dita cicciotte fanno una mano.
+
+#### La sfumatura della pelle vale per la MANO, non per il pezzo
+
+`gCarne` usa `gradientUnits="userSpaceOnUse"`, non `objectBoundingBox`. Con le coordinate relative al
+riquadro di ciascun pezzo ogni dito si prendeva tutta la rampa, dal chiaro allo scuro, lungo i suoi
+trenta millimetri — e una mano diventava cinque dita slavate ognuna con la sua luce. Le coordinate sono
+nello spazio locale della mano, che è lo stesso per tutte le mani perché la posa la mette a posto una
+traslazione di gruppo.
+
+Ce ne vuole **una sola** perché la luce di questo disegno è fissa nello spazio dello schermo. È così che
+si ha l'ombreggiatura morbida dei riferimenti senza una sfumatura per pezzo.
+
 #### La pelle: occlusione, traslucenza, albedo, rugosità
 
 Quattro cose che il modello **ricava**, non che qualcuno scrive:
