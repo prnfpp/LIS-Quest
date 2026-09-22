@@ -244,6 +244,71 @@ traslazione di gruppo.
 Ce ne vuole **una sola** perché la luce di questo disegno è fissa nello spazio dello schermo. È così che
 si ha l'ombreggiatura morbida dei riferimenti senza una sfumatura per pezzo.
 
+#### Il volume si ricava dalla sagoma
+
+Questo è il passo che fa sembrare la mano un oggetto invece che un disegno, ed è la stessa cosa che i
+motori 2D fanno agli sprite piatti: si prende la **trasparenza** della figura, la si sfoca — così i bordi
+diventano un pendio invece di un salto — e si legge quel pendio come una superficie. Da lì
+`feDiffuseLighting` e `feSpecularLighting` ci mettono sopra una luce di Phong. Nessuna texture, nessun
+modello: il volume esce dalla sagoma che già abbiamo.
+
+Tre cose lo tengono in piedi:
+
+- **Va sopra il disegno finito, non al suo posto.** Quello che esce dal filtro è una *mappa di luce*, e
+  la mappa si moltiplica su quello che c'è. Così l'ordine di profondità non viene riordinato: il disegno
+  sotto resta quello di prima, con le sue occlusioni e i suoi dettagli al posto giusto.
+- **Le due sorgenti sono tinte del colore neutro della loro fusione** — bianco per il prodotto, nero per
+  lo schermo. Un browser che non sa fare questi filtri disegna le sagome senza filtrarle, e un bianco
+  moltiplicato e un nero schermato non cambiano un pixel: si vede esattamente il disegno di prima. Al
+  filtro il colore della sorgente non serve, perché legge solo l'alpha.
+- **Il gruppo della mano è isolato** (`.mano3d{isolation:isolate}`), se no il prodotto e lo schermo
+  prenderebbero anche il fondale e la mano scaverebbe un buco nel cielo. Per lo stesso motivo la mappa
+  si ritaglia sulla sagoma e **fuori resta trasparente**: riempire il fuori di bianco, che è il neutro
+  del prodotto, sembra giusto e non lo è — dentro un gruppo isolato quel bianco non ha uno sfondo con
+  cui fondersi e si vede come un rettangolo.
+
+Il prodotto può solo scurire, quindi la mappa diffusa fa l'ombra (va da poco meno di tre quarti a uno) e
+ad accendere ci pensa lo speculare, che si fonde a schermo.
+
+**Il prezzo, e si è scelto sapendolo:** i filtri di illuminazione SVG sono il punto in cui i browser
+divergono di più, e questa mano è tarata su Chromium. Il ripiego è pulito — senza filtri si torna al
+disegno precedente — ma la resa migliore è lì.
+
+#### Lo spazio dentro, che a volte è la lettera
+
+O, F e D sono definite da un cerchio fatto con le dita, e il cerchio è spazio vuoto. Il motore sa solo
+**aggiungere** materia: ogni pezzo è una sagoma piena e l'unione la fa l'ordine di disegno, che può
+soltanto coprire. Quelle lettere erano quattro pugni indistinguibili, e nel gioco del sigillo chi deve
+sceglierle tirava a indovinare.
+
+Due cose sono servite, e la prima non è di resa:
+
+- **Il piano dell'anello deve guardare chi legge.** Un cerchio visto di taglio è una stecca. O, C, F e D
+  stanno tutte con il palmo di tre quarti verso l'interno, perché è da lì che il loro cerchio si vede in
+  faccia. Vale per tutte le forme definite da un arco o da un anello: quello che le definisce è lo spazio
+  in mezzo, e lo spazio in mezzo si vede solo se il suo piano è rivolto a chi guarda. È così che la C ha
+  smesso di essere un uncino.
+- **L'interno non è un foro passante**, la mano non è bucata: dietro l'anello c'è il palmo, e quello che
+  si vede guardando dentro è palmo in ombra — un **incavo**. Quindi non si sottrae dalla sagoma: si
+  scurisce l'interno, disegnandolo dopo il palmo e prima delle dita che l'anello lo formano, e le dita
+  gli passano sopra. Quale sia l'interno lo dice `incavoAnello`, che prende i giunti delle dita
+  dichiarate in `anello` e li sposta verso il baricentro di quanto è spesso ciascun dito.
+
+#### Il rilievo: quando il contorno interno è l'informazione
+
+La sagoma unica è quello che fa leggere questa mano come una mano, e per ottenerla i contorni interni
+spariscono. Ma A, E, S e T sono quattro pugni che si distinguono **solo** da dove sta il pollice, e
+senza quel contorno sono la stessa figura a ogni dimensione — misurato, non temuto.
+
+La tipografia dell'alfabeto manuale conosce il problema e la regola: quello che distingue due forme
+quasi uguali deve stare in **spazio negativo**, cioè rompere la sagoma, e restare visibile anche a corpo
+piccolo. Qui diventa due cose: la punta del pollice portata fuori dalla massa (sopra al pugno per la T,
+di traverso e oltre il lato opposto per la S, in basso per la E), e una posa che può chiedere
+`rilievo:['pol']` — quel pezzo si tiene il suo profilo anche dentro l'unione.
+
+È un'eccezione, e va usata **solo dove il tratto porta significato**. Metterla dappertutto rimetterebbe
+la mano-adesivo da cui si è scappati.
+
 #### La pelle: occlusione, traslucenza, albedo, rugosità
 
 Quattro cose che il modello **ricava**, non che qualcuno scrive:
