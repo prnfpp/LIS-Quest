@@ -1,0 +1,47 @@
+# Le istantanee dei disegni.
+#
+# Questo gioco e' un disegno generato: un numero cambiato in fondo al motore
+# si porta dietro quaranta disegni senza dirlo a nessuno. Questo controllo
+# apre la pagina in un browser vero, si fa dare il disegno generato di ogni
+# segno, lettera e configurazione di mano, e lo confronta con quello
+# registrato in tools/istantanee/.
+#
+# Se fallisce non vuol dire che hai sbagliato: vuol dire che qualcosa si e'
+# mosso. Guarda quali disegni sono cambiati, verifica con i tuoi occhi che
+# sia quello che volevi, e poi registra il nuovo stato:
+#     node tools/istantanee.mjs --scrivi
+# e metti nella stessa consegna anche i file che cambiano sotto
+# tools/istantanee/. E' quella differenza, in revisione, il controllo vero.
+
+name: istantanee
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  istantanee:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Node 22: serve per WebSocket, con cui lo strumento parla al browser.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # I runner di GitHub hanno gia' Chrome. Se un domani non l'avessero,
+      # lo si installa invece di far fallire il controllo per un motivo che
+      # non c'entra niente con il disegno.
+      - name: Un browser
+        run: |
+          if ! command -v google-chrome >/dev/null 2>&1; then
+            wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+            sudo apt-get update
+            sudo apt-get install -y ./google-chrome-stable_current_amd64.deb
+          fi
+          google-chrome --version
+
+      - name: Confronta i disegni con quelli registrati
+        run: node tools/istantanee.mjs

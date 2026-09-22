@@ -313,6 +313,34 @@ di traverso e oltre il lato opposto per la S, in basso per la E), e una posa che
 È un'eccezione, e va usata **solo dove il tratto porta significato**. Metterla dappertutto rimetterebbe
 la mano-adesivo da cui si è scappati.
 
+#### I solchi: due dita accostate devono restare due dita
+
+L'occlusione ambientale è un alone scuro **attorno** a ogni pezzo, e funziona quando un pezzo sta
+davanti a un altro: l'alone di quello davanti cade su quello dietro, e l'ordine di profondità li
+separa. Quando invece due dita stanno affiancate alla **stessa** profondità — le due dita stese di
+NOME, le quattro di un pugno, le dita curve di una mano a coppa — nessuno dei due aloni cade
+sull'altro: cadono tutti e due nel mezzo, e i pieni li ricoprono. Il contorno interno non c'è più,
+perché la sagoma è unica. Risultato, in miniatura: un dito largo il doppio. E contare le dita, in
+LIS, è metà dell'informazione — è la differenza fra V e B, fra due e quattro.
+
+`solchiFraDita(catene)` lo ricava dal modello invece di farlo dichiarare alla posa: per ogni coppia
+di dita **vicine** cerca, lungo le due linee d'asse proiettate, dove le due sagome si sfiorano, e lì
+mette il buio. Il punto di mezzo è quello fra le due *superfici*, non fra i due assi: con un pollice
+grosso accanto a un mignolo sottile la valle non sta in mezzo. L'intensità viene da quanto sono
+vicine, quindi il solco compare da sé quando le dita si accostano e svanisce quando si aprono.
+Nessuna posa lo deve sapere e nessuna posa lo può sbagliare.
+
+Tre cose si lasciano fuori apposta:
+
+- **un asse che finisce dentro l'altra sagoma** — quello è un dito davanti a un altro, non un fianco
+  contro un fianco, e lo risolve già l'alone;
+- **due parti a profondità molto diverse** — idem;
+- **le coppie non adiacenti** — l'indice che passa davanti al mignolo in un pugno non ha nessuna
+  valle fra sé e il mignolo, e scavarcela sarebbe una riga in mezzo al niente.
+
+Va disegnato **dopo tutti i pieni** (se no lo coprono) e **prima** di `volumeDaSagoma` (così il
+volume lo illumina insieme al resto invece di passarci sopra). Costa mezzo millisecondo per mano.
+
 #### La pelle: occlusione, traslucenza, albedo, rugosità
 
 Quattro cose che il modello **ricava**, non che qualcuno scrive:
@@ -320,6 +348,7 @@ Quattro cose che il modello **ricava**, non che qualcuno scrive:
 | Funzione | Cosa fa e perché |
 |---|---|
 | `occlusione(d, k)` | il buio nelle fessure, con tre passate di contorno invece di un filtro gaussiano — un filtro su quaranta pezzi per mano è una rasterizzazione per pezzo, e su un telefono si paga. Va tenuto **stretto**: allargato diventa un'ombra portata e la mano finisce in una nuvola grigia |
+| `solchiFraDita(catene)` | l'occlusione fra parti alla **stessa** profondità, che l'alone non sa fare: vedi qui sopra |
 | `traslucenza(mezzaLargh)` | quanto brilla un pezzo in controluce, dal suo spessore. Un dito sottile molto, il palmo niente |
 | `membrane(pose, B)` | i cunei caldi alle radici delle dita. Si restringono da sé quando le dita si stringono, perché sono le basi a muoversi |
 | `fascia(..., colore, opac)` | la luce lungo la catena. Il colore lo dice chi chiama: prima lo decideva il *segno* dello spostamento, e per cambiare la luce senza cambiare il lato non c'era modo |
@@ -481,7 +510,7 @@ difetti veri, e ognuno di questi era un difetto nostro:
 
 | Il rapporto chiede | Qui è diventato |
 |---|---|
-| Ambient Occlusion, «essenziale per definire gli spazi interdigitali» | `occlusione()`: un alone scuro fuori da ogni sagoma. L'ordine di profondità fa il resto — dove due dita si toccano i due aloni si sommano e la fessura si scurisce da sé. Serve a **contare le dita**, che in LIS è l'informazione |
+| Ambient Occlusion, «essenziale per definire gli spazi interdigitali» | due cose, perché il caso è due: `occlusione()` mette un alone scuro fuori da ogni sagoma, e l'ordine di profondità fa il resto quando un dito sta davanti a un altro; `solchiFraDita()` scava la valle quando due dita stanno **affiancate** alla stessa profondità, dove l'alone non arriva. Serve a **contare le dita**, che in LIS è l'informazione |
 | Subsurface Scattering, «in controluce i bordi delle dita e le membrane interdigitali diventano traslucidi» | `traslucenza()`: l'alone caldo non è uniforme, la sua intensità viene dallo **spessore** del pezzo. Un mignolo brilla, il palmo no. Più i cunei caldi alle radici delle dita (`membrane()`), che sono la parte più sottile della mano |
 | Albedo non omogeneo: caldo dove c'è sangue, freddo dove ci sono tendini | una scia calda dentro l'ultima falange, più marcata dal lato del palmo che dal dorso |
 | Roughness: palmo 0.2–0.4, dorso 0.4–0.6 | la fascia di luce è **più stretta e più accesa** sulla faccia del palmo, più larga e smorzata sul dorso. Quale faccia vediamo lo dice la normale |
@@ -651,8 +680,38 @@ uno scorrimento, quanto sono curve le dita di una mano a tazza, né cosa fa il v
 muove. Le clip qui sopra servono da riferimento per chi disegna, anche se il gioco continuerà a
 mostrare i disegni: chi valida guarda il disegno accanto al video e dice dove sbaglia.
 
+## Le istantanee: quello che il motore non può più muovere di nascosto
+
+Ogni mano, ogni lettera e ogni segno escono da numeri: non c'è nessuna immagine disegnata da
+qualcuno che resta com'è. Una correzione in fondo al motore — la lunghezza di un osso, l'angolo
+della camera, il modo di tagliare il riquadro — si porta dietro decine di disegni tutti insieme, e
+non lo dice a nessuno. È già successo due volte, e tutte e due le volte se n'è accorto un occhio
+umano per caso: la cinematica del pollice, corretta, ha mandato storte diciassette configurazioni;
+il taglio stretto, cambiato, ha fatto comparire nei mini-giochi mani senza mento.
+
+    node tools/istantanee.mjs            confronta con quello che è registrato
+    node tools/istantanee.mjs --scrivi   registra lo stato di adesso
+
+Lo strumento apre `index.html` in un browser vero, si fa dare da `window.LISQ` il disegno **generato**
+di circa centotrenta cose — i segni interi, gli stessi segni nel taglio stretto dei mini-giochi, le
+ventisei lettere, ogni configurazione di mano vista dal palmo e dal dorso — e lo confronta riga per
+riga con `tools/istantanee/`. Serve Node 22 e un Chrome già installato: nessuna dipendenza da
+scaricare, e il gioco resta un file che si apre con un doppio clic. I dettagli stanno in
+`tools/LEGGIMI.md`; il controllo gira da solo su ogni PR.
+
+**Se fallisce non vuol dire che hai sbagliato: vuol dire che qualcosa si è mosso.** Guarda quali
+disegni sono cambiati, verifica con i tuoi occhi che sia quello che volevi, poi `--scrivi` e metti
+nella stessa PR anche i file che cambiano sotto `tools/istantanee/`. È quella differenza, in
+revisione, il controllo vero.
+
+E quello che **non** fa, perché nessuno se lo aspetti: non dice se un segno è *giusto*. Un disegno
+può essere identico a ieri e sbagliato da sempre. Che la LIS sia resa bene lo può dire solo chi la
+LIS la conosce — per quello c'è la pagina di revisione (`#validazione`) e il piano di `SEGNI.md`.
+
 ## Pull request
 
-Il progetto è una pagina sola: niente build, niente test automatici, per ora. Prima di aprire una
-PR, apri `index.html` e **gioca la demo dall'inizio alla fine**, su schermo largo e su telefono.
-Nella descrizione scrivi cosa hai cambiato e cosa hai provato.
+Il progetto è una pagina sola: niente build, nessuna dipendenza. L'unico controllo automatico sono
+le istantanee qui sopra, e controllano che i disegni non si muovano — non che siano giusti. Il
+resto lo devi guardare tu: prima di aprire una PR, apri `index.html` e **gioca la demo dall'inizio
+alla fine**, su schermo largo e su telefono. Nella descrizione scrivi cosa hai cambiato e cosa hai
+provato.

@@ -1,0 +1,30 @@
+# istantanee: lettere
+# generate da tools/istantanee.mjs — non si scrivono a mano.
+# nome | riquadro | disegno (x y larghezza altezza) | elementi | impronta
+
+A | -25 -32 58 59 | -8.2 -14.9 27.5 31.1 | g:22 line:8 path:108 | 2ae1d576203602f2
+B | -25 -32 58 59 | -8.2 -27.7 17.1 43.9 | ellipse:1 g:22 line:1 path:134 | 6db2d211b8d94d05
+C | -25 -32 58 59 | -5.9 -24.2 20 41.7 | ellipse:1 g:22 line:1 path:116 | 02b602b3a663340f
+D | -25 -32 58 59 | -5.9 -26.6 22.9 44.1 | ellipse:1 g:23 path:102 | 57621fcb55dd88d7
+E | -25 -32 58 59 | -8.2 -13.3 21.5 29.5 | ellipse:1 g:22 line:9 path:104 | f6334faa880d0c7e
+F | -25 -32 58 59 | -6.1 -28.5 21.8 46 | ellipse:1 g:23 path:126 | 32c3a87c7c90c330
+G | -25 -32 58 59 | -9.7 -10.5 38.2 29.7 | circle:4 ellipse:5 g:22 line:6 path:98 | 25655860bb1730ac
+H | -25 -32 58 59 | -12.2 -10.5 23.7 29.9 | circle:4 ellipse:5 g:22 line:5 path:101 | 1b767cc2496c1eb6
+I | -25 -32 58 59 | -8.2 -18.5 19.7 34.7 | ellipse:1 g:22 line:7 path:104 | aa2eec051961ff29
+J | -25 -32 58 59 | -8.2 -25 31.2 41.2 | ellipse:1 g:22 line:7 path:105 | ec267490a8711b2c
+K | -25 -32 58 59 | -8.2 -26.9 32.8 43 | g:22 line:4 path:103 | b2117712e58bf7a6
+L | -25 -32 58 59 | -8.2 -25.4 37.3 41.5 | g:22 line:6 path:102 | dfa5a46b90868147
+M | -25 -32 58 59 | -9.3 -17.1 18.4 38 | circle:4 ellipse:4 g:22 line:3 path:111 | 7a89a78a0e7f92b6
+N | -25 -32 58 59 | -9.3 -17.1 18.4 38.2 | circle:4 ellipse:4 g:22 line:5 path:95 | d2aa9bc331d98727
+O | -25 -32 58 59 | -5.9 -20.4 21.9 37.9 | g:23 path:118 | 9160eb281bab5c7c
+P | -25 -32 58 59 | -21.5 -17.4 37.1 40.5 | g:22 line:4 path:96 | 4a711b4e0126e7e2
+Q | -25 -32 58 59 | -9.3 -17.1 25.3 35.3 | circle:4 ellipse:5 g:22 line:6 path:92 | 64af27bf497764cb
+R | -25 -32 58 59 | -8.2 -26.1 18 42.2 | ellipse:1 g:22 line:5 path:118 | fcbb0c56f5ae3f2a
+S | -25 -32 58 59 | -8.2 -12.2 19.7 28.4 | ellipse:1 g:22 line:9 path:98 | 0cd1447fd14d8feb
+T | -25 -32 58 59 | -8.2 -12.2 19.7 28.4 | ellipse:1 g:22 line:9 path:110 | f77f018bc0b1bb57
+U | -25 -32 58 59 | -8.2 -27.5 17.9 43.6 | ellipse:1 g:22 line:5 path:132 | 6a3a8311a5bf3d5d
+V | -25 -32 58 59 | -8.2 -26.9 20.9 43 | ellipse:1 g:22 line:5 path:126 | 9175c0ec097edf68
+W | -25 -32 58 59 | -8.2 -28 21.1 44.2 | ellipse:1 g:22 line:3 path:136 | 499ab2946a8754a0
+X | -25 -32 58 59 | -8.2 -18.1 20.7 34.2 | ellipse:1 g:22 line:9 path:127 | 0ffa44197d985255
+Y | -25 -32 58 59 | -10.7 -17.9 38.3 34 | g:22 line:6 path:96 | 5217ab68c771d6ec
+Z | -25 -32 58 59 | -26 -33 34.9 49.2 | ellipse:1 g:22 line:7 path:129 | f5b62992c39d3c16
