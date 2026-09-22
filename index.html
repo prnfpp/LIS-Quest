@@ -15,7 +15,81 @@
     body{margin:0}
     img{max-width:100%}
     [hidden]{display:none!important}
-  </style>
+  /* ---------- la pagina di revisione ----------
+   Deve leggersi in fretta e su qualunque schermo: chi la usa ci mette dieci
+   minuti e non deve imparare niente per usarla. */
+.rev-testa h2{margin-bottom:6px}
+.rev-nota{font-size:13.5px;color:var(--testo-3)}
+.rev-chi{display:flex;gap:14px;flex-wrap:wrap;margin:14px 0 4px}
+.rev-chi label{display:flex;flex-direction:column;gap:4px;font-size:13px;
+  color:var(--testo-2);flex:1 1 220px}
+.rev-chi input[type=text]{padding:9px 12px;border-radius:10px;border:1px solid var(--bordo);
+  background:rgba(8,24,36,.6);color:var(--testo);font:400 15px inherit;width:100%;
+  /* il maiuscolo vale per il nome del giocatore, non per il nome di chi
+     revisiona: un cognome in maiuscolo sembra un modulo, non una firma */
+  text-transform:none;letter-spacing:normal}
+.rev-moto{margin-top:12px}
+.rev-conta{font-family:"IBM Plex Mono",monospace;font-size:12px;
+  color:var(--nima);font-weight:400;letter-spacing:.06em}
+.rev-guida{font-size:14px;color:var(--testo-2);margin-bottom:14px}
+.rev-griglia{display:grid;gap:12px;
+  grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+.rev-griglia-lettere{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+.rev-carta{border:1px solid var(--bordo);border-radius:var(--raggio);
+  background:rgba(8,24,36,.42);padding:10px;display:flex;flex-direction:column;gap:8px}
+.rev-carta.giusto{border-color:var(--ok);background:rgba(126,212,147,.08)}
+.rev-carta.quasi{border-color:var(--luce);background:rgba(255,193,94,.07)}
+.rev-carta.sbagliato{border-color:var(--corallo);background:rgba(240,120,100,.08)}
+.rev-carta svg{width:100%;height:auto;display:block}
+.rev-disegno{background:linear-gradient(#123244,#0C2231);border-radius:12px;padding:4px}
+/* la stessa lettera, piccola come la vede un bambino nella ruota: e' li' che
+   due forme simili si confondono, e va guardata cosi' */
+.rev-piccolo{width:42px;margin:6px auto 0;opacity:.95}
+.rev-glossa{font-family:"IBM Plex Mono",monospace;font-size:13px;
+  letter-spacing:.09em;color:var(--nima);font-weight:600}
+.rev-senso{font-size:13px;color:var(--testo-2);line-height:1.45}
+.rev-par{font-family:"IBM Plex Mono",monospace;font-size:11px;line-height:1.7;
+  color:var(--testo-3);background:rgba(0,0,0,.22);border-radius:8px;padding:6px 8px}
+.rev-par b{color:var(--testo-2);font-weight:600}
+.rev-voti{display:flex;gap:6px}
+.rev-voti button{flex:1;padding:7px 4px;border-radius:9px;cursor:pointer;
+  border:1px solid var(--bordo);background:rgba(8,24,36,.5);color:var(--testo-2);
+  font:inherit;font-size:13px;transition:background .12s,border-color .12s,color .12s}
+.rev-voti button:hover{border-color:var(--nima)}
+.rev-voti button[aria-pressed="true"]{color:#08202C;font-weight:700}
+.rev-voti button[data-voto="giusto"][aria-pressed="true"]{background:var(--ok);border-color:var(--ok)}
+.rev-voti button[data-voto="quasi"][aria-pressed="true"]{background:var(--luce);border-color:var(--luce)}
+.rev-voti button[data-voto="sbagliato"][aria-pressed="true"]{background:var(--corallo);border-color:var(--corallo)}
+/* i parametri sbagliati compaiono solo quando servono: se il segno e' giusto
+   non c'e' niente da precisare */
+.rev-quali{display:none;flex-wrap:wrap;gap:5px}
+.rev-carta.quasi .rev-quali,.rev-carta.sbagliato .rev-quali{display:flex}
+.rev-quali button{padding:4px 9px;border-radius:999px;font-size:12px;cursor:pointer;
+  border:1px solid var(--bordo);background:transparent;color:var(--testo-3);font:inherit}
+.rev-quali button[aria-pressed="true"]{background:var(--corallo);border-color:var(--corallo);
+  color:#2A0C06;font-weight:600}
+.rev-nota-campo{display:none}
+.rev-carta.quasi .rev-nota-campo,.rev-carta.sbagliato .rev-nota-campo{display:block}
+.rev-carta textarea{width:100%;box-sizing:border-box;min-height:52px;resize:vertical;
+  padding:7px 9px;border-radius:9px;border:1px solid var(--bordo);
+  background:rgba(8,24,36,.6);color:var(--testo);font:inherit;font-size:13.5px}
+.rev-sts{font-size:12px;color:var(--nima-2);text-decoration:none}
+.rev-sts:hover{text-decoration:underline}
+/* Resta sotto mentre si scorre. Deve essere BASSA: con la scheda intera qui
+   dentro copriva due righe di carte, ed era piu' quello che nascondeva di
+   quello che mostrava. E con fondo pieno — semitrasparente si leggevano le
+   carte attraverso, e non si leggeva piu' ne' l'una ne' l'altre. */
+.rev-barra{position:sticky;bottom:10px;z-index:5;display:flex;gap:14px;
+  align-items:center;justify-content:space-between;flex-wrap:wrap;
+  background:var(--pannello);border:1px solid var(--bordo);
+  border-left:4px solid var(--nima);border-radius:var(--raggio);
+  padding:10px 16px;box-shadow:0 -10px 30px rgba(3,11,17,.55)}
+.rev-barra span{font-size:14px;color:var(--testo-2)}
+@media (max-width:520px){
+  .rev-griglia{grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}
+  .rev-griglia-lettere{grid-template-columns:repeat(auto-fill,minmax(125px,1fr))}
+}
+</style>
 <title>L'isola di Nima</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -762,6 +836,8 @@ footer a{color:var(--testo-2)}
       <div class="card">
         <h3>Sei sordo o sorda, o interprete LIS?</h3>
         <p>È di te che il progetto ha bisogno per primo.</p>
+        <p><a class="btn" href="#validazione" id="vaiValidazione">Guarda i segni e dicci quali sono sbagliati ▸</a></p>
+        <p class="hint">Tutti e quaranta su una schermata, in movimento, con i parametri con cui li abbiamo costruiti. Dieci minuti, e alla fine scarichi un file.</p>
         <ul>
           <li>Guardare l'alfabeto manuale lettera per lettera e dire quali forme sono sbagliate</li>
           <li>Guardare il lessico delle prime due scene e dire cosa non va</li>
@@ -791,6 +867,62 @@ footer a{color:var(--testo-2)}
     </div>
     <div class="card">
       <p style="margin:0"><strong>Il progetto è e resta gratuito.</strong> Nasce a Bologna da un'idea di due persone, una delle quali è interprete LIS. Non c'è un ente dietro, non c'è un modello di business: c'è una lingua che merita di essere incontrata prima dai bambini che dai manuali.</p>
+    </div>
+  </section>
+
+  <!-- ===================== LA PAGINA DI REVISIONE =====================
+       Questa pagina non e' per chi gioca: e' per chi sa la LIS.
+       Finora il progetto CHIEDEVA una revisione — sta scritto nella schermata
+       finale e in SEGNI.md — ma per darla bisognava attraversare otto minuti
+       di narrativa e poi descrivere a parole quale segno non andava. Era
+       difficile proprio l'unica cosa che manca.
+       Qui i quarantadue disegni stanno tutti su una schermata, grandi, in
+       movimento (il movimento e' un parametro del segno: fermo non si
+       giudica), ognuno con i parametri con cui l'abbiamo costruito. Il
+       verdetto si da' in un clic, e si puo' dire QUALE parametro e'
+       sbagliato — cosi' un giudizio diventa una correzione, non un'opinione.
+       Si arriva da index.html#validazione. -->
+  <section class="screen" id="scr-validazione" hidden>
+    <div class="card rev-testa">
+      <h2>Questi segni sono giusti?</h2>
+      <p>Chiediamo a te, che la LIS la conosci, di guardarli e dirci quali sono sbagliati. Nessuno l'ha ancora fatto: sono disegnati da descrizioni scritte, e una descrizione scritta non dice quanto le dita sono ricurve né che angolo prende il pollice.</p>
+      <p>Servono circa dieci minuti. Puoi fermarti e riprendere: le risposte restano su questo computer. Alla fine scarichi un file e ce lo mandi.</p>
+      <p class="rev-nota">Non ti chiediamo un favore anonimo. Scrivi come vuoi essere accreditato — o dicci che preferisci non esserlo.</p>
+      <div class="rev-chi">
+        <label>Come ti chiami <input type="text" id="revChi" placeholder="nome e cognome, o come vuoi comparire"></label>
+        <label>Dove segni <input type="text" id="revDove" placeholder="città o zona — la LIS ha varianti regionali"></label>
+      </div>
+      <div id="motoRev" class="rev-moto"></div>
+    </div>
+
+    <div class="card">
+      <h3>Le parole <span class="rev-conta" id="revContaSegni"></span></h3>
+      <p class="rev-guida">Questi sono i segni delle parole del capitolo 1. Sotto ogni disegno ci sono i cinque parametri con cui l'abbiamo costruito: se qualcosa non va, dicci <strong>quale</strong>.</p>
+      <div class="rev-griglia" id="revSegni"></div>
+    </div>
+
+    <div class="card">
+      <h3>L'alfabeto manuale <span class="rev-conta" id="revContaLettere"></span></h3>
+      <p class="rev-guida">Le ventisei lettere della dattilologia italiana. Guardale anche <strong>piccole</strong>: nel gioco un bambino le sceglie da una ruota, e alcune forme si somigliano.</p>
+      <div class="rev-griglia rev-griglia-lettere" id="revLettere"></div>
+    </div>
+
+    <div class="card">
+      <h3>Grazie</h3>
+      <p>Quando hai finito — o quando vuoi fermarti — scarica il file e mandacelo. Il file è testo leggibile: puoi aprirlo e controllare cosa contiene prima di mandarlo. Contiene solo i tuoi verdetti, il nome che hai scritto e la data.</p>
+      <div class="btn-row">
+        <button class="btn ghost" id="revPulisci">Ricomincia da capo</button>
+        <button class="btn ghost" id="revEsci">Vai al gioco</button>
+      </div>
+    </div>
+
+    <!-- La barra resta sotto mentre si scorre, e tiene solo le due cose che
+         servono da qualunque punto: a che punto sei e come porti via il
+         lavoro fatto. Prima qui c'era la scheda intera, e copriva due righe
+         di carte. -->
+    <div class="rev-barra">
+      <span id="revRiepilogo">Nessun verdetto ancora.</span>
+      <button class="btn" id="revScarica">⬇ Scarica i verdetti</button>
     </div>
   </section>
 
@@ -3237,7 +3369,8 @@ function load(){ try{ const r=localStorage.getItem(KEY); return r?JSON.parse(r):
 
 const $ = s => document.querySelector(s);
 const el = {
-  scrs:{titolo:$('#scr-titolo'),nome:$('#scr-nome'),classe:$('#scr-classe'),gioco:$('#scr-gioco'),finale:$('#scr-finale')},
+  scrs:{titolo:$('#scr-titolo'),nome:$('#scr-nome'),classe:$('#scr-classe'),
+        gioco:$('#scr-gioco'),finale:$('#scr-finale'),validazione:$('#scr-validazione')},
   nima:$('#nimaWrap'), testo:$('#testo'), chi:$('#chi'), tap:$('#tapHint'), avanti:$('#avanti'),
   gioco:$('#gioco'), stage:$('#stage'), scenery:$('#scenery'),
   hudNome:$('#hudNome'), hudXp:$('#hudXp'), hudTacc:$('#hudTacc'), hudScena:$('#hudScena'), gloss:$('#gloss')
@@ -4112,6 +4245,211 @@ function avvia(scena,beat){
 }
 
 
+/* ================= LA PAGINA DI REVISIONE =================
+   Il progetto chiede da sempre che qualcuno che sa la LIS guardi questi
+   disegni e dica quali sono sbagliati: sta scritto nella schermata finale e
+   in SEGNI.md. Mancava il modo di farlo. Per dare un parere bisognava
+   attraversare otto minuti di narrativa e poi descrivere a parole quale
+   segno non andava — cioe' era difficile proprio l'unica cosa che manca.
+
+   Qui i quarantadue disegni stanno su una schermata sola. Tre cose contano:
+     · sono IN MOVIMENTO, perche' il movimento e' un parametro del segno e un
+       disegno fermo non si puo' giudicare. Il comando del moto e' lo stesso
+       del gioco: rallentatore, fermo immagine, passo a passo;
+     · sono lo STESSO disegno che vede il bambino, non una copia per la
+       revisione — se divergesse, la revisione varrebbe per l'altra cosa;
+     · il verdetto e' STRUTTURATO sui cinque parametri formazionali, gli
+       stessi con cui il motore e' costruito. «Sbagliato» e' un'opinione;
+       «il luogo e' sbagliato» e' una correzione, e arriva gia' nel formato
+       in cui va applicata. */
+
+const REV_CHIAVE = 'lisquest-validazione-v1';
+/* i cinque parametri, con i nomi con cui li chiama chi studia le lingue dei
+   segni — non con i nomi delle variabili */
+const REV_PARAMETRI = [
+  ['h',  'configurazione'],
+  ['or', 'orientamento'],
+  ['l',  'luogo'],
+  ['m',  'movimento'],
+  ['nm', 'non manuale']
+];
+let REV = {chi:'', dove:'', voti:{}};
+
+function revCarica(){
+  try{ const g = localStorage.getItem(REV_CHIAVE);
+       if(g) REV = Object.assign({chi:'',dove:'',voti:{}}, JSON.parse(g)); }catch(e){}
+}
+function revSalva(){
+  try{ localStorage.setItem(REV_CHIAVE, JSON.stringify(REV)); }catch(e){}
+  revRiepiloga();
+}
+function revVoto(id){
+  if(!REV.voti[id]) REV.voti[id] = {voto:'', quali:[], nota:''};
+  return REV.voti[id];
+}
+
+/* i parametri di un segno, in chiaro: servono a chi giudica per dire quale
+   pezzo e' sbagliato, e sono scritti come li dichiara il dato */
+function revParametri(s){
+  const dir = v => Array.isArray(v) ? v.join('+') : (v || '—');
+  const f = (s.fasi && s.fasi[0]) || s;
+  const righe = [
+    ['configurazione', f.h || '—'],
+    ['orientamento', 'dita ' + dir(f.dita) + ', palmo ' + dir(f.palmo)],
+    ['luogo', f.l || '—'],
+    ['movimento', f.m || '—'],
+    ['non manuale', s.nm || 'neutro']
+  ];
+  if(s.fasi) righe.push(['fasi', s.fasi.length + ' momenti']);
+  if(f.due) righe.push(['due mani', 'sì']);
+  return righe.map(r=>'<b>'+r[0]+':</b> '+r[1]).join('<br>');
+}
+
+function revCarta(id, tipo, disegno, glossa, senso, parametri, cerca){
+  const v = revVoto(id);
+  const bottone = (k, testo) =>
+    '<button type="button" data-voto="'+k+'" aria-pressed="'+(v.voto===k)+'">'+testo+'</button>';
+  const quale = p =>
+    '<button type="button" data-quale="'+p[0]+'" aria-pressed="'+
+    (v.quali.indexOf(p[0])>=0)+'">'+p[1]+'</button>';
+  return '<div class="rev-carta '+(v.voto||'')+'" data-id="'+id+'" data-tipo="'+tipo+'">'+
+    '<div class="rev-disegno">'+disegno+'</div>'+
+    '<div class="rev-glossa">'+glossa+'</div>'+
+    (senso ? '<div class="rev-senso">'+senso+'</div>' : '')+
+    (parametri ? '<div class="rev-par">'+parametri+'</div>' : '')+
+    '<div class="rev-voti">'+bottone('giusto','Giusto')+bottone('quasi','Quasi')+
+      bottone('sbagliato','Sbagliato')+'</div>'+
+    '<div class="rev-quali">'+REV_PARAMETRI.map(quale).join('')+'</div>'+
+    '<div class="rev-nota-campo"><textarea placeholder="Cosa non va? Scrivilo come vuoi.">'+
+      (v.nota||'').replace(/</g,'&lt;')+'</textarea></div>'+
+    (cerca ? '<a class="rev-sts" href="'+stsLink(cerca)+'" target="_blank" rel="noopener">'+
+      '▶ confronta su Spread the Sign</a>' : '')+
+    '</div>';
+}
+
+function revCostruisci(){
+  const segni = Object.keys(SIGNS).filter(k=>!SIGNS[k].faceOnly);
+  document.getElementById('revSegni').innerHTML = segni.map(k=>{
+    const s = SIGNS[k], u = USO[k];
+    return revCarta(k, 'segno', renderSign(s, {compatto:true}), s.g,
+                    u ? u[1] : '', revParametri(s), u ? u[0] : s.g);
+  }).join('');
+  document.getElementById('revLettere').innerHTML = ALFA_IT.concat(ALFA_NOMI).map(L=>{
+    const a = ALFA[L] || {};
+    const dir = v => Array.isArray(v) ? v.join('+') : (v || '—');
+    const par = '<b>configurazione:</b> ' + (a.h || '—') +
+      '<br><b>orientamento:</b> dita ' + dir(a.dita) + ', palmo ' + dir(a.palmo) +
+      (a.m && a.m !== 'tap' ? '<br><b>movimento:</b> ' + a.m : '') +
+      (a.tratto ? '<br><b>tratto in aria:</b> sì' : '');
+    /* la lettera si mostra due volte: grande, e piccola come la vede un
+       bambino nella ruota del gioco. E' li' che due forme simili si
+       confondono, ed e' li' che serve il parere */
+    return revCarta('lettera:'+L, 'lettera',
+      letterGlyph(L) + '<div class="rev-piccolo">'+letterGlyph(L)+'</div>',
+      L, '', par, L);
+  }).join('');
+  document.getElementById('revContaSegni').textContent = segni.length + ' segni';
+  document.getElementById('revContaLettere').textContent =
+    (ALFA_IT.length + ALFA_NOMI.length) + ' lettere';
+  const posto = document.getElementById('motoRev');
+  if(posto && !posto.firstChild) posto.appendChild(comandoMoto());
+  MOTO.accendi(document.getElementById('scr-validazione'));
+  revRiepiloga();
+}
+
+/* un solo ascoltatore per tutta la pagina: quarantadue carte per cinque
+   bottoni sono duecento ascoltatori che non servono a niente */
+function revAscolta(){
+  const sezione = document.getElementById('scr-validazione');
+  sezione.addEventListener('click', e=>{
+    const b = e.target.closest('button[data-voto],button[data-quale]');
+    if(!b) return;
+    const carta = b.closest('.rev-carta'); if(!carta) return;
+    const v = revVoto(carta.dataset.id);
+    if(b.dataset.voto){
+      v.voto = (v.voto === b.dataset.voto) ? '' : b.dataset.voto;
+      if(v.voto === 'giusto'){ v.quali = []; v.nota = ''; }
+      carta.className = 'rev-carta ' + (v.voto || '');
+      carta.querySelectorAll('[data-voto]').forEach(x=>
+        x.setAttribute('aria-pressed', String(x.dataset.voto === v.voto)));
+      if(v.voto === 'giusto'){
+        carta.querySelectorAll('[data-quale]').forEach(x=>x.setAttribute('aria-pressed','false'));
+        const t = carta.querySelector('textarea'); if(t) t.value = '';
+      }
+    }else{
+      const q = b.dataset.quale, i = v.quali.indexOf(q);
+      if(i>=0) v.quali.splice(i,1); else v.quali.push(q);
+      b.setAttribute('aria-pressed', String(i<0));
+    }
+    revSalva();
+  });
+  sezione.addEventListener('input', e=>{
+    if(e.target.tagName === 'TEXTAREA'){
+      const carta = e.target.closest('.rev-carta');
+      if(carta){ revVoto(carta.dataset.id).nota = e.target.value; revSalva(); }
+    }
+    if(e.target.id === 'revChi'){ REV.chi = e.target.value; revSalva(); }
+    if(e.target.id === 'revDove'){ REV.dove = e.target.value; revSalva(); }
+  });
+  document.getElementById('revScarica').onclick = revScarica;
+  document.getElementById('revEsci').onclick = ()=>{ location.hash=''; show('titolo'); };
+  document.getElementById('revPulisci').onclick = ()=>{
+    if(!confirm('Cancello tutti i verdetti dati finora?')) return;
+    REV = {chi:'', dove:'', voti:{}};
+    try{ localStorage.removeItem(REV_CHIAVE); }catch(e){}
+    document.getElementById('revChi').value = '';
+    document.getElementById('revDove').value = '';
+    revCostruisci();
+  };
+}
+
+function revRiepiloga(){
+  const v = REV.voti, k = Object.keys(v).filter(x=>v[x].voto);
+  const conta = t => k.filter(x=>v[x].voto===t).length;
+  const tot = Object.keys(SIGNS).filter(x=>!SIGNS[x].faceOnly).length +
+              ALFA_IT.length + ALFA_NOMI.length;
+  document.getElementById('revRiepilogo').textContent = k.length
+    ? k.length+' su '+tot+' guardati — '+conta('giusto')+' giusti, '+
+      conta('quasi')+' quasi, '+conta('sbagliato')+' sbagliati.'
+    : 'Nessun verdetto ancora.';
+}
+
+/* Il file che esce e' JSON, cioe' testo che si legge: chi lo manda puo'
+   aprirlo e controllare cosa contiene. Va versionato nel repository accanto
+   al codice, perche' da quel momento esiste una verita' di riferimento
+   contro cui il disegno puo' essere sbagliato. */
+function revScarica(){
+  const v = REV.voti;
+  const dati = {
+    formato: 'lis-quest-validazione/1',
+    chi: REV.chi || '(non indicato)',
+    dove: REV.dove || '(non indicato)',
+    data: new Date().toISOString().slice(0,10),
+    verdetti: Object.keys(v).filter(k=>v[k].voto).map(k=>({
+      voce: k, giudizio: v[k].voto,
+      parametri: v[k].quali.slice(), nota: v[k].nota || ''
+    }))
+  };
+  const testo = JSON.stringify(dati, null, 2);
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([testo], {type:'application/json'}));
+  a.download = 'validazione-' + (REV.chi || 'anonimo').toLowerCase()
+                 .replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') + '.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 4000);
+}
+
+/* Si entra da index.html#validazione. E' un indirizzo, quindi si manda per
+   posta a chi deve guardare: apre la revisione e basta, senza passare dal
+   gioco. */
+function revApri(){
+  revCarica();
+  document.getElementById('revChi').value = REV.chi || '';
+  document.getElementById('revDove').value = REV.dove || '';
+  revCostruisci();
+  show('validazione');
+}
+
 /* ripresa da localStorage */
 function boot(hot){
   /* la copertina e' la stessa isola del gioco, di notte: la prima cosa che si
@@ -4129,6 +4467,15 @@ function boot(hot){
     r.onclick=()=>{ if(S.finito) finisci(); else avvia(S.scena, S.beat); };
   }
   if(hot && hot.scena!==undefined){ Object.assign(S,hot); if(hot.inGioco) avvia(S.scena,S.beat); }
+
+  /* L'indirizzo decide cosa si apre. #validazione porta dritti alla pagina di
+     revisione: e' il link che si manda a chi deve guardare i segni, e gli
+     evita di attraversare il gioco per arrivarci. */
+  revAscolta();
+  if(location.hash === '#validazione') revApri();
+  window.addEventListener('hashchange', ()=>{
+    if(location.hash === '#validazione') revApri();
+  });
 }
 try{
   if(window.claude && window.claude.hot && window.claude.hot.snapshot){

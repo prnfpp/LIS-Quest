@@ -20,6 +20,18 @@ e il documento su **https://prnfpp.github.io/LIS-Quest/gdd.html**.
 In locale bastano due click: apri `index.html` in un browser. 
 Non serve nessuna build, nessuna dipendenza, nessun server — è una singola pagina HTML con tutto dentro.
 
+## 👀 Sei sordo o sorda, o interprete LIS? Guarda i segni
+
+**[Apri la pagina di revisione →](https://prnfpp.github.io/LIS-Quest/#validazione)**
+
+Tutti e quaranta i disegni — i segni delle parole e le ventisei lettere dell'alfabeto manuale — su una
+schermata sola, in movimento, con rallentatore e fermo immagine. Sotto ognuno ci sono i cinque parametri
+formazionali con cui l'abbiamo costruito, così puoi dire non solo *che* è sbagliato ma **quale parametro**
+lo è. Alla fine scarichi un file e ce lo mandi.
+
+Servono circa dieci minuti, non serve installare niente, e le risposte restano sul tuo computer finché
+non decidi di mandarle. Dicci come vuoi essere accreditato.
+
 ## ⚠️ Cosa è vero e cosa no
 
 Questa è la cosa più importante di tutto il repository, e va letta prima di far giocare qualcuno.
