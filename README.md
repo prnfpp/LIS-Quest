@@ -17,8 +17,27 @@ segni, dentro mini-giochi che si giocano con tocco e trascinamento.
 GitHub Pages - demo online su **https://prnfpp.github.io/LIS-Quest/**
 e il documento su **https://prnfpp.github.io/LIS-Quest/gdd.html**.
 
-In locale bastano due click: apri `index.html` in un browser. 
-Non serve nessuna build, nessuna dipendenza, nessun server — è una singola pagina HTML con tutto dentro.
+In locale bastano due click: apri `index.html` in un browser.
+Non serve nessuna build, nessun server, nessun pacchetto da installare.
+
+**Per essere precisi**, perché è il genere di dettaglio su cui questo progetto non vuole arrotondare:
+i file sono **due** — `index.html` e `dialoghi.js` — e devono stare nella stessa cartella. E `index.html`
+chiede a Google i caratteri della pagina: **senza rete il gioco parte lo stesso**, con i caratteri di
+sistema al posto dei suoi. Sul computer di scuola filtrato che è la ragione di tutta questa
+architettura, quindi, funziona — ma quella richiesta a Google parte, ed è una cosa da sapere prima di
+installarlo in una classe.
+
+## 👀 Sei sordo o sorda, o interprete LIS? Guarda i segni
+
+**[Apri la pagina di revisione →](https://prnfpp.github.io/LIS-Quest/#validazione)**
+
+Tutti e quaranta i disegni — i segni delle parole e le ventisei lettere dell'alfabeto manuale — su una
+schermata sola, in movimento, con rallentatore e fermo immagine. Sotto ognuno ci sono i cinque parametri
+formazionali con cui l'abbiamo costruito, così puoi dire non solo *che* è sbagliato ma **quale parametro**
+lo è. Alla fine scarichi un file e ce lo mandi.
+
+Servono circa dieci minuti, non serve installare niente, e le risposte restano sul tuo computer finché
+non decidi di mandarle. Dicci come vuoi essere accreditato.
 
 ## ⚠️ Cosa è vero e cosa no
 

@@ -261,6 +261,10 @@ Tre cose lo tengono in piedi:
   lo schermo. Un browser che non sa fare questi filtri disegna le sagome senza filtrarle, e un bianco
   moltiplicato e un nero schermato non cambiano un pixel: si vede esattamente il disegno di prima. Al
   filtro il colore della sorgente non serve, perché legge solo l'alpha.
+  **Attenzione a non fermarsi qui**, come ha fatto la prima versione di questa pagina: quel
+  ragionamento vale se mancano i *filtri*, non se manca la *fusione*. Senza `mix-blend-mode` le due
+  sagome verrebbero disegnate opache sopra la mano — un blocco bianco e nero, il contrario di un
+  ripiego. Per questo c'è un `@supports` che in quel caso le toglie di mezzo.
 - **Il gruppo della mano è isolato** (`.mano3d{isolation:isolate}`), se no il prodotto e lo schermo
   prenderebbero anche il fondale e la mano scaverebbe un buco nel cielo. Per lo stesso motivo la mappa
   si ritaglia sulla sagoma e **fuori resta trasparente**: riempire il fuori di bianco, che è il neutro
