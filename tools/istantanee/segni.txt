@@ -1,0 +1,38 @@
+# istantanee: segni
+# generate da tools/istantanee.mjs — non si scrivono a mano.
+# nome | riquadro | disegno (x y larghezza altezza) | elementi | impronta
+
+acqua | 32 5 150 148 | 34.6 8.1 144.9 132.5 | circle:5 clipPath:3 ellipse:5 g:52 path:183 | 6752c566dbf2bff2
+acqua (compatto) | 16 10 118 118 | 38 8.1 106 132.5 | circle:5 clipPath:3 ellipse:5 g:47 path:173 | 42eccb897e4ec855
+bere | 32 5 150 148 | 34.6 8.1 144.9 132.5 | circle:9 clipPath:3 ellipse:10 g:52 line:8 path:136 | d3abedcfa291884b
+bere (compatto) | 21 10 132 132 | 69.3 8.1 74.7 132.5 | circle:9 clipPath:3 ellipse:10 g:47 line:8 path:126 | cdad0958d4ef093c
+ciao | 32 5 150 148 | 34.6 8.1 144.9 132.5 | circle:1 clipPath:3 ellipse:3 g:53 path:174 | 9e96e74b8111344f
+ciao (compatto) | 12 10 140 140 | 66.2 8.1 77.8 132.5 | circle:1 clipPath:3 ellipse:3 g:48 path:164 | d39ba122d32f7b9e
+conchiglia | 32 5 150 148 | 34.6 8.1 144.9 133.9 | circle:9 clipPath:3 ellipse:10 g:52 line:1 path:198 | da81d90d79f79629
+conchiglia (compatto) | 9 10 158 158 | 52 8.1 92 133.9 | circle:9 clipPath:3 ellipse:10 g:47 line:1 path:188 | 7e3c532ec1685f1a
+fame | 32 5 150 148 | 34.6 8.1 144.9 136.9 | circle:9 clipPath:3 ellipse:10 g:52 line:1 path:148 | 38d519628e0e96fe
+fame (compatto) | -2 10 164 164 | 47 8.1 97 136.9 | circle:9 clipPath:3 ellipse:10 g:47 line:1 path:138 | c68103c7fce819e3
+io | 32 5 150 148 | 34.6 8.1 144.9 140 | circle:9 clipPath:3 ellipse:9 g:52 line:7 path:158 | 96c6633fc91665cb
+io (compatto) | 23 10 154 154 | 69.3 8.1 74.7 140 | circle:9 clipPath:3 ellipse:9 g:47 line:7 path:148 | 8ddb2c8e48904bf2
+mangiare | 32 5 150 148 | 34.6 8.1 144.9 132.5 | circle:5 clipPath:3 ellipse:5 g:52 path:182 | 5d630779307baf8d
+mangiare (compatto) | 17 10 124 124 | 58.4 8.1 85.6 132.5 | circle:5 clipPath:3 ellipse:5 g:47 path:172 | 0d852bf365fe1087
+mela | 32 5 150 148 | 34.6 8.1 144.9 132.5 | circle:9 clipPath:3 ellipse:9 g:52 line:1 path:183 | 7f033f9943e79f65
+mela (compatto) | 28 10 128 128 | 61 8.1 83 132.5 | circle:9 clipPath:3 ellipse:9 g:47 line:1 path:173 | 1490fed305acb8e7
+no | 32 5 150 148 | 34.6 8.1 144.9 132.5 | circle:5 clipPath:3 ellipse:6 g:52 line:7 path:182 | 4b9ec14ac51c8866
+no (compatto) | 17 10 142 142 | 65 8.1 79 132.5 | circle:5 clipPath:3 ellipse:6 g:47 line:7 path:172 | fbd8f222ddfb847e
+nome | 32 5 150 148 | 34.6 8.1 144.9 132.5 | circle:9 clipPath:3 ellipse:9 g:52 line:5 path:182 | e15971cd35cfb7d1
+nome (compatto) | 9 10 142 142 | 56.8 8.1 87.3 132.5 | circle:9 clipPath:3 ellipse:9 g:47 line:5 path:172 | 060ab3d4101b6c68
+nonAdesso | 32 5 150 148 | 34.6 8.1 144.9 132.5 | circle:17 clipPath:6 ellipse:21 g:126 line:7 path:413 | 63314709fdaea215
+nonAdesso (compatto) | 28 10 158 158 | 57 8.1 100 132.5 | circle:17 clipPath:6 ellipse:21 g:121 line:7 path:403 | a04808415a40de15
+pesce | 32 5 150 148 | 34.6 8.1 144.9 136 | circle:9 clipPath:3 ellipse:9 g:52 line:5 path:170 | 0ea71040e85fb10c
+pesce (compatto) | 13 10 154 154 | 68.6 8.1 75.4 136 | circle:9 clipPath:3 ellipse:9 g:47 line:5 path:160 | 79428934fe90e868
+si | 32 5 150 148 | 34.6 8.1 144.9 132.5 | circle:9 clipPath:3 ellipse:10 g:52 line:6 path:176 | 97609231ab3df2c5
+si (compatto) | 17 10 142 142 | 63.7 8.1 80.3 132.5 | circle:9 clipPath:3 ellipse:10 g:47 line:6 path:166 | 31bc40791d3eab4d
+tu | 32 5 150 148 | 34.6 8.1 144.9 137.9 | circle:5 clipPath:3 ellipse:6 g:51 line:7 path:150 | 100345b1dd8948d5
+tu (compatto) | 9 10 158 158 | 58 8.1 86 137.9 | circle:5 clipPath:3 ellipse:6 g:46 line:7 path:140 | eb4d01be3a750f42
+vDomanda | 64 10 88 92 | 66 5.6 80 135 | circle:4 clipPath:3 ellipse:5 g:17 path:31 | dcff2bc3adc0203f
+vDomanda (compatto) | 64 10 88 92 | 66 5.6 80 135 | circle:4 clipPath:3 ellipse:5 g:17 path:31 | 0b41b35b3afffdf7
+vNega | 64 10 88 92 | 69.3 8.1 74.7 132.5 | circle:4 clipPath:3 ellipse:5 g:17 path:31 | e5faf368a9c9080c
+vNega (compatto) | 64 10 88 92 | 69.3 8.1 74.7 132.5 | circle:4 clipPath:3 ellipse:5 g:17 path:31 | 353fa97c579d2840
+vNeutro | 64 10 88 92 | 69.3 8.1 74.7 132.5 | circle:4 clipPath:3 ellipse:5 g:17 path:31 | 1475c12679087e42
+vNeutro (compatto) | 64 10 88 92 | 69.3 8.1 74.7 132.5 | circle:4 clipPath:3 ellipse:5 g:17 path:31 | b21b6d54f15dce70

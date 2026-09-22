@@ -1616,6 +1616,123 @@ function occlusione(d, k){
     '<path d="'+d+'" stroke-width="'+n2(q*0.6)+'" opacity=".22"/></g>';
 }
 
+/* ---------- i solchi: il buio fra due parti che si toccano ----------
+   L'occlusione di qui sopra e' un alone attorno a ogni pezzo, e funziona
+   quando un pezzo sta DAVANTI a un altro: l'alone di quello davanti cade su
+   quello dietro, e l'ordine di profondita' li separa.
+   Quando invece due dita stanno affiancate alla STESSA profondita' — le due
+   dita stese di NOME, le quattro dita accostate di un pugno, le dita curve
+   di una mano a coppa — nessuno dei due aloni cade sull'altro: cadono
+   entrambi nel mezzo e vengono ricoperti dai pieni. Il contorno interno non
+   c'e' piu', perche' la sagoma e' unica. Risultato: in miniatura due dita
+   diventano un dito largo il doppio. E contare le dita, in LIS, e' meta'
+   dell'informazione — e' la differenza fra V e B, fra due e quattro, fra il
+   nome e il saluto.
+
+   Il solco si RICAVA dal modello, non si dichiara nella posa: per ogni
+   coppia di dita vicine si cerca, lungo le due linee d'asse proiettate, dove
+   le due sagome si sfiorano; li' passa la valle, ed e' li' che va il buio.
+   Dove le dita sono aperte le sagome non si sfiorano e non esce niente; man
+   mano che si accostano il solco compare da se' e si scurisce. Nessuna posa
+   lo deve sapere, e nessuna posa lo puo' sbagliare.
+
+   Due casi si lasciano stare apposta, perche' li risolve gia' l'alone e un
+   solco li peggiorerebbe: una linea d'asse che finisce DENTRO l'altra sagoma
+   (non e' un fianco contro un fianco, e' un dito davanti a un altro) e due
+   parti a profondita' molto diverse. */
+
+/* quanti campioni per osso: abbastanza da seguire una curva, pochi abbastanza
+   da poter cercare il punto piu' vicino con una scansione */
+const SOLCO_PASSI = 9;
+
+function campionaCatena(c){
+  const out = [];
+  for(let i=0;i<c.pt.length-1;i++){
+    const a = c.pt[i], b = c.pt[i+1];
+    const ra = c.largh[i]*a[3], rb = c.largh[i+1]*b[3];
+    for(let j=0;j<SOLCO_PASSI;j++){
+      const t = j/SOLCO_PASSI;
+      out.push([a[0]+(b[0]-a[0])*t, a[1]+(b[1]-a[1])*t,
+                a[2]+(b[2]-a[2])*t, ra+(rb-ra)*t]);
+    }
+  }
+  const u = c.pt.length-1;
+  out.push([c.pt[u][0], c.pt[u][1], c.pt[u][2], c.largh[u]*c.pt[u][3]]);
+  return out;                                  /* [x, y, z(mm), raggio] */
+}
+
+/* il tratto di un solco: una polilinea sola, in quattro gradini di buio, in
+   modo che il solco sfumi alle estremita' invece di finire come un graffio */
+function trattoSolco(corsa){
+  if(corsa.length < 2) return '';
+  let s = '', i = 0;
+  const liv = p => Math.min(3, Math.floor(p[2]*4));
+  while(i < corsa.length-1){
+    const l = liv(corsa[i]);
+    let j = i+1;
+    while(j < corsa.length && liv(corsa[j]) === l) j++;
+    const pezzo = corsa.slice(i, Math.min(corsa.length, j+1));
+    if(pezzo.length >= 2){
+      const t = pezzo.reduce((m,p)=>m+p[2],0)/pezzo.length;
+      const r = pezzo.reduce((m,p)=>Math.min(m,p[3]), 1e9);
+      let d = 'M '+n2(pezzo[0][0])+' '+n2(pezzo[0][1]);
+      for(let k=1;k<pezzo.length;k++) d += ' L '+n2(pezzo[k][0])+' '+n2(pezzo[k][1]);
+      s += '<path d="'+d+'" stroke-width="'+n2(r*1.55)+'" opacity="'+n2(.11*t)+'"/>'+
+           '<path d="'+d+'" stroke-width="'+n2(r*0.72)+'" opacity="'+n2(.20*t)+'"/>'+
+           '<path d="'+d+'" stroke-width="'+n2(r*0.28)+'" opacity="'+n2(.28*t)+'"/>';
+    }
+    i = j-1 > i ? j-1 : i+1;
+  }
+  return s;
+}
+
+function solcoFraCatene(A, B){
+  const corse = [];
+  let corsa = [];
+  const chiudi = ()=>{ if(corsa.length >= 2) corse.push(corsa); corsa = []; };
+  for(let n=0;n<A.length;n++){
+    const a = A[n];
+    let b = null, dm = 1e9;
+    for(let i=0;i<B.length;i++){
+      const d = Math.hypot(a[0]-B[i][0], a[1]-B[i][1]);
+      if(d < dm){ dm = d; b = B[i]; }
+    }
+    const somma = b ? a[3] + b[3] : 0;
+    if(!b || dm < 1e-4){ chiudi(); continue; }
+    /* troppo lontane: fra le due sagome si vede il fondo, il solco non serve */
+    if(dm - somma > somma*.16){ chiudi(); continue; }
+    /* una linea d'asse dentro l'altra sagoma: un dito davanti a un altro */
+    if(dm < Math.abs(a[3]-b[3])*1.05){ chiudi(); continue; }
+    /* profondita' molto diverse: le separa gia' l'ordine, e l'alone */
+    if(Math.abs(a[2]-b[2])*MANO.scala > somma*2.0){ chiudi(); continue; }
+    /* il punto di mezzo fra le due SUPERFICI, non fra i due assi: con un
+       pollice grosso accanto a un mignolo sottile la valle non sta in mezzo */
+    const f = (dm + a[3] - b[3])/(2*dm);
+    const t = Math.max(0, Math.min(1, (somma*.16 - (dm - somma))/(somma*.46)));
+    corsa.push([a[0]+(b[0]-a[0])*f, a[1]+(b[1]-a[1])*f, t, Math.min(a[3], b[3])]);
+  }
+  chiudi();
+  return corse.map(trattoSolco).join('');
+}
+
+/* Solo le coppie VICINE. Due dita non adiacenti che in proiezione si
+   sovrappongono — l'indice che passa davanti al mignolo in un pugno — non
+   hanno nessuna valle fra loro: quello e' un davanti-dietro, e scavarci un
+   solco disegnerebbe una riga in mezzo al niente. */
+const SOLCO_VICINI = [['pol','ind'],['ind','med'],['med','anu'],['anu','mig']];
+
+function solchiFraDita(catene){
+  const mappa = {};
+  catene.forEach(c=>{ mappa[c.id] = campionaCatena(c); });
+  let s = '';
+  SOLCO_VICINI.forEach(cp=>{
+    const A = mappa[cp[0]], B = mappa[cp[1]];
+    if(A && B) s += solcoFraCatene(A, B);
+  });
+  return s ? '<g class="solchi" fill="none" stroke="var(--pelle-ombra)" '+
+             'stroke-linecap="round" stroke-linejoin="round">'+s+'</g>' : '';
+}
+
 /* la fascia: la stessa catena, più stretta e spostata di lato.
    Il colore lo dice chi chiama: prima lo decideva il SEGNO dello spostamento,
    e per cambiare la luce senza cambiare il lato non c'era modo. */
@@ -2043,6 +2160,10 @@ function manoSVG(nomeConfig, B, opt){
   opt = Object.assign({luce: LUCE}, opt);
 
   const pelle = [];
+  /* Le linee d'asse proiettate si tengono da parte: servono ai SOLCHI, che
+     hanno bisogno di sapere dove passa il mezzo di ogni dito, non solo dove
+     finisce la sua sagoma. */
+  const catene = [];
   MANO.dita.forEach(d=>{
     const cat = catenaDito(d, pose[d.id] || TESO);
     /* La sagoma del dito comincia SOTTO la nocca, dentro il palmo. Senza
@@ -2053,7 +2174,9 @@ function manoSVG(nomeConfig, B, opt){
        fra un dito e l'altro le scava l'occlusione. */
     const u = nrm(dif(cat[1], cat[0]));
     cat[0] = dif(cat[0], per(u, 8));
-    pelle.push(ditoSolido(cat.map(q=>appM3(B,q)), d.largh, B, opt));
+    const pt3 = cat.map(q=>appM3(B,q));
+    catene.push({id: d.id, pt: pt3.map(proietta), largh: d.largh});
+    pelle.push(ditoSolido(pt3, d.largh, B, opt));
   });
   /* Del pollice si disegna solo la parte che SI VEDE: il metacarpo, che e'
      lungo quasi quanto tutto il resto del dito, sta dentro la massa della mano
@@ -2069,8 +2192,10 @@ function manoSVG(nomeConfig, B, opt){
      — il pollice sembrava tagliato a metà. */
   const up = nrm(dif(cp[2], cp[1]));
   const radice = dif(cp[1], per(up, 9));
-  const pollice = ditoSolido([radice].concat(cp.slice(2)),
-                        MANO.pollice.largh.slice(1), B,
+  const catPol = [radice].concat(cp.slice(2));
+  const larghPol = MANO.pollice.largh.slice(1);
+  catene.push({id: 'pol', pt: catPol.map(proietta), largh: larghPol});
+  const pollice = ditoSolido(catPol, larghPol, B,
                         Object.assign({}, opt, {unghiaDorso: appM3(B, pol.dorso)}));
   pelle.push(pollice);
   pelle.push(palmoSolido(pose, B, opt));
@@ -2106,8 +2231,13 @@ function manoSVG(nomeConfig, B, opt){
   const alone = pelle.map(p=>p.alone).join('');
   const dentro = pelle.map(p=> p.ao + p.pieno + p.detta).join('');
 
+  /* I solchi vanno DOPO tutti i pieni — se no li coprirebbero — e PRIMA
+     della mappa di luce, cosi' il volume li illumina insieme al resto invece
+     di passarci sopra. */
+  const solchi = solchiFraDita(catene);
+
   return '<g class="mano3d">'+ polsinoSolido(B, opt).svg +
-         alone + fuori + dentro + rilievo + volumeDaSagoma(pelle) + '</g>';
+         alone + fuori + dentro + solchi + rilievo + volumeDaSagoma(pelle) + '</g>';
 }
 
 /* ---------- il volume, ricavato dalla sagoma ----------
@@ -4490,6 +4620,25 @@ function boot(hot){
     if(location.hash === '#validazione') revApri();
   });
 }
+/* ================= IL BANCO DI PROVA =================
+   Un solo appiglio, deliberato, verso l'esterno: da qui lo strumento di
+   verifica (tools/istantanee.mjs) chiede alla pagina il disegno GENERATO di
+   ogni segno, di ogni lettera e di ogni configurazione di mano, e lo confronta
+   con quello registrato l'ultima volta. Senza questo appiglio la verifica
+   dovrebbe confrontare PIXEL, e i pixel cambiano quando cambia il browser:
+   l'SVG no. Un SVG si legge in una differenza, si discute in una revisione, e
+   dice esattamente quale numero si e' mosso.
+   Non serve al gioco e il gioco non lo usa: costa un oggetto. */
+window.LISQ = {
+  segni:  ()=> Object.keys(SIGNS),
+  lettere:()=> Object.keys(ALFA),
+  configurazioni: ()=> Object.keys(CONFIG),
+  segno:  (k, opz) => renderSign(SIGNS[k], opz),
+  lettera:k => letterGlyph(k),
+  mano:   (k, dita, palmo) => manoSVG(k,
+            baseOrientata(dita || 'su', palmo || 'avanti', false), {luce: luceDi(false)})
+};
+
 try{
   if(window.claude && window.claude.hot && window.claude.hot.snapshot){
     window.claude.hot.snapshot(()=>Object.assign({}, S, {inGioco: !el.scrs.gioco.hidden}));

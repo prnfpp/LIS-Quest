@@ -1,0 +1,76 @@
+# istantanee: mani
+# generate da tools/istantanee.mjs — non si scrivono a mano.
+# nome | riquadro | disegno (x y larghezza altezza) | elementi | impronta
+
+a (dorso) | -40 -46 84 90 | -18.1 -16.7 26.3 32.9 | circle:4 ellipse:5 g:20 line:8 path:131 | b27745ee41d61bba
+a (palmo) | -40 -46 84 90 | -8.2 -14.9 27.5 31.1 | g:20 line:8 path:108 | 8ac40fe56d3f5031
+artiglio (dorso) | -40 -46 84 90 | -21 -24.1 29.2 40.2 | circle:4 ellipse:5 g:20 line:1 path:128 | a5046d23d1fb176f
+artiglio (palmo) | -40 -46 84 90 | -8.2 -18.9 30.3 35.1 | ellipse:1 g:20 line:1 path:127 | cc07543a5929867e
+b (dorso) | -40 -46 84 90 | -8.6 -28 16.8 44.2 | circle:4 ellipse:5 g:20 line:1 path:133 | b95fc9b16ae40f2d
+b (palmo) | -40 -46 84 90 | -8.2 -27.7 17.1 43.9 | ellipse:1 g:20 line:1 path:134 | b843d05ff1ee6ad3
+becco (dorso) | -40 -46 84 90 | -12.3 -19.1 20.5 35.3 | circle:4 ellipse:5 g:20 path:145 | e89c775d60fbdd91
+becco (palmo) | -40 -46 84 90 | -8.2 -16 23.1 32.2 | ellipse:1 g:20 path:144 | dcd46d60978ee6c4
+c (dorso) | -40 -46 84 90 | -12.1 -26.2 20.3 42.4 | circle:4 ellipse:5 g:20 line:1 path:134 | 86273de1b5bd0695
+c (palmo) | -40 -46 84 90 | -8.2 -21.6 21.8 37.8 | ellipse:1 g:20 line:1 path:142 | 524ca7bc7c6d7380
+ci (dorso) | -40 -46 84 90 | -12.5 -25 20.7 41.2 | circle:4 ellipse:5 g:20 path:130 | 2fc4b96c398cb0c0
+ci (palmo) | -40 -46 84 90 | -8.2 -19.5 21.8 35.6 | ellipse:1 g:20 path:156 | 40586b28f2ec72cc
+cinque (dorso) | -40 -46 84 90 | -25.6 -27.8 35.9 44 | circle:4 ellipse:5 g:20 path:128 | cccd634320d3d767
+cinque (palmo) | -40 -46 84 90 | -10.5 -28 37.9 44.2 | g:20 path:129 | 778be208a2538d1c
+coppa (dorso) | -40 -46 84 90 | -16.5 -22.9 24.7 39.1 | circle:4 ellipse:5 g:20 line:1 path:129 | 23de1bd2d38b4ebe
+coppa (palmo) | -40 -46 84 90 | -8.2 -17.3 26.6 33.5 | ellipse:1 g:20 line:1 path:121 | 3e90fd01ba5209bd
+corna (dorso) | -40 -46 84 90 | -13.3 -23.7 23.9 39.9 | circle:4 ellipse:4 g:20 line:5 path:95 | 856b2d218410a165
+corna (palmo) | -40 -46 84 90 | -10.7 -25.8 23.7 42 | ellipse:1 g:20 line:5 path:120 | dee25e94a5ef45a0
+d (dorso) | -40 -46 84 90 | -9 -24.8 17.2 41 | circle:4 ellipse:5 g:21 path:130 | 5c8a62b01f814c6c
+d (palmo) | -40 -46 84 90 | -8.2 -25.4 19.9 41.5 | ellipse:1 g:21 path:137 | e4dccf1fdd325d93
+e (dorso) | -40 -46 84 90 | -11.4 -17.5 19.6 33.7 | circle:4 ellipse:4 g:20 line:7 path:127 | 10701f17833c0513
+e (palmo) | -40 -46 84 90 | -8.2 -13.3 21.5 29.5 | ellipse:1 g:20 line:9 path:104 | 8678488da9c93ef9
+elle (dorso) | -40 -46 84 90 | -30.9 -24.8 39.1 41 | circle:4 ellipse:5 g:20 line:6 path:98 | b814d03de3a8a651
+elle (palmo) | -40 -46 84 90 | -8.2 -25.4 37.3 41.5 | g:20 line:6 path:102 | ecb94d2fe8124253
+f (dorso) | -40 -46 84 90 | -12.2 -27.9 22.3 44.1 | circle:4 ellipse:5 g:21 path:137 | b88568e4a1e173c8
+f (palmo) | -40 -46 84 90 | -10.3 -27.9 25.1 44.1 | g:21 path:151 | 1c9fc9ecc2b3aa88
+g (dorso) | -40 -46 84 90 | -31.9 -24.8 40.1 41 | circle:4 ellipse:5 g:20 line:6 path:98 | 65ed031858eeec2c
+g (palmo) | -40 -46 84 90 | -8.2 -25.4 38.8 41.5 | g:20 line:6 path:102 | b81d2cb3b429bc4f
+indice (dorso) | -40 -46 84 90 | -8.6 -24.8 16.8 41 | circle:4 ellipse:4 g:20 line:7 path:106 | 8e505650e5d1d62c
+indice (palmo) | -40 -46 84 90 | -8.2 -25.4 17.1 41.5 | ellipse:1 g:20 line:7 path:128 | 483ee2b2c8e87c36
+k (dorso) | -40 -46 84 90 | -22.4 -28.1 30.6 44.2 | circle:4 ellipse:5 g:20 line:4 path:99 | 60c3c4ebd08a5537
+k (palmo) | -40 -46 84 90 | -8.2 -26.9 32.8 43 | g:20 line:4 path:103 | 5ff86c3b6188ea27
+m (dorso) | -40 -46 84 90 | -10.1 -28.1 18.3 44.2 | circle:4 ellipse:4 g:20 line:3 path:114 | b7da03bd3f706301
+m (palmo) | -40 -46 84 90 | -8.2 -27.6 18.5 43.7 | ellipse:1 g:20 line:3 path:136 | 26fd504929c19025
+mignolo (dorso) | -40 -46 84 90 | -10.5 -20.2 18.7 36.4 | circle:4 ellipse:4 g:20 line:7 path:109 | 64087a246280c5a8
+mignolo (palmo) | -40 -46 84 90 | -8.2 -18.5 19.7 34.7 | ellipse:1 g:20 line:7 path:104 | 083afbf47b2d1318
+n (dorso) | -40 -46 84 90 | -9.8 -28.1 18 44.3 | circle:4 ellipse:4 g:20 line:5 path:110 | 2a4e11802c87497c
+n (palmo) | -40 -46 84 90 | -8.2 -27.3 18.3 43.5 | ellipse:1 g:20 line:5 path:129 | cd3b472b7aaf8de7
+o (dorso) | -40 -46 84 90 | -12.2 -23.2 20.4 39.4 | circle:4 ellipse:5 g:21 path:137 | 3fbf4568050af68c
+o (palmo) | -40 -46 84 90 | -8.2 -18 22.6 34.1 | g:21 path:147 | 594b8e1d5a0fff81
+p (dorso) | -40 -46 84 90 | -10.1 -24.8 18.3 41 | circle:4 ellipse:5 g:20 line:4 path:103 | 4c07cf0a1ad8b026
+p (palmo) | -40 -46 84 90 | -8.2 -25.3 18.7 41.5 | g:20 line:4 path:126 | 7d49313a2661d3de
+piatta (dorso) | -40 -46 84 90 | -21 -28 29.2 44.2 | circle:4 ellipse:5 g:20 path:116 | 145296868020bfda
+piatta (palmo) | -40 -46 84 90 | -8.2 -27.7 31.4 43.9 | g:20 path:117 | ad3bbddbe4d9c11f
+pinza (dorso) | -40 -46 84 90 | -12.2 -18.4 20.4 34.6 | circle:4 ellipse:5 g:20 line:6 path:119 | ad000af6a1760eba
+pinza (palmo) | -40 -46 84 90 | -8.2 -15.9 22.8 32.1 | g:20 line:6 path:141 | 4716caf0901db114
+pollice (dorso) | -40 -46 84 90 | -24.4 -15.1 32.6 31.3 | circle:4 ellipse:5 g:20 line:8 path:109 | 99e3d0a95b8f89bd
+pollice (palmo) | -40 -46 84 90 | -8.2 -13.7 32.8 29.9 | g:20 line:8 path:107 | a62e9c53f496750f
+pugno (dorso) | -40 -46 84 90 | -10.5 -15.1 18.7 31.3 | circle:4 ellipse:4 g:20 line:9 path:114 | 10d8fed53c062bb1
+pugno (palmo) | -40 -46 84 90 | -8.2 -12.2 19.7 28.4 | ellipse:1 g:20 line:9 path:115 | c54f169d8aac42b1
+q (dorso) | -40 -46 84 90 | -30.7 -24.8 38.9 41 | circle:4 ellipse:5 g:20 line:6 path:98 | df450505959db099
+q (palmo) | -40 -46 84 90 | -8.2 -25.4 38.9 41.5 | g:20 line:6 path:102 | f7f828e534d96d59
+quattro (dorso) | -40 -46 84 90 | -12.1 -27.8 22.1 44 | circle:4 ellipse:5 g:20 line:1 path:148 | 1454b695e105c151
+quattro (palmo) | -40 -46 84 90 | -10.1 -28 22 44.2 | ellipse:1 g:20 line:1 path:146 | d9971052f69250f6
+r (dorso) | -40 -46 84 90 | -8.9 -27.7 17.2 43.9 | circle:4 ellipse:4 g:20 line:5 path:104 | c201553c9fa48430
+r (palmo) | -40 -46 84 90 | -8.2 -26.1 18 42.2 | ellipse:1 g:20 line:5 path:118 | 97b80334177c45b8
+s (dorso) | -40 -46 84 90 | -10.5 -15.1 18.7 31.3 | circle:4 ellipse:4 g:20 line:9 path:133 | 398e717ff77b01bb
+s (palmo) | -40 -46 84 90 | -8.2 -12.2 19.7 28.4 | ellipse:1 g:20 line:9 path:98 | 1483a7b0122cb4bc
+t (dorso) | -40 -46 84 90 | -10.5 -15.1 18.7 31.3 | circle:4 ellipse:5 g:20 line:9 path:118 | 2e52fd40683e6a64
+t (palmo) | -40 -46 84 90 | -8.2 -12.2 19.7 28.4 | ellipse:1 g:20 line:9 path:110 | 970d9f1757725b0b
+tre (dorso) | -40 -46 84 90 | -27 -27.9 35.2 44.1 | circle:4 ellipse:5 g:20 line:4 path:105 | 6b97e7d906f18ffd
+tre (palmo) | -40 -46 84 90 | -8.2 -27.9 35.9 44 | g:20 line:4 path:109 | 19f52e5fed705fbb
+u (dorso) | -40 -46 84 90 | -9.5 -28 17.7 44.2 | circle:4 ellipse:4 g:20 line:5 path:113 | 19db95809a2ebfb4
+u (palmo) | -40 -46 84 90 | -8.2 -27.5 17.9 43.6 | ellipse:1 g:20 line:5 path:132 | 914a1c545552e788
+v (dorso) | -40 -46 84 90 | -13 -28.1 21.2 44.2 | circle:4 ellipse:4 g:20 line:5 path:107 | d4fa76c9dd1a35f5
+v (palmo) | -40 -46 84 90 | -8.2 -26.9 20.9 43 | ellipse:1 g:20 line:5 path:126 | db2bdf2a24805afe
+w (dorso) | -40 -46 84 90 | -13.3 -27.8 21.5 44 | circle:4 ellipse:4 g:20 line:3 path:123 | 6a2960e8bddf2584
+w (palmo) | -40 -46 84 90 | -8.2 -28 21.1 44.2 | ellipse:1 g:20 line:3 path:136 | 05736003185f7ab7
+x (dorso) | -40 -46 84 90 | -10.8 -18.4 19 34.6 | circle:4 ellipse:4 g:20 line:9 path:123 | 60df8af53af94b69
+x (palmo) | -40 -46 84 90 | -8.2 -18.1 20.7 34.2 | ellipse:1 g:20 line:9 path:127 | a85894a09fb2a214
+y (dorso) | -40 -46 84 90 | -28.3 -20.5 38.9 36.7 | circle:4 ellipse:5 g:20 line:6 path:101 | 5541b9438f9ed19f
+y (palmo) | -40 -46 84 90 | -10.7 -17.9 38.3 34 | g:20 line:6 path:96 | 45f206a53dccd9e1

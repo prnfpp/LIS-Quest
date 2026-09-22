@@ -21,7 +21,8 @@ In locale bastano due click: apri `index.html` in un browser.
 Non serve nessuna build, nessun server, nessun pacchetto da installare.
 
 **Per essere precisi**, perché è il genere di dettaglio su cui questo progetto non vuole arrotondare:
-i file sono **due** — `index.html` e `dialoghi.js` — e devono stare nella stessa cartella. E `index.html`
+i file da scaricare per giocare sono **due** — `index.html` e `dialoghi.js` — e devono stare nella
+stessa cartella (nel deposito ce n'è dell'altro, ma è roba per chi sviluppa). E `index.html`
 chiede a Google i caratteri della pagina: **senza rete il gioco parte lo stesso**, con i caratteri di
 sistema al posto dei suoi. Sul computer di scuola filtrato che è la ragione di tutta questa
 architettura, quindi, funziona — ma quella richiesta a Google parte, ed è una cosa da sapere prima di
@@ -102,11 +103,19 @@ semplice collegamento.
 ├── gdd.html            Game Design Document completo
 ├── SEGNI.md            dove andranno le clip video del lessico, e con che requisiti
 ├── CONTRIBUTING.md     come aggiungere un segno, una scena, un capitolo
+├── tools/              attrezzi per chi sviluppa — il gioco non li usa e non li carica
 ├── LICENSE             MIT, per il codice
 └── README.md
 ```
 
-I due file vanno tenuti nella stessa cartella: `index.html` carica `dialoghi.js` all'avvio.
+Per **giocare** servono due file e basta, `index.html` e `dialoghi.js`, nella stessa cartella:
+`index.html` carica `dialoghi.js` all'avvio. Tutto il resto è per chi il gioco lo scrive.
+
+`tools/` contiene un solo attrezzo: le **istantanee**, che apre la pagina in un browser e controlla
+che nessun disegno si sia mosso senza che qualcuno l'abbia voluto — utile perché qui ogni mano e
+ogni lettera escono da numeri, e un numero cambiato in fondo al motore ne sposta quaranta insieme.
+Vuole Node e un Chrome già installato, non scarica niente, e chi gioca non lo incontra mai. Si
+spiega da solo in [`tools/LEGGIMI.md`](./tools/LEGGIMI.md).
 
 Le clip dei segni andranno in una cartella `segni/` che si creerà quando ci sarà il primo video.
 
