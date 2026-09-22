@@ -1284,11 +1284,19 @@ const CONFIG = {
   quattro: posa({ind:[12,2,4,2], med:[4,2,4,2], anu:[-5,2,4,2], mig:[-14,3,6,3],
                  pol:[-22,0,0,30,70]}),
 
-  /* --- pugni: cambia il pollice, e cambia la lettera --- */
+  /* --- pugni: cambia il pollice, e cambia la lettera ---
+     E, S e T sono tre pugni, e a distinguerli c'e' solo dove sta il pollice.
+     Finche' il pollice restava dentro la massa erano la stessa figura, a ogni
+     dimensione: la tipografia dell'alfabeto manuale lo sa da sempre, e la
+     regola che usa e' che il tratto distintivo deve stare in SPAZIO NEGATIVO,
+     cioe' rompere la sagoma. Quindi la punta del pollice e' portata fuori:
+     sopra al pugno per la T, che spunta fra indice e medio; di traverso e
+     oltre il lato opposto per la S, che passa davanti; in basso per la E, che
+     sta orizzontale sotto le dita ripiegate. */
   pugno:   posa({pol:[-16,0,0,55,70]}),
-  a:       posa({pol:[14,10,6,3,2]}),
-  s:       posa({pol:[-22,0,0,55,70]}),
-  t:       posa({pol:[-8,8,0,10,75]}),
+  a:       posa({pol:[14,10,6,3,2], rilievo:['pol']}),
+  s:       posa({pol:[-26,0,0,35,75], rilievo:['pol']}),
+  t:       posa({pol:[-8,0,0,20,75], rilievo:['pol']}),
 
   /* --- un dito, due dita --- */
   indice:  posa({ind:TESO, pol:[-22,0,0,50,70]}),
@@ -1327,9 +1335,9 @@ const CONFIG = {
                  pol:[-2,0,0,60,5]}),
   pinza:   posa({ind:[2,36,52,28], pol:[-2,9,0,25,25]}),
   o:       posa({ind:[2,30,46,26], med:[0,28,44,24], anu:[-2,28,42,24], mig:[-5,30,40,24],
-                 pol:[-2,9,15,0,0]}),
+                 pol:[-2,9,15,0,0], anello:['ind','med','anu','mig','pol']}),
   e:       posa({ind:[2,58,70,38], med:[0,58,74,38], anu:[-2,58,72,38], mig:[-5,60,68,38],
-                 pol:[-4,0,0,60,70]}),
+                 pol:[-26,0,0,80,75], rilievo:['pol']}),
 
   /* --- le due che puntano al pavimento ---
      Le dita sono DISTESE, non flesse: e' la mano che e' girata in basso, non
@@ -1345,10 +1353,10 @@ const CONFIG = {
   /* --- tre forme che servono solo all'alfabeto --- */
   /* D: indice teso, le altre tre ripiegate a chiudere un cerchio col pollice */
   d:       posa({ind:TESO, med:[0,54,52,30], anu:[-3,54,50,30], mig:[-7,56,48,30],
-                 pol:[-14,12,5,10,60]}),
+                 pol:[-14,12,5,10,60], anello:['med','anu','mig','pol']}),
   /* F: indice e pollice a cerchio, le altre tre tese e staccate */
   f:       posa({ind:[4,34,50,26], med:[3,2,4,2], anu:[-6,2,4,2], mig:[-15,3,6,3],
-                 pol:[-2,6,5,25,10]}),
+                 pol:[-2,6,5,25,10], anello:['ind','pol']}),
   /* K: indice e medio tesi e aperti, pollice teso in mezzo alle due dita */
   k:       posa({ind:[15,2,4,2], med:[-13,2,4,2], pol:[24,16,10,5,2]})
 };
@@ -1745,9 +1753,64 @@ function palmoSolido(pose, B, opt){
   if(versoNoi > .12) s += nocchePalmo(pose, B);
   else if(versoNoi < -.12) s += pieghePalmo(cen);
   s += membrane(pose, B);
+  /* l'incavo dell'anello sta qui, subito dopo il palmo: le dita che lo
+     formano si disegnano dopo e gli passano sopra */
+  s += incavoAnello(pose, B);
   return {d:d, alone:alone, ao:occlusione(d, 1.35), pieno:pieno, detta:s,
           z: mondo.reduce((a,p)=>a+p[2],0)/mondo.length};
 }
+/* ---------- l'anello: lo spazio DENTRO, che e' la lettera ----------
+   O, F e D sono definite da un cerchio fatto con le dita, e il cerchio e'
+   spazio vuoto. Finora il motore sapeva solo AGGIUNGERE materia: ogni pezzo
+   e' una sagoma piena e l'unione la fa l'ordine di disegno, che puo' soltanto
+   coprire. Risultato, quelle lettere erano pugni indistinguibili l'uno
+   dall'altro, e nel gioco del sigillo chi deve sceglierle tira a indovinare.
+   Lo spazio dentro un anello, pero', non e' un foro passante: la mano non e'
+   bucata. Dietro l'anello c'e' il palmo, e quello che si vede guardando
+   dentro e' palmo in ombra — un INCAVO. Quindi non serve sottrarre dalla
+   sagoma: basta scurire l'interno, disegnandolo dopo il palmo e prima delle
+   dita che l'anello lo formano. Le dita gli passano sopra e l'anello si
+   chiude da se'.
+   Quale sia l'interno si ricava: si prendono i giunti delle dita dichiarate,
+   si sposta ciascuno verso il baricentro di quanto e' spesso quel dito, e
+   quello che resta e' il vuoto in mezzo. */
+function incavoAnello(pose, B){
+  const quali = pose.anello;
+  if(!quali || quali.length < 2) return '';
+  const punti = [];
+  quali.forEach(id=>{
+    const pollice = (id === 'pol');
+    const d = pollice ? null : MANO.dita.find(x=>x.id===id);
+    if(!pollice && !d) return;
+    const cat = pollice ? catenaPollice(pose.pol).giunti
+                        : catenaDito(d, pose[id] || TESO);
+    const lar = pollice ? MANO.pollice.largh : d.largh;
+    for(let i=1;i<cat.length;i++){
+      const q = proietta(appM3(B, cat[i]));
+      punti.push({p:[q[0], q[1]], r: lar[i]*q[3]});
+    }
+  });
+  if(punti.length < 3) return '';
+  const cen = punti.reduce((a,x)=>[a[0]+x.p[0]/punti.length,
+                                   a[1]+x.p[1]/punti.length], [0,0]);
+  const dentro = punti.map(x=>{
+    const dx = cen[0]-x.p[0], dy = cen[1]-x.p[1];
+    const l = Math.hypot(dx,dy) || 1;
+    /* verso il centro di quanto e' spesso il dito, ma mai oltre il centro */
+    const k = Math.min(l*.8, x.r*1.25);
+    return [x.p[0]+dx/l*k, x.p[1]+dy/l*k];
+  });
+  const d = blob(arrotonda(inviluppo(dentro), 2));
+  /* il fondo dell'incavo, l'ombra che le pareti gli buttano dentro, e un
+     filo di contorno perche' il cerchio si veda anche piccolo */
+  return '<path d="'+d+'" fill="var(--pelle-ombra)" opacity=".38"/>'+
+         '<g fill="none" stroke="var(--pelle-ombra)" stroke-linejoin="round">'+
+           '<path d="'+d+'" stroke-width="3" opacity=".22"/>'+
+           '<path d="'+d+'" stroke-width="1.4" opacity=".3"/></g>'+
+         '<path d="'+d+'" fill="none" stroke="var(--bordo-pelle)" '+
+           'stroke-width="'+n2(ORLO)+'" opacity=".45"/>';
+}
+
 /* Le membrane fra le dita. Sono la parte più sottile della mano, e in
    controluce sono la prima cosa che si accende: chiunque abbia guardato la
    propria mano davanti a una finestra le ha viste rosse. Qui sono un piccolo
@@ -1869,10 +1932,27 @@ function manoSVG(nomeConfig, B, opt){
      — il pollice sembrava tagliato a metà. */
   const up = nrm(dif(cp[2], cp[1]));
   const radice = dif(cp[1], per(up, 9));
-  pelle.push(ditoSolido([radice].concat(cp.slice(2)),
+  const pollice = ditoSolido([radice].concat(cp.slice(2)),
                         MANO.pollice.largh.slice(1), B,
-                        Object.assign({}, opt, {unghiaDorso: appM3(B, pol.dorso)})));
+                        Object.assign({}, opt, {unghiaDorso: appM3(B, pol.dorso)}));
+  pelle.push(pollice);
   pelle.push(palmoSolido(pose, B, opt));
+
+  /* ---------- il rilievo: quando il contorno interno E' l'informazione ----------
+     La sagoma unica e' quello che fa leggere questa mano come una mano invece
+     che come cinque stecche accostate, e per ottenerla i contorni interni
+     spariscono. Ma su A, E, S e T — quattro pugni che si distinguono SOLO da
+     dove sta il pollice — il contorno del pollice e' l'unica cosa che le
+     separa, e senza sono la stessa figura a ogni dimensione.
+     Per questo una posa puo' chiedere il RILIEVO: quel pezzo si tiene il suo
+     profilo anche dentro l'unione. E' un'eccezione, e va usata solo dove il
+     tratto porta significato — e' la stessa regola che seguono i caratteri
+     tipografici dell'alfabeto manuale, dove quello che distingue due forme
+     quasi uguali deve restare visibile anche a corpo piccolo. */
+  const rilievo = (pose.rilievo && pose.rilievo.indexOf('pol') >= 0)
+    ? '<path d="'+pollice.d+'" fill="none" stroke="var(--bordo-pelle)" '+
+      'stroke-width="'+n2(ORLO*1.15)+'" stroke-linejoin="round" opacity=".5"/>'
+    : '';
 
   /* Il bordo esterno e' MORBIDO e caldo, non un taglio di forbici. Con un
      bruno pieno la mano leggeva come un adesivo ritagliato e appoggiato sopra
@@ -1890,7 +1970,39 @@ function manoSVG(nomeConfig, B, opt){
   const dentro = pelle.map(p=> p.ao + p.pieno + p.detta).join('');
 
   return '<g class="mano3d">'+ polsinoSolido(B, opt).svg +
-         alone + fuori + dentro + '</g>';
+         alone + fuori + dentro + rilievo + volumeDaSagoma(pelle) + '</g>';
+}
+
+/* ---------- il volume, ricavato dalla sagoma ----------
+   Questo e' il passo che fa sembrare la mano un oggetto invece che un
+   disegno, ed e' la stessa cosa che i motori 2D fanno agli sprite piatti:
+   si prende la TRASPARENZA della figura, la si sfoca — cosi' i bordi
+   diventano un pendio invece di un salto — e si legge quel pendio come una
+   superficie. Da li' `feDiffuseLighting` e `feSpecularLighting` ci mettono
+   sopra una luce vera. Nessuna texture, nessun modello: il volume esce dalla
+   sagoma che gia' abbiamo.
+
+   Va SOPRA il disegno finito, non al suo posto: quello che esce dal filtro
+   e' una mappa di luce, e la mappa si moltiplica sopra quello che c'e'.
+   Questo tiene due cose insieme. La prima e' l'ordine di profondita': il
+   disegno sotto resta quello di prima, con le sue occlusioni e i suoi
+   dettagli al posto giusto, e la luce non lo riordina. La seconda e' che se
+   un browser non sa fare questi filtri si vede esattamente il disegno di
+   prima — e perche' sia vero fino in fondo le due sorgenti sono tinte del
+   colore NEUTRO della loro fusione: bianco per il prodotto, nero per lo
+   schermo. Senza filtro, una sagoma bianca moltiplicata e una nera schermata
+   non cambiano un pixel, e resta il disegno di prima. Il filtro, dal canto
+   suo, legge solo l'alpha: che colore abbia la sorgente non gli importa.
+
+   Il prezzo e' che la resa dipende dal motore grafico: i filtri di
+   illuminazione SVG sono il punto in cui i browser divergono di piu', e
+   questa mano e' tarata su Chromium. E' una scelta fatta sapendo il costo. */
+function volumeDaSagoma(pelle){
+  const sagome = c => pelle.map(p=>'<path d="'+p.d+'" fill="'+c+'"/>').join('');
+  return '<g class="vol-molt" aria-hidden="true"><g filter="url(#fLuceDiffusa)">'+
+           sagome('#fff') + '</g></g>'+
+         '<g class="vol-spec" aria-hidden="true"><g filter="url(#fLuceSpeculare)">'+
+           sagome('#000') + '</g></g>';
 }
 
 
@@ -2105,6 +2217,9 @@ function boccaSVG(quale){
    sbuca l'alone caldo controluce. Cambiare la luce della scena adesso vuol
    dire cambiare un vettore. */
 const LUCE_XY = nrm([LUCE[0], -LUCE[1], 0]);   /* sullo schermo la y cresce in giù */
+/* lo stesso verso, in gradi, come lo vogliono i filtri di illuminazione SVG:
+   zero verso destra, in senso orario perche' la y del filtro cresce in giu' */
+const AZIMUT = ((Math.atan2(LUCE_XY[1], LUCE_XY[0])/RAD) + 360) % 360;
 const verLuce = k => n2(LUCE_XY[0]*k)+','+n2(LUCE_XY[1]*k);
 
 /* L'alone caldo: la stessa sagoma, spostata dalla parte opposta alla luce e
@@ -2801,15 +2916,19 @@ const ALFA = {
  /* Quattro dita tese e unite in alto, pollice piegato sul palmo. */
  B: {h:'b',       dita:'su',               palmo:'avanti'},
  /* Semicerchio: pollice in basso, quattro dita unite e ricurve in alto.
-    Il palmo guarda di lato, perché una C la si legge guardando dentro
-    l'apertura: di fronte sarebbe un pugno. */
- C: {h:'c',       dita:'su',               palmo:'fuori'},
+    Una C la si legge guardando DENTRO l'apertura, quindi il piano della C
+    deve stare di faccia a chi guarda — non di taglio. E' un tre quarti verso
+    l'interno: di fronte, o girata dall'altra parte, la C e' un pugno. Vale
+    per tutte le lettere fatte di un cerchio o di un arco: quello che le
+    definisce e' lo spazio in mezzo, e lo spazio in mezzo si vede solo se il
+    suo piano guarda chi legge. */
+ C: {h:'c',       dita:'su',               palmo:['dentro','avanti']},
  /* Indice teso in alto; pollice e le altre tre a cerchio alla base. */
- D: {h:'d',       dita:'su',               palmo:'avanti'},
+ D: {h:'d',       dita:'su',               palmo:['dentro','avanti']},
  /* Dita ripiegate con le unghie quasi sul palmo, pollice orizzontale sotto. */
  E: {h:'e',       dita:'su',               palmo:'avanti'},
  /* Indice e pollice a cerchio; medio, anulare e mignolo tesi e staccati. */
- F: {h:'f',       dita:'su',               palmo:'avanti'},
+ F: {h:'f',       dita:'su',               palmo:['dentro','avanti']},
  /* Pugno con indice e pollice distesi in avanti, paralleli e distanziati.
     Puntano davanti a sé, quindi qui di traverso: puntati nell'obiettivo
     sarebbero due punte e non si vedrebbe che sono paralleli. */
@@ -2834,7 +2953,7 @@ const ALFA = {
  /* Come M, ma solo indice e medio distesi in basso. */
  N: {h:'n',       dita:'giu',              palmo:'indietro'},
  /* Tutte le punte unite a quella del pollice: un cerchio. */
- O: {h:'o',       dita:'su',               palmo:['avanti','fuori']},
+ O: {h:'o',       dita:'su',               palmo:['dentro','avanti']},
  /* Indice in avanti, medio in basso ad angolo retto, pollice sulla falange
     del medio. */
  P: {h:'p',       dita:['fuori','giu'],    palmo:'avanti'},
@@ -2871,7 +2990,7 @@ const ALFA = {
    riquadro ritagliato lettera per lettera farebbe saltare la mano di posto e
    di misura fra una lettera e l'altra, e chi compita il proprio nome vede le
    lettere una dopo l'altra: devono stare ferme. */
-const ALFA_RIQUADRO = '-34 -33 71 61';
+const ALFA_RIQUADRO = '-25 -32 58 59';
 function letterGlyph(L){
   const a = ALFA[L];
   if(!a) return '<svg viewBox="'+ALFA_RIQUADRO+'" role="img" aria-label="lettera '+L+' non ancora disponibile">'+
@@ -2895,6 +3014,12 @@ MOVE_CSS.textContent = `
 /* Qui non ci sono piu' fotogrammi: i movimenti stanno in MOVIMENTI e li suona
    l'orologio dei segni (MOTO). Restano soltanto i perni — da dove gira una
    mano, un capo, una lettera — perche' quelli sono geometria, non movimento. */
+/* Il volume si fonde con la mano, non con la pagina: senza isolare il gruppo
+   il prodotto e lo schermo prenderebbero anche il fondale, e la mano
+   scaverebbe un buco nel cielo. */
+.mano3d{isolation:isolate}
+.vol-molt{mix-blend-mode:multiply}
+.vol-spec{mix-blend-mode:screen}
 .mv{transform-box:fill-box;transform-origin:50% 60%}
 /* le fasi di un segno composto: il perno sta nel loro riquadro, se no la
    scala del passaggio le sposta verso l'origine del disegno, che e' fuori
@@ -2974,6 +3099,44 @@ DEFS.innerHTML =
              ritto('Polsino', p.polsinoA, p.polsinoB)+
              ritto('Abito', p.abitoA, p.abitoB);
     }).join('')+
+    /* ---------- i due filtri della luce ----------
+       Non sono per personaggio: la luce e' una sola e i suoi due filtri
+       leggono soltanto l'alpha, quindi la pelle di chiunque passa di qui.
+       L'azimut viene da LUCE, che e' la stessa direzione con cui sono
+       disegnate le fasce e l'alone: se un giorno si sposta la luce della
+       scena, si sposta qui e tutto la segue. */
+    '<filter id="fLuceDiffusa" x="-30%" y="-30%" width="160%" height="160%" '+
+      'color-interpolation-filters="sRGB">'+
+      /* la sagoma gonfiata: il bordo sfocato diventa un pendio, e il pendio
+         una superficie da illuminare */
+      '<feGaussianBlur in="SourceAlpha" stdDeviation="2.2" result="altezza"/>'+
+      '<feDiffuseLighting in="altezza" surfaceScale="3.4" diffuseConstant="1" '+
+        'lighting-color="#FFFFFF" result="crudo">'+
+        '<feDistantLight azimuth="'+n2(AZIMUT)+'" elevation="54"/></feDiffuseLighting>'+
+      /* Si comprime la gamma: una mappa che va da zero a uno, moltiplicata,
+         spegnerebbe meta' mano. Qui va da poco meno di tre quarti a uno —
+         scurisce il lato in ombra e non tocca quello in luce, che e' tutto
+         quello che un prodotto puo' fare. Ad accendere ci pensa lo speculare. */
+      '<feComponentTransfer in="crudo" result="mappa">'+
+        '<feFuncR type="linear" slope=".30" intercept=".72"/>'+
+        '<feFuncG type="linear" slope=".32" intercept=".70"/>'+
+        '<feFuncB type="linear" slope=".34" intercept=".66"/>'+
+      '</feComponentTransfer>'+
+      /* La mappa si ritaglia sulla sagoma e fuori resta TRASPARENTE. Riempire
+         il fuori di bianco — il neutro del prodotto — sembra la cosa giusta e
+         non lo e': dentro un gruppo isolato il prodotto non ha uno sfondo con
+         cui fondersi, e quel bianco si vede come un rettangolo. Trasparente
+         non contribuisce, che e' quello che serve. */
+      '<feComposite in="mappa" in2="SourceAlpha" operator="in"/>'+
+    '</filter>'+
+    '<filter id="fLuceSpeculare" x="-30%" y="-30%" width="160%" height="160%" '+
+      'color-interpolation-filters="sRGB">'+
+      '<feGaussianBlur in="SourceAlpha" stdDeviation="2.2" result="altezza"/>'+
+      '<feSpecularLighting in="altezza" surfaceScale="3.4" specularConstant=".34" '+
+        'specularExponent="30" lighting-color="#FFFFFF" result="luccichio">'+
+        '<feDistantLight azimuth="'+n2(AZIMUT)+'" elevation="54"/></feSpecularLighting>'+
+      '<feComposite in="luccichio" in2="SourceAlpha" operator="in"/>'+
+    '</filter>'+
     '<linearGradient id="gAla" x1="0" y1="0" x2="1" y2="1">'+
       '<stop offset="0" stop-color="#C8FBF1" stop-opacity=".78"/>'+
       '<stop offset=".55" stop-color="#7FE0CE" stop-opacity=".44"/>'+

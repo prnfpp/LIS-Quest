@@ -126,6 +126,9 @@ nessuna funzione.
 - [x] Un dito molto flesso si disegna come massa e non come profilo: il pugno non è più un fascio di stecchi
 - [x] Una mano è una sagoma sola, non cinque accostate: contorno dell'unione, bordo morbido, palmo e masse arrotondati
 - [x] Il pollice esce dal fianco del palmo e non dal polso: il metacarpo sta dentro la massa della mano
+- [x] Volume ricavato dalla sagoma: la trasparenza fa da superficie e due filtri di luce SVG le danno rilievo — **tarato su Chromium**, altrove si torna al disegno piatto
+- [x] Le lettere ad anello mostrano il loro anello: O, C, F e D girate perché il cerchio si veda in faccia, e l'interno scurito come l'incavo che è
+- [x] A, E, S e T non sono più lo stesso pugno: il pollice esce dalla massa e tiene il suo contorno
 - [x] Movimento descritto come dato: freccia ricavata dal percorso, non piazzata a occhio
 - [x] Rallentatore, fermo immagine e passo a passo su ogni segno, lettere comprese
 - [x] Non manuale a canali indipendenti: il capo scuote e annuisce come vuole la grammatica
