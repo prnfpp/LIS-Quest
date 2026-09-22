@@ -963,7 +963,7 @@ footer a{color:var(--testo-2)}
     <li><strong>Movimento</strong> — cosa fa</li>
     <li><strong>Espressione</strong> — la faccia, che in LIS è grammatica e non emozione</li>
   </ul>
-  <p>Nel gioco vero, ognuna di queste animazioni è una clip video. Il codice ha già lo spazio per riceverla: si cambia la sorgente, non il gioco.</p>
+  <p>Nel gioco vero, ognuna di queste animazioni sarà una clip girata con segnanti sordi. Il codice, oggi, <strong>non</strong> sa ancora riceverla: è un pezzo da scrivere, non un interruttore da girare. Lo scriviamo quando esiste la prima clip.</p>
   <div class="btn-row"><button class="btn ghost" onclick="document.getElementById('dlgBadge').close()">Ho capito</button></div>
 </div></dialog>
 
@@ -998,8 +998,13 @@ const D = window.DIALOGHI;
    Ogni segno è descritto dai parametri formazionali: configurazione della mano,
    ORIENTAMENTO del palmo, luogo sul corpo, movimento, espressione del viso — e,
    quando serve, la seconda mano e le fasi di cui è fatto.
-   Nel prodotto finale questo oggetto porta anche `video:"...webm"`,
-   e renderSign() mostra la clip invece del disegno.
+   Quando il lessico sara' girato con segnanti sordi, questo oggetto portera'
+   anche il nome della clip, e il disegno restera' come ripiego per i segni
+   che una clip non ce l'hanno ancora.
+   Quello spazio NON c'e' ancora: renderSign() non sa leggere un campo
+   `video`. E' poco lavoro — un ramo in cima alla funzione — ma finche' non e'
+   scritto, dire che c'e' e' una bugia, e questo file ne ha gia' raccontata
+   una per parecchio tempo.
 
    DA CHE PARTE SEGNA NIMA
    Nima è destra, ed è vista di fronte: la sua mano destra sta dunque a SINISTRA
@@ -3152,6 +3157,14 @@ MOVE_CSS.textContent = `
 .mano3d{isolation:isolate}
 .vol-molt{mix-blend-mode:multiply}
 .vol-spec{mix-blend-mode:screen}
+/* Il ripiego, per davvero. Le due sagome del volume sono tinte del neutro
+   della loro fusione — bianca per il prodotto, nera per lo schermo — quindi
+   se mancano i FILTRI non cambiano un pixel. Ma se manca la FUSIONE vengono
+   disegnate opache sopra la mano, e la mano diventa un blocco bianco e nero:
+   il contrario di un ripiego. Qui si tolgono di mezzo. */
+@supports not (mix-blend-mode: multiply){
+  .vol-molt,.vol-spec{display:none}
+}
 .mv{transform-box:fill-box;transform-origin:50% 60%}
 /* le fasi di un segno composto: il perno sta nel loro riquadro, se no la
    scala del passaggio le sposta verso l'origine del disegno, che e' fuori
