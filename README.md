@@ -94,6 +94,15 @@ I loro filmati **non sono ridistribuiti qui**: sono sotto licenza proprietaria, 
 semplice collegamento.
 
 
+## 📷 Provati (sperimentale)
+
+[`index.html#provati`](./index.html#provati) accende la camera, riconosce la mano e dice quanto somiglia a una
+delle 21 lettere del gioco, e cosa cambiare. **Non è un correttore di LIS**: confronta con il *modello del
+gioco*, che è «quasi corretto» e non validato, con tolleranze scelte a occhio, e non è ancora stato provato
+da persone che segnano davanti a una camera. Non fa parte del gioco: non si carica da solo, e solo dopo il
+clic scarica il riconoscimento da `cdn.jsdelivr.net` e `storage.googleapis.com` (nessun fotogramma lascia la
+pagina). Dettagli e limiti in [`CONTRIBUTING.md`](./CONTRIBUTING.md).
+
 ## 📁 Struttura
 
 ```

@@ -495,8 +495,10 @@ può leggere né correggere; MediaPipe scarica i pesi via `fetch`, che su `file:
 stack vuol dire diventare un'altra cosa, e quella cosa va decisa, non subita.
 
 Inoltre metà del rapporto descrive **un prodotto che non esiste**. MediaPipe, Kalidokit e il filtro One
-Euro servono a catturare le mani *dell'utente* dalla webcam e rispecchiarle sull'avatar. Qui non c'è
-input da webcam: chi gioca tocca e trascina. Lo stesso per VRM, Dual Quaternion Skinning e le blend
+Euro servono a catturare le mani *dell'utente* dalla webcam e rispecchiarle sull'avatar. Il gioco non ha
+input da webcam: chi gioca tocca e trascina. (Esiste solo `#provati`, un modulo sperimentale e opzionale
+che usa MediaPipe per confrontare la mano di chi segna con il modello — vedi sotto. Non rispecchia niente
+su un avatar, e il gioco non lo carica.) Lo stesso per VRM, Dual Quaternion Skinning e le blend
 shape, che deformano una *mesh*: qui non c'è una mesh, c'è SVG generato a ogni fotogramma.
 
 C'è anche un argomento del rapporto che va contro la sua stessa conclusione. Le pagine sui neuroni
@@ -715,3 +717,39 @@ le istantanee qui sopra, e controllano che i disegni non si muovano — non che 
 resto lo devi guardare tu: prima di aprire una PR, apri `index.html` e **gioca la demo dall'inizio
 alla fine**, su schermo largo e su telefono. Nella descrizione scrivi cosa hai cambiato e cosa hai
 provato.
+
+## Provati: la camera, sperimentale
+
+`index.html#provati` apre una pagina che accende la camera, riconosce la mano con MediaPipe e dice a quale
+delle 21 lettere statiche somiglia, o — scelta una lettera — cosa cambiare. **Non fa parte del gioco né
+dell'MVP**: il gioco non la carica, e senza rete parte lo stesso. Non scarica niente finché non si preme il
+bottone; poi prende da `cdn.jsdelivr.net` il programma e da `storage.googleapis.com` il modello, a versioni
+fissate (`SPE_VERSIONE` e `SPE_URL` in `index.html`).
+
+Come è fatto, in breve (il codice è la sezione `PROVATI` di `index.html`, e commentato):
+
+- **Il bersaglio non è una copia.** I 21 punti di ogni lettera si ricavano da `CONFIG`, `ALFA`, `catenaDito` e
+  `catenaPollice`, gli stessi che la disegnano: se cambi una lettera cambia anche il suo bersaglio.
+- **Si confrontano angoli e distanze, non posizioni**: flessione di ogni giunto, apertura fra le dita,
+  distanze fra le punte, posizione del pollice nel sistema del palmo. Le proporzioni del modello non sono
+  quelle di una mano vera, e la profondità è l'asse che MediaPipe sbaglia di più.
+- **Orientamento largo di proposito** per le lettere che il gioco gira di tre quarti perché si leggano
+  (C, D, F, O, G, H): quella è una scelta di disegno, non una regola della lettera.
+- **Una correzione alla volta**, la più pesante. Se il punto che la determina balla da un fotogramma all'altro,
+  dice "non vedo bene" invece di indovinare.
+- **Le lettere con movimento** (J, K, X, Y, Z) restano fuori.
+
+**Cosa si sa e cosa no.** Con mani simulate dal modello stesso (rotazione, scala e rumore casuali) la lettera
+giusta esce prima nel 100% dei casi senza rumore e circa nel 91% con rumore del 4% della lunghezza del palmo
+(71% al 6%): dice solo che il confronto è coerente con sé stesso, **non** che riconosca mani vere.
+Su una mano vera in una fotografia l'intera catena (caricamento da `file://`, modello, assi, lateralità,
+risposta) gira, ma nessuna persona che segna l'ha ancora provata davanti a una camera, e le tolleranze sono
+scelte a occhio. Coppie che anche a mano perfetta restano vicine: R/U/V, S/T, E/S, H/U/N, G/Q/L, B/C.
+
+**Lateralità.** L'etichetta Left/Right di MediaPipe, sui fotogrammi non specchiati, qui si è mostrata uguale
+alla mano vera (la documentazione dice il contrario): c'è un interruttore, e un controllo sulla flessione
+delle dita che specchia la mano se le dita si piegano all'indietro.
+
+**Privacy.** Nessun fotogramma viene salvato o inviato, e le tracce della camera si fermano uscendo dalla
+pagina. I due server contattati vedono l'indirizzo di chi la usa. Con minorenni serve un adulto che lo sappia.
+

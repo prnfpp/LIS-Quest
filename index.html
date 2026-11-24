@@ -85,6 +85,39 @@
   border-left:4px solid var(--nima);border-radius:var(--raggio);
   padding:10px 16px;box-shadow:0 -10px 30px rgba(3,11,17,.55)}
 .rev-barra span{font-size:14px;color:var(--testo-2)}
+/* ---------- provati (sperimentale) ---------- */
+.spe-sper{font:600 11px "IBM Plex Mono",monospace;color:var(--luce);border:1px solid var(--luce);
+  border-radius:999px;padding:2px 8px;vertical-align:middle;margin-left:6px}
+.spe-scena{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:16px;align-items:start}
+.spe-video{position:relative;aspect-ratio:4/3;border-radius:12px;overflow:hidden;background:#06121A;
+  border:1px solid var(--bordo)}
+.spe-video video,.spe-video canvas{position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;transform:scaleX(-1)}
+.spe-lato{display:flex;flex-direction:column;gap:12px}
+.spe-modello{padding:8px}
+.spe-modello svg{width:100%;max-width:230px;height:auto;display:block;margin:0 auto}
+.spe-mod-nota{font-size:13px;color:var(--testo-2);text-align:center;padding:6px}
+.spe-esito{border:1px solid var(--bordo);border-left:4px solid var(--bordo-2);border-radius:12px;
+  padding:10px 14px;min-height:76px;background:rgba(8,24,36,.45)}
+.spe-esito.ok{border-left-color:var(--ok)}
+.spe-esito.quasi{border-left-color:var(--luce)}
+.spe-esito.dubbio{border-left-color:var(--corallo)}
+.spe-titolo{font:700 18px "Baloo 2",inherit}
+.spe-riga{font-size:13.5px;color:var(--testo-2);margin-top:2px}
+.spe-opz{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start;margin-top:14px;font-size:13.5px;
+  color:var(--testo-2)}
+.spe-opz select{margin-left:6px;background:rgba(8,24,36,.6);color:var(--testo);border:1px solid var(--bordo);
+  border-radius:8px;padding:5px 8px;font:inherit}
+.spe-opz details{flex:1 1 320px}
+.spe-inv{display:block;margin:8px 0}
+#speDebug{white-space:pre-wrap;min-height:2em}
+.spe-lettere{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:8px}
+.spe-let{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;cursor:pointer;
+  border-radius:10px;border:1px solid var(--bordo);background:rgba(8,24,36,.5);color:var(--testo);font:inherit}
+.spe-let:hover{border-color:var(--nima)}
+.spe-let[aria-pressed="true"]{border-color:var(--nima);background:rgba(127,224,206,.16)}
+.spe-let-g svg{width:44px;height:auto;display:block}
+@media (max-width:640px){.spe-scena{grid-template-columns:1fr}}
 @media (max-width:520px){
   .rev-griglia{grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}
   .rev-griglia-lettere{grid-template-columns:repeat(auto-fill,minmax(125px,1fr))}
@@ -838,6 +871,7 @@ footer a{color:var(--testo-2)}
         <p>È di te che il progetto ha bisogno per primo.</p>
         <p><a class="btn" href="#validazione" id="vaiValidazione">Guarda i segni e dicci quali sono sbagliati ▸</a></p>
         <p class="hint">Tutti e quaranta su una schermata, in movimento, con i parametri con cui li abbiamo costruiti. Dieci minuti, e alla fine scarichi un file.</p>
+        <p class="hint">In più, <a href="#provati">Provati</a> (sperimentale): accendi la camera, segna una lettera e vedi quanto somiglia a quella del gioco.</p>
         <ul>
           <li>Guardare l'alfabeto manuale lettera per lettera e dire quali forme sono sbagliate</li>
           <li>Guardare il lessico delle prime due scene e dire cosa non va</li>
@@ -923,6 +957,58 @@ footer a{color:var(--testo-2)}
     <div class="rev-barra">
       <span id="revRiepilogo">Nessun verdetto ancora.</span>
       <button class="btn" id="revScarica">⬇ Scarica i verdetti</button>
+    </div>
+  </section>
+
+  <!-- ===================== PROVATI (sperimentale) =====================
+       Registrarsi mentre si segna e vedere quanto la propria mano somiglia
+       alla lettera del gioco. Non fa parte del gioco ne' dell'MVP: sta qui
+       perche' una demo si fa vedere, e perche' dice quanto e' fattibile.
+       Non carica niente finche' non si preme il bottone. -->
+  <section class="screen" id="scr-provati" hidden>
+    <div class="card rev-testa">
+      <h2>Provati <span class="spe-sper">sperimentale</span></h2>
+      <p>Accendi la camera, scegli una lettera e segnala: ti dico <strong>quanto la tua mano somiglia a quella del gioco</strong>, e cosa cambiare. Oppure segna e basta, e ti dico a quale lettera somiglia.</p>
+      <p class="rev-nota"><strong>Non è un correttore di LIS.</strong> Il confronto è con il <em>modello di questo gioco</em>, che è «quasi corretto» e non è stato ancora validato da segnanti sordi: una mano che somiglia al disegno non è per questo una lettera giusta. Le tolleranze sono scelte a occhio, e finora è stato provato su mani simulate, non su persone.</p>
+      <p class="rev-nota">Vale per le 21 lettere senza movimento: J, K, X, Y e Z restano fuori. Alcune forme si distinguono solo dal pollice (A, E, S, T, M, N), ed è il punto in cui una camera sbaglia di più: quando non vede bene, lo dice.</p>
+      <p class="rev-nota"><strong>Privacy.</strong> Il video resta in questa pagina: nessun fotogramma viene salvato o inviato. Per riconoscere le mani la pagina scarica un programma da <code>cdn.jsdelivr.net</code> e un modello da <code>storage.googleapis.com</code> (Google): quei due server vedono il tuo indirizzo, non il video. Se a provarlo è un minorenne, deve esserci un adulto che sa cosa sta autorizzando.</p>
+      <div class="btn-row">
+        <button class="btn" id="speAccendi" type="button">📷 Accendi la camera</button>
+        <button class="btn ghost" id="speSpegni" type="button" hidden>Spegni la camera</button>
+        <a class="btn ghost" href="#" id="speEsci">Torna al gioco</a>
+      </div>
+      <p class="rev-nota" id="speStato" role="status" aria-live="polite"></p>
+    </div>
+
+    <div class="card">
+      <div class="spe-scena">
+        <div class="spe-video">
+          <video id="speVideo" playsinline muted></video>
+          <canvas id="speCanvas"></canvas>
+        </div>
+        <div class="spe-lato">
+          <div class="spe-modello rev-disegno" id="speModello"></div>
+          <div class="spe-esito" id="speEsito">
+            <div class="spe-titolo" id="speTitolo" aria-live="polite"></div>
+            <div class="spe-riga" id="speRiga"></div>
+          </div>
+        </div>
+      </div>
+      <div class="spe-opz">
+        <label>Segno con la mano
+          <select id="speMano"><option value="destra">destra</option><option value="sinistra">sinistra</option></select>
+        </label>
+        <details>
+          <summary>Cosa vede la camera</summary>
+          <label class="spe-inv"><input type="checkbox" id="speInverti"> Destra e sinistra mi risultano scambiate</label>
+          <pre id="speDebug" class="rev-par"></pre>
+        </details>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Quale lettera <span class="rev-conta">tocca per scegliere</span></h3>
+      <div class="spe-lettere" id="speLettere"></div>
     </div>
   </section>
 
@@ -3513,7 +3599,7 @@ function load(){ try{ const r=localStorage.getItem(KEY); return r?JSON.parse(r):
 const $ = s => document.querySelector(s);
 const el = {
   scrs:{titolo:$('#scr-titolo'),nome:$('#scr-nome'),classe:$('#scr-classe'),
-        gioco:$('#scr-gioco'),finale:$('#scr-finale'),validazione:$('#scr-validazione')},
+        gioco:$('#scr-gioco'),finale:$('#scr-finale'),validazione:$('#scr-validazione'),provati:$('#scr-provati')},
   nima:$('#nimaWrap'), testo:$('#testo'), chi:$('#chi'), tap:$('#tapHint'), avanti:$('#avanti'),
   gioco:$('#gioco'), stage:$('#stage'), scenery:$('#scenery'),
   hudNome:$('#hudNome'), hudXp:$('#hudXp'), hudTacc:$('#hudTacc'), hudScena:$('#hudScena'), gloss:$('#gloss')
@@ -4616,10 +4702,553 @@ function boot(hot){
      evita di attraversare il gioco per arrivarci. */
   revAscolta();
   if(location.hash === '#validazione') revApri();
+  else if(location.hash === '#provati') speApri();
   window.addEventListener('hashchange', ()=>{
+    if(location.hash !== '#provati') speChiudi();
     if(location.hash === '#validazione') revApri();
+    else if(location.hash === '#provati') speApri();
   });
 }
+/* ================= PROVATI (sperimentale) =================
+   Registrarsi mentre si segna, e vedere quanto la propria mano somiglia a
+   quella del gioco. NON e' un correttore di LIS: confronta la mano con il
+   MODELLO di questo progetto, e il modello e' "quasi corretto", non validato.
+   Una distanza piccola dal modello vuol dire "somiglia al disegno", non "e'
+   la lettera giusta". Le tolleranze sono scelte a occhio: non ci sono ancora
+   registrazioni di segnanti veri su cui tararle.
+
+   Come funziona, in tre passi:
+   1. MediaPipe (caricato SOLO quando si preme il bottone, mai prima) da' 21
+      punti per mano. Il gioco non ne dipende: senza rete parte lo stesso.
+   2. Dal modello della mano — gli stessi CONFIG, ALFA, catenaDito e
+      catenaPollice che disegnano le lettere — si ricavano gli stessi 21
+      punti. Cosi' il bersaglio non e' una copia: e' il gioco, ed e' sempre
+      sincronizzato con quello che si vede.
+   3. Si confrontano GRANDEZZE CHE NON DIPENDONO DALLA ROTAZIONE (angoli di
+      flessione, distanze fra le punte, posizione del pollice nel sistema del
+      palmo) e non le posizioni: le proporzioni del modello non sono quelle di
+      una mano vera, e la profondita' e' l'asse che MediaPipe sbaglia di piu'.
+
+   Niente viene salvato o inviato: i fotogrammi restano nella pagina. */
+let SPEC = null;
+try{ SPEC = (function(){
+  const DITA = ['ind','med','anu','mig'];
+  const NOME_DITO = {ind:'l’indice', med:'il medio', anu:'l’anulare', mig:'il mignolo'};
+  const PUNTA_DITO = {ind:'dell’indice', med:'del medio', anu:'dell’anulare', mig:'del mignolo'};
+  const clamp = (x,a,b)=> Math.max(a, Math.min(b, x));
+  const angolo = (a,b)=> Math.acos(clamp(pun(nrm(a), nrm(b)), -1, 1)) / RAD;
+
+  /* ---- i 21 punti del modello, nell'ordine di MediaPipe ----
+     0 polso · 1-4 pollice (CMC, MCP, IP, punta) · 5-8 indice · 9-12 medio ·
+     13-16 anulare · 17-20 mignolo (nocca, PIP, DIP, punta).
+     Il modello non ha un polso: lo si mette sul bordo vicino del carpo. */
+  function puntiModello(cfg){
+    const pt = new Array(21);
+    pt[0] = [0,-32,0];
+    const pol = catenaPollice(cfg.pol).giunti;
+    for(let i=0;i<4;i++) pt[1+i] = pol[i];
+    MANO.dita.forEach((d,k)=>{
+      const c = catenaDito(d, cfg[d.id]);
+      for(let i=0;i<4;i++) pt[5+4*k+i] = c[i];
+    });
+    return pt;
+  }
+
+  /* il sistema del palmo: Y dal polso alla nocca del medio, X verso il
+     mignolo, Z = X × Y, che e' il DORSO per una mano destra (e' lo stesso
+     sistema dello scheletro del gioco). Per una sinistra si specchia prima. */
+  function sistema(pt){
+    const Yr = dif(pt[9], pt[0]);
+    const Y = nrm(Yr);
+    let X = dif(pt[17], pt[5]);
+    X = nrm(dif(X, per(Y, pun(X,Y))));
+    return {X, Y, Z: vet(X,Y), L: lun(Yr)};
+  }
+
+  /* ---- le grandezze confrontate ----
+     s e' la tolleranza (a occhio) in cui si misura lo scarto; w quanto pesa. */
+  const FEAT = [];
+  DITA.forEach(d=>{
+    FEAT.push({id:d+'.mcp', d, t:'mcp', s:30, w:1});
+    FEAT.push({id:d+'.pip', d, t:'pip', s:30, w:1});
+    FEAT.push({id:d+'.dip', d, t:'dip', s:35, w:.6});
+    FEAT.push({id:d+'.abd', d, t:'abd', s:10, w:.7});
+  });
+  FEAT.push({id:'pol.x',   t:'px',   s:.30, w:1},
+            {id:'pol.y',   t:'py',   s:.30, w:1},
+            {id:'pol.z',   t:'pz',   s:.30, w:1},
+            {id:'pol.mcp', t:'pmcp', s:30,  w:.8},
+            {id:'pol.ip',  t:'pip2', s:30,  w:.8});
+  DITA.forEach(d=> FEAT.push({id:'pol~'+d, d, t:'toc', s:.30, w:1}));
+  FEAT.push({id:'pol~nocca', t:'tocN', s:.30, w:.7});
+  const IX = {}; FEAT.forEach((f,i)=> IX[f.id] = i);
+
+  function caratteristiche(pt){
+    const F = sistema(pt);
+    const loc = v => [pun(v,F.X), pun(v,F.Y), pun(v,F.Z)];
+    const Lm = lun(dif(pt[10],pt[9])) + lun(dif(pt[11],pt[10])) + lun(dif(pt[12],pt[11]));
+    const v = new Array(FEAT.length).fill(0);
+    DITA.forEach((d,k)=>{
+      const b = 5+4*k;
+      const s0 = dif(pt[b+1],pt[b]), s1 = dif(pt[b+2],pt[b+1]), s2 = dif(pt[b+3],pt[b+2]);
+      const l0 = loc(s0);
+      v[IX[d+'.mcp']] = Math.atan2(-l0[2], l0[1]) / RAD;
+      v[IX[d+'.pip']] = angolo(s0, s1);
+      v[IX[d+'.dip']] = angolo(s1, s2);
+      /* l'apertura conta solo se il dito e' disteso nel piano del palmo: un
+         dito piegato non ha un'apertura, e dargliela e' rumore */
+      const inpiano = Math.hypot(l0[0], l0[1]) / (lun(l0) || 1);
+      v[IX[d+'.abd']] = -Math.atan2(l0[0], l0[1]) / RAD * inpiano;
+    });
+    const tp = loc(dif(pt[4], pt[0]));
+    v[IX['pol.x']] = tp[0]/Lm; v[IX['pol.y']] = tp[1]/Lm; v[IX['pol.z']] = tp[2]/Lm;
+    v[IX['pol.mcp']] = angolo(dif(pt[2],pt[1]), dif(pt[3],pt[2]));
+    v[IX['pol.ip']]  = angolo(dif(pt[3],pt[2]), dif(pt[4],pt[3]));
+    DITA.forEach((d,k)=> v[IX['pol~'+d]] = lun(dif(pt[4], pt[8+4*k])) / Lm);
+    v[IX['pol~nocca']] = lun(dif(pt[4], pt[5])) / Lm;
+    return {v, dita:F.Y, palmo:per(F.Z,-1)};
+  }
+
+  /* ---- il bersaglio di ogni lettera ----
+     Le lettere con movimento (J K X Y Z) restano fuori: il movimento ne fa
+     parte, e qui si guarda un fotogramma solo. */
+  const STATICHE = Object.keys(ALFA).filter(L=> !ALFA[L].m && !ALFA[L].tratto);
+
+  /* Orientamento. Le tolleranze sono larghe di proposito: il gioco gira alcune
+     lettere "di tre quarti" perche' si leggano (C D F O: il cerchio si vede
+     solo di faccia; G e H: puntano verso chi guarda, e in faccia sarebbero due
+     punte). Quell'orientamento e' una scelta di disegno, non una regola della
+     lettera, e non si puo' far pagare a chi segna. */
+  const LIBERO_PALMO = {C:1, D:1, F:1, O:1, G:1, H:1};
+  const LARGO_DITA   = {G:1, H:1, P:1};
+  const TOL_DITA = 50, TOL_DITA_LARGO = 90, TOL_PALMO = 70;
+  const PESO_ORIENT = .5;
+
+  const BERSAGLIO = {};
+  STATICHE.forEach(L=>{
+    const a = ALFA[L], c = caratteristiche(puntiModello(CONFIG[a.h]));
+    BERSAGLIO[L] = {
+      L, v:c.v,
+      dita: verso(a.dita), palmo: verso(a.palmo),
+      nDita: a.dita, nPalmo: a.palmo,
+      tolDita: LARGO_DITA[L] ? TOL_DITA_LARGO : TOL_DITA,
+      palmoLibero: !!LIBERO_PALMO[L]
+    };
+  });
+
+  /* distanza di una mano misurata da una lettera, in unita' di tolleranza:
+     1 = "al limite di quello che accettiamo". */
+  function distanza(m, T){
+    /* norma di grado 4, non quadratica: con la media quadratica uno scarto
+       grosso su due grandezze (U contro V: solo l'apertura delle due dita)
+       si annega in altre venti che coincidono, e due lettere diverse
+       risultano "la stessa". Con il grado 4 uno scarto grosso conta davvero,
+       e se tutti gli scarti sono uguali il risultato resta in unita' di
+       tolleranza. */
+    let somma = 0, peso = 0;
+    const parti = new Array(FEAT.length);
+    for(let i=0;i<FEAT.length;i++){
+      const f = FEAT[i];
+      const e = (m.v[i] - T.v[i]) / f.s;
+      parti[i] = f.w * e*e*e*e;
+      somma += parti[i]; peso += f.w;
+    }
+    const eD = angolo(m.dita, T.dita) / T.tolDita;
+    const eP = T.palmoLibero ? 0 : angolo(m.palmo, T.palmo) / TOL_PALMO;
+    somma += PESO_ORIENT * (eD**4 + eP**4); peso += 2*PESO_ORIENT;
+    return {score: Math.pow(somma/peso, .25), parti, eD, eP};
+  }
+
+  function classifica(m){
+    const r = STATICHE.map(L=>{
+      const d = distanza(m, BERSAGLIO[L]);
+      return {L, score:d.score, d};
+    }).sort((a,b)=> a.score - b.score);
+    return r;
+  }
+
+  /* ---- quali lettere questa mano non puo' distinguere ----
+     Si ricava dal modello, non da una lista scritta a mano: due lettere sono
+     "vicine" se, anche a mano perfetta, la distanza fra i loro bersagli e'
+     sotto l'unita' di tolleranza. */
+  function matrice(){
+    const out = {};
+    STATICHE.forEach(A=>{
+      out[A] = {};
+      STATICHE.forEach(B=>{
+        const m = {v:BERSAGLIO[A].v, dita:BERSAGLIO[A].dita, palmo:BERSAGLIO[A].palmo};
+        out[A][B] = distanza(m, BERSAGLIO[B]).score;
+      });
+    });
+    return out;
+  }
+  let MAT = null;
+  function vicine(L){
+    if(!MAT) MAT = matrice();
+    return STATICHE.filter(B=> B!==L && MAT[L][B] < 1.0 && MAT[B][L] < 1.0)
+                   .sort((a,b)=> MAT[L][a]-MAT[L][b]);
+  }
+
+  /* ---- dire cosa cambiare ----
+     Una correzione sola: il gruppo (un dito, le aperture, il pollice,
+     l'orientamento) che pesa di piu' nello scarto dalla lettera scelta. */
+  const TESTO_VERSO = {su:'l’alto', giu:'il basso', avanti:'la camera', indietro:'di te',
+                       fuori:'l’esterno', dentro:'il centro del corpo'};
+  const nomiVerso = n => (Array.isArray(n)? n : [n]).map(x=> TESTO_VERSO[x] || x).join(' e ');
+
+  function correzione(m, L, instab){
+    const T = BERSAGLIO[L], d = distanza(m, T);
+    const g = [];                                 /* gruppi: {tipo, peso, ...} */
+    DITA.forEach(dd=>{
+      const p = d.parti[IX[dd+'.mcp']] + d.parti[IX[dd+'.pip']] + d.parti[IX[dd+'.dip']];
+      g.push({tipo:'dito', d:dd, peso:p});
+    });
+    let pa = 0; DITA.forEach(dd=> pa += d.parti[IX[dd+'.abd']]);
+    g.push({tipo:'aperture', peso:pa});
+    let pp = 0; FEAT.forEach((f,i)=>{ if(f.id.indexOf('pol')===0) pp += d.parti[i]; });
+    g.push({tipo:'pollice', peso:pp});
+    g.push({tipo:'dita-verso', peso: PESO_ORIENT * d.eD**4 * 3});
+    if(!T.palmoLibero) g.push({tipo:'palmo-verso', peso: PESO_ORIENT * d.eP**4 * 3});
+    g.sort((a,b)=> b.peso - a.peso);
+    const top = g[0];
+    const dv = id => T.v[IX[id]] - m.v[IX[id]];  /* bersaglio meno misura */
+    let testo = '', quale = top.tipo;
+
+    /* se il gruppo e' quello che sta ballando da un fotogramma all'altro, la
+       correzione sarebbe un'ipotesi: meglio dire che non si vede */
+    const ballaDito = top.tipo==='dito' && instab && instab[top.d];
+    const ballaPol  = top.tipo==='pollice' && instab && instab.pol;
+    if(ballaDito || ballaPol){
+      return {testo: 'Non vedo bene ' + (ballaPol ? 'il pollice' : NOME_DITO[top.d]) +
+                     ': tieni ferma la mano e mostrala meglio alla camera.',
+              gruppo: top.tipo, dubbia:true, score:d.score};
+    }
+
+    if(top.tipo === 'dito'){
+      const dd = top.d, nm = NOME_DITO[dd];
+      const Tt = T.v[IX[dd+'.mcp']] + T.v[IX[dd+'.pip']] + T.v[IX[dd+'.dip']];
+      const Mm = m.v[IX[dd+'.mcp']] + m.v[IX[dd+'.pip']] + m.v[IX[dd+'.dip']];
+      if(Tt < Mm) testo = Tt < 50 ? 'Stendi di più ' + nm : 'Piega un po’ meno ' + nm;
+      else testo = Tt > 200 ? 'Chiudi ' + nm + ' a pugno' : 'Piega di più ' + nm;
+    }else if(top.tipo === 'aperture'){
+      const spr = v => { const a = DITA.map(dd=> v[IX[dd+'.abd']]);
+                         return Math.abs(a[0]-a[1]) + Math.abs(a[1]-a[2]) + Math.abs(a[2]-a[3]); };
+      testo = spr(m.v) > spr(T.v) ? 'Tieni le dita più unite' : 'Allarga di più le dita';
+    }else if(top.tipo === 'pollice'){
+      /* dentro il pollice, la grandezza che pesa di piu' */
+      let best = null;
+      FEAT.forEach((f,i)=>{ if(f.id.indexOf('pol')===0 && (!best || d.parti[i] > d.parti[best])) best = i; });
+      const f = FEAT[best], dl = T.v[best] - m.v[best];
+      quale = 'pollice';
+      if(f.t === 'toc'){
+        testo = dl < 0 ? 'Porta la punta del pollice a toccare la punta ' + PUNTA_DITO[f.d]
+                       : 'Stacca il pollice dalla punta ' + PUNTA_DITO[f.d];
+      }else if(f.t === 'tocN'){
+        testo = dl < 0 ? 'Porta il pollice contro la base dell’indice'
+                       : 'Allontana il pollice dalla base dell’indice';
+      }else if(f.t === 'px'){
+        testo = dl < 0 ? 'Allarga di più il pollice, lontano dalla mano'
+                       : 'Avvicina il pollice alla mano';
+      }else if(f.t === 'py'){
+        testo = dl > 0 ? 'Alza il pollice, verso la punta delle dita'
+                       : 'Abbassa il pollice, verso il polso';
+      }else if(f.t === 'pz'){
+        testo = dl < 0 ? 'Porta il pollice davanti al palmo'
+                       : 'Porta il pollice fuori dal palmo, di lato';
+      }else{
+        testo = dl > 0 ? 'Piega di più il pollice' : 'Stendi di più il pollice';
+      }
+    }else if(top.tipo === 'dita-verso'){
+      testo = 'Punta le dita verso ' + nomiVerso(T.nDita);
+    }else{
+      testo = 'Gira il palmo verso ' + nomiVerso(T.nPalmo);
+    }
+    return {testo, gruppo:quale, dubbia:false, score:d.score};
+  }
+
+  /* ---- da MediaPipe al sistema del gioco ----
+     MediaPipe: x a destra nell'immagine, y in basso, z lontano dalla camera.
+     Gioco: +X a destra di chi guarda, +Y in alto, +Z verso chi guarda. La
+     camera riceve il fotogramma NON specchiato — la mano destra di chi segna
+     sta a sinistra dell'immagine, come la destra di Nima sta a sinistra di chi
+     guarda — quindi basta girare y e z. Una mano sinistra si specchia in x e
+     diventa una destra: il modello e' destro. */
+  function daMediaPipe(w, sinistra){
+    return w.map(p=> [sinistra ? -p.x : p.x, -p.y, -p.z]);
+  }
+
+  /* per il banco di prova: una lettera messa dove il gioco la mette */
+  function puntiInMondo(L){
+    const a = ALFA[L], loc = puntiModello(CONFIG[a.h]);
+    const B = baseMano(a.dita, a.palmo);
+    return loc.map(p=> som(som(per(B[0],p[0]), per(B[1],p[1])), per(B[2],p[2])));
+  }
+
+  /* mediana e media su una finestra di fotogrammi */
+  function mediana(arr){
+    const s = arr.slice().sort((a,b)=>a-b), n = s.length;
+    return n%2 ? s[(n-1)/2] : (s[n/2-1] + s[n/2]) / 2;
+  }
+  function filtra(buf){
+    const n = FEAT.length, v = new Array(n), mad = new Array(n);
+    for(let i=0;i<n;i++){
+      const col = buf.map(x=>x.v[i]), md = mediana(col);
+      v[i] = md; mad[i] = mediana(col.map(x=>Math.abs(x-md)));
+    }
+    const sum = k => nrm(buf.reduce((a,x)=> som(a, x[k]), [0,0,0]));
+    /* instabilita': uno scarto tipico che supera meta' della tolleranza vuol
+       dire che il punto non e' fermo, e quindi non e' affidabile */
+    const instab = {};
+    DITA.forEach(d=>{
+      ['mcp','pip','dip'].forEach(t=>{
+        const i = IX[d+'.'+t]; if(mad[i] > FEAT[i].s * .5) instab[d] = true;
+      });
+    });
+    FEAT.forEach((f,i)=>{ if(f.id.indexOf('pol')===0 && mad[i] > f.s * .5) instab.pol = true; });
+    return {m:{v, dita:sum('dita'), palmo:sum('palmo')}, instab};
+  }
+
+  return {FEAT, IX, STATICHE, BERSAGLIO, puntiModello, caratteristiche, classifica,
+          distanza, matrice, vicine, correzione, daMediaPipe, puntiInMondo, filtra,
+          NOME_DITO};
+})(); }catch(err){ console.warn('Lo specchio non è disponibile', err); }
+
+/* ---------- la pagina: camera, riconoscimento, risposta ----------
+   Tutto quello che scarica qualcosa sta qui sotto, dietro un bottone. Prima
+   del clic la pagina non contatta nessuno. Le versioni sono fissate: un CDN
+   che cambia sotto i piedi cambierebbe anche i nomi dei campi. */
+const SPE_VERSIONE = '0.10.14';
+const SPE_URL = {
+  bundle:  'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@' + SPE_VERSIONE + '/vision_bundle.mjs',
+  wasm:    'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@' + SPE_VERSIONE + '/wasm',
+  modello: 'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task'
+};
+const SPE = {lm:null, flusso:null, raf:0, buf:[], ultimi:[], bersaglio:null, mano:'destra',
+             invertiEtichetta:false, acceso:false, ultimoTesto:0, ultimoVideo:-1};
+
+function speStato(t){ const e = document.getElementById('speStato'); if(e) e.textContent = t; }
+
+function speCostruisci(){
+  const gr = document.getElementById('speLettere');
+  if(gr.firstChild) return;
+  gr.innerHTML = SPEC.STATICHE.map(L=>
+    '<button type="button" class="spe-let" data-l="'+L+'" aria-pressed="false" '+
+    'aria-label="lettera '+L+'"><span class="spe-let-g">'+letterGlyph(L)+'</span>'+
+    '<b>'+L+'</b></button>').join('');
+  gr.addEventListener('click', e=>{
+    const b = e.target.closest('button[data-l]'); if(!b) return;
+    speScegli(SPE.bersaglio === b.dataset.l ? null : b.dataset.l);
+  });
+  document.getElementById('speMano').addEventListener('change', e=>{
+    SPE.mano = e.target.value; SPE.buf = []; SPE.ultimi = [];
+  });
+  document.getElementById('speInverti').addEventListener('change', e=>{
+    SPE.invertiEtichetta = e.target.checked; SPE.buf = []; SPE.ultimi = [];
+  });
+  document.getElementById('speAccendi').onclick = speAccendi;
+  document.getElementById('speEsci').onclick = e=>{ e.preventDefault(); speChiudi(); location.hash=''; show('titolo'); };
+  document.getElementById('speSpegni').onclick = ()=> speSpegni('Camera spenta.');
+}
+
+function speScegli(L){
+  SPE.bersaglio = L;
+  document.querySelectorAll('#speLettere .spe-let').forEach(b=>
+    b.setAttribute('aria-pressed', String(b.dataset.l === L)));
+  const g = document.getElementById('speModello');
+  if(L){
+    const v = SPEC.vicine(L);
+    g.innerHTML = letterGlyph(L) +
+      '<div class="spe-mod-nota">Modello del gioco: <b>'+L+'</b>' +
+      (v.length ? '<br>Anche a mano perfetta la camera la confonde con <b>'+v.join(', ')+'</b>.' : '') +
+      '</div>';
+  }else{
+    g.innerHTML = '<div class="spe-mod-nota">Scegli una lettera qui sotto, oppure segna e basta: dico a quale somiglia.</div>';
+  }
+}
+
+async function speAccendi(){
+  if(SPE.acceso) return;
+  const bt = document.getElementById('speAccendi'); bt.disabled = true;
+  try{
+    if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia)
+      throw new Error('Questo browser non permette di usare la camera da qui.');
+    speStato('Carico il riconoscimento delle mani (circa 10 MB, una volta)…');
+    if(!SPE.lm){
+      const mod = await import(SPE_URL.bundle);
+      const set = await mod.FilesetResolver.forVisionTasks(SPE_URL.wasm);
+      const crea = delegate => mod.HandLandmarker.createFromOptions(set, {
+        baseOptions:{modelAssetPath:SPE_URL.modello, delegate},
+        runningMode:'VIDEO', numHands:2,
+        minHandDetectionConfidence:.5, minHandPresenceConfidence:.5, minTrackingConfidence:.5});
+      try{ SPE.lm = await crea('GPU'); }catch(e){ SPE.lm = await crea('CPU'); }
+    }
+    speStato('Chiedo la camera: il browser ti domanderà il permesso.');
+    SPE.flusso = await navigator.mediaDevices.getUserMedia(
+      {video:{facingMode:'user', width:{ideal:640}, height:{ideal:480}}, audio:false});
+    const v = document.getElementById('speVideo');
+    v.srcObject = SPE.flusso; await v.play();
+    SPE.acceso = true; SPE.buf = []; SPE.ultimi = [];
+    document.getElementById('speSpegni').hidden = false;
+    bt.hidden = true;
+    speStato('Mostra la mano alla camera.');
+    SPE.raf = requestAnimationFrame(speCiclo);
+  }catch(e){
+    bt.disabled = false; bt.hidden = false;
+    const n = e && e.name;
+    speSpegni(n==='NotAllowedError' ? 'Permesso negato: senza camera non posso guardare la mano.'
+      : n==='NotFoundError' ? 'Non trovo nessuna camera.'
+      : 'Non è partito: ' + (e && e.message ? e.message : e));
+  }
+}
+
+/* la camera si spegne davvero: ogni traccia fermata, il video svuotato */
+function speSpegni(msg){
+  SPE.acceso = false;
+  cancelAnimationFrame(SPE.raf);
+  if(SPE.flusso){ SPE.flusso.getTracks().forEach(t=> t.stop()); SPE.flusso = null; }
+  const v = document.getElementById('speVideo'); if(v){ v.pause(); v.srcObject = null; }
+  const c = document.getElementById('speCanvas');
+  if(c){ const x = c.getContext('2d'); x.clearRect(0,0,c.width,c.height); }
+  SPE.buf = []; SPE.ultimi = [];
+  const bt = document.getElementById('speAccendi');
+  if(bt){ bt.hidden = false; bt.disabled = false; }
+  const sp = document.getElementById('speSpegni'); if(sp) sp.hidden = true;
+  if(msg) speStato(msg);
+  speRisposta('', '', '');
+}
+
+const DITA_ID = ['ind','med','anu','mig'];
+const SPE_OSSA = [[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[5,9],[9,10],[10,11],[11,12],
+                  [9,13],[13,14],[14,15],[15,16],[13,17],[17,18],[18,19],[19,20],[0,17]];
+
+function speDisegna(punti){
+  const c = document.getElementById('speCanvas'), v = document.getElementById('speVideo');
+  if(c.width !== v.videoWidth){ c.width = v.videoWidth; c.height = v.videoHeight; }
+  const x = c.getContext('2d'); x.clearRect(0,0,c.width,c.height);
+  if(!punti) return;
+  x.lineWidth = 3; x.strokeStyle = 'rgba(127,224,206,.9)';
+  SPE_OSSA.forEach(([a,b])=>{
+    x.beginPath(); x.moveTo(punti[a].x*c.width, punti[a].y*c.height);
+    x.lineTo(punti[b].x*c.width, punti[b].y*c.height); x.stroke();
+  });
+  x.fillStyle = '#FFC15E';
+  punti.forEach(p=>{ x.beginPath(); x.arc(p.x*c.width, p.y*c.height, 3.5, 0, 6.3); x.fill(); });
+}
+
+function speRisposta(titolo, riga, classe, dettaglio){
+  const t = document.getElementById('speTitolo'), r = document.getElementById('speRiga');
+  if(!t) return;
+  t.textContent = titolo; r.textContent = riga;
+  document.getElementById('speEsito').className = 'spe-esito ' + (classe || '');
+  if(dettaglio !== undefined){
+    const d = document.getElementById('speDebug'); if(d) d.textContent = dettaglio;
+  }
+}
+
+function speCiclo(){
+  if(!SPE.acceso) return;
+  SPE.raf = requestAnimationFrame(speCiclo);
+  const v = document.getElementById('speVideo');
+  if(v.readyState < 2 || v.currentTime === SPE.ultimoVideo) return;
+  SPE.ultimoVideo = v.currentTime;
+  let res;
+  try{ res = SPE.lm.detectForVideo(v, performance.now()); }
+  catch(e){ speSpegni('Il riconoscimento si è fermato: ' + e.message); return; }
+
+  const mani = res.landmarks || [];
+  const ett  = res.handednesses || res.handedness || [];
+  if(!mani.length){ speDisegna(null); SPE.buf = []; SPE.ultimi = [];
+    speRisposta('Non vedo la mano', 'Mostrala alla camera, con buona luce.', 'nulla'); return; }
+
+  /* quale mano. L'etichetta di MediaPipe va presa cosi' com'e' sui
+     fotogrammi NON specchiati: l'ho verificato su una fotografia con due mani
+     (la destra e' "Right", e solo la sinistra, specchiata, ha le dita che si
+     piegano nel verso giusto). La documentazione dice il contrario, e c'e'
+     un interruttore per chi trovasse le etichette scambiate. */
+  const reale = i => {
+    const l = ett[i] && ett[i][0] && ett[i][0].categoryName;
+    const dest = (l === 'Right') !== SPE.invertiEtichetta;
+    return dest ? 'destra' : 'sinistra';
+  };
+  let k = -1;
+  for(let i=0;i<mani.length;i++) if(reale(i) === SPE.mano){ k = i; break; }
+  let nota = '';
+  if(k < 0){ k = 0; nota = 'Vedo la mano ' + reale(0) + ': la confronto con il modello specchiato. '; }
+  let sinistra = reale(k) === 'sinistra';
+  speDisegna(mani[k]);
+
+  let c = SPEC.caratteristiche(SPEC.daMediaPipe(res.worldLandmarks[k], sinistra));
+  /* controllo che non dipende dall'etichetta: le dita non si piegano
+     all'indietro. Se la flessione media e' molto negativa la mano e' stata
+     presa per quella sbagliata, e si specchia. */
+  const curl = x => DITA_ID.reduce((a,d)=> a + x.v[SPEC.IX[d+'.mcp']] + x.v[SPEC.IX[d+'.pip']] + x.v[SPEC.IX[d+'.dip']], 0) / 4;
+  let corretta = '';
+  if(curl(c) < -30){
+    sinistra = !sinistra;
+    c = SPEC.caratteristiche(SPEC.daMediaPipe(res.worldLandmarks[k], sinistra));
+    corretta = '  (mano corretta dalla flessione)';
+  }
+  SPE.buf.push(c); if(SPE.buf.length > 12) SPE.buf.shift();
+  if(SPE.buf.length < 6){ speRisposta('Guardo…', 'Tieni la mano ferma un attimo.', 'nulla'); return; }
+  const f = SPEC.filtra(SPE.buf);
+  const rank = SPEC.classifica(f.m);
+  const top = rank[0];
+  SPE.ultimi.push(top.L); if(SPE.ultimi.length > 12) SPE.ultimi.shift();
+  const stabile = SPE.ultimi.length >= 10 && SPE.ultimi.every(x=> x === top.L);
+
+  const ora = performance.now();
+  if(ora - SPE.ultimoTesto < 120) return;
+  SPE.ultimoTesto = ora;
+
+  const forse = rank.slice(0,3).map(r=> r.L + ' ' + r.score.toFixed(2)).join('  ·  ');
+  let titolo, riga, classe;
+  if(SPE.bersaglio){
+    const L = SPE.bersaglio, mio = rank.find(r=> r.L === L);
+    if(mio.score <= 1.0){
+      titolo = 'Ci sei: somiglia alla ' + L; classe = 'ok';
+      riga = nota + 'È la lettera del gioco, entro le tolleranze (scelte a occhio).';
+    }else{
+      const cor = SPEC.correzione(f.m, L, f.instab);
+      titolo = cor.dubbia ? 'Non sono sicuro' : 'Quasi: ' + cor.testo; classe = cor.dubbia ? 'dubbio' : 'quasi';
+      riga = nota + (cor.dubbia ? cor.testo
+           : (top.L !== L && top.score <= 1.0 ? 'Adesso somiglia di più alla ' + top.L + '.' : ''));
+    }
+  }else{
+    if(top.score > 1.4){ titolo = 'Non riconosco una lettera'; classe = 'nulla';
+      riga = nota + 'Nessuna forma del gioco somiglia abbastanza a questa mano.'; }
+    else if(!stabile){ titolo = 'Guardo…'; classe = 'nulla'; riga = nota + 'Tieni ferma la mano.'; }
+    else{
+      const v2 = SPEC.vicine(top.L), simili = v2.filter(x=> rank.slice(0,4).some(r=> r.L === x));
+      titolo = 'Somiglia alla ' + top.L; classe = 'ok';
+      riga = nota + (simili.length ? 'Ma la camera non distingue bene ' + top.L + ' da ' +
+        simili.join(', ') + ': guarda il pollice sul modello.' : '');
+    }
+  }
+  const d = f.m;
+  const lin = [];
+  ['ind','med','anu','mig'].forEach(dd=>{
+    lin.push(dd + '  mcp ' + d.v[SPEC.IX[dd+'.mcp']].toFixed(0) + '°  pip ' +
+      d.v[SPEC.IX[dd+'.pip']].toFixed(0) + '°  dip ' + d.v[SPEC.IX[dd+'.dip']].toFixed(0) +
+      '°  abd ' + d.v[SPEC.IX[dd+'.abd']].toFixed(0) + '°');
+  });
+  lin.push('pollice  x ' + d.v[SPEC.IX['pol.x']].toFixed(2) + '  y ' + d.v[SPEC.IX['pol.y']].toFixed(2) +
+    '  z ' + d.v[SPEC.IX['pol.z']].toFixed(2));
+  lin.push('dita verso ' + d.dita.map(x=>x.toFixed(2)).join(' ') + '   palmo verso ' +
+    d.palmo.map(x=>x.toFixed(2)).join(' ') + '   (x destra · y alto · z camera)');
+  const e0 = ett[k] && ett[k][0];
+  lin.push('etichetta ' + (e0 ? e0.categoryName + ' ' + e0.score.toFixed(2) : '?') + ' → ' + (sinistra ? 'sinistra' : 'destra') +
+    '   migliori: ' + forse + corretta);
+  speRisposta(titolo, riga, classe, lin.join('\n'));
+}
+
+function speApri(){
+  if(!SPEC){ alert('Lo specchio non è disponibile in questo browser.'); location.hash=''; return; }
+  speCostruisci();
+  speScegli(SPE.bersaglio);
+  show('provati');
+}
+function speChiudi(){ if(SPE.acceso) speSpegni(''); }
+
 /* ================= IL BANCO DI PROVA =================
    Un solo appiglio, deliberato, verso l'esterno: da qui lo strumento di
    verifica (tools/istantanee.mjs) chiede alla pagina il disegno GENERATO di
@@ -4632,6 +5261,7 @@ function boot(hot){
 window.LISQ = {
   segni:  ()=> Object.keys(SIGNS),
   lettere:()=> Object.keys(ALFA),
+  provati: ()=> SPEC,
   configurazioni: ()=> Object.keys(CONFIG),
   segno:  (k, opz) => renderSign(SIGNS[k], opz),
   lettera:k => letterGlyph(k),
