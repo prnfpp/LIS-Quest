@@ -1,4 +1,4 @@
-# LIS Quest 
+# LIS Quest - Prototipo
 
 **È un'avventura in cui si cerca di imparare la Lingua dei Segni Italiana attraverso un piccolo gioco di ruolo.**
 
