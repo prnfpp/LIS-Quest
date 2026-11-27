@@ -753,3 +753,47 @@ delle dita che specchia la mano se le dita si piegano all'indietro.
 **Privacy.** Nessun fotogramma viene salvato o inviato, e le tracce della camera si fermano uscendo dalla
 pagina. I due server contattati vedono l'indirizzo di chi la usa. Con minorenni serve un adulto che lo sappia.
 
+## Registra: dati per tarare Provati (per chi segna)
+
+`index.html#registra` (collegato dalla copertina) fa segnare le lettere davanti alla camera e salva i
+**punti della mano**, non il video: niente volto, niente fotogrammi. Serve a tarare e valutare Provati su mani
+vere invece che a occhio. Stesse regole di Provati: non si carica da solo, scarica MediaPipe solo dopo il clic,
+fa funzionare il gioco anche senza.
+
+**Come si registra.** Consenso (maggiorenne, ha letto cosa contiene il file) → camera → «Comincia». Per ogni
+lettera: due secondi di preparazione, conto alla rovescia di tre, poi 1,5 s di registrazione (3 s per J, K, X,
+Y, Z, che hanno il movimento). Si lavora a **giri**: ogni giro passa per tutte le lettere scelte, rimescolate
+(dieci prese uguali di fila sono quasi una presa sola). Cinque giri sono una ventina di minuti; si può
+spezzare, il codice della persona resta lo stesso. Una presa con la mano vista in meno dell'80% del tempo, o
+con troppo pochi fotogrammi, non si salva e si rifà (alla terza si salta). Si può anche registrare **errori
+tipici** di chi impara, con la causa (pollice, dita aperte/unite, dita piegate, palmo girato, altro): sono i
+dati che servono alla modalità «quasi».
+
+**Cosa contiene il file** (`lis-quest-registrazioni/1`, testo JSON, leggibile):
+
+- `persona`: `id` casuale e anonimo (generato una volta, anche senza nome), nome facoltativo, zona, ruolo
+  dichiarato, mano con cui segna. Il ruolo serve a escludere dalla taratura chi non segna.
+- `consenso`: versione del testo e data.
+- `registrazioni[]`: ognuna con `id`, `lettera`, `tipo` (`giusta`|`errore`), `causa`, `sessione`, `giro`,
+  `durata`, dimensioni del video, `mp` (versione di MediaPipe, modello, delegate, impostazione destra/sinistra
+  in uso) e `fotogrammi[]`.
+- ogni fotogramma ha `t` (ms) e, per ogni mano vista, `e` (etichetta Left/Right grezza), `s` (punteggio), `w`
+  (21 punti 3D, in 0,1 mm, centrati sulla mano) e `n` (21 punti nell'immagine, in decimillesimi).
+
+**Perché l'uscita grezza.** Grandezze, tolleranze e perfino la regola destra/sinistra cambieranno: un dato
+ricavato al momento della ripresa congela le ipotesi di oggi dentro registrazioni che costano il tempo di una
+persona. I punti 3D sono centrati sulla mano e non hanno traslazione: per il movimento servono quelli
+nell'immagine.
+
+**Dove restano.** Ogni presa va su IndexedDB appena accettata (se il browser non lo permette — finestra
+privata — restano in memoria e la pagina lo dice). Il file lo scarica chi ha registrato, quando vuole.
+
+**Come si legge.** `SPEC.valutaPresa(presa)` (visibile da `LISQ.provati()`) rifà passare una presa registrata
+per la stessa catena del vivo: etichetta, specchiatura, grandezze, classificazione. Provato con la fotografia
+usata come camera finta: le stesse tre lettere migliori e gli stessi punteggi del vivo.
+
+**Cosa non c'è ancora.** Lo strumento che dai file calcola tolleranze e matrici di confusione: non ha ancora
+dati su cui girare. **Il testo del consenso dice solo quello che fa la pagina** (cosa contiene il file, dove
+resta, cosa viene scaricato): non promette conservazione, pubblicazione né licenza, che vanno decise con chi
+segna e scritte da chi è titolare del progetto.
+

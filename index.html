@@ -117,6 +117,17 @@
 .spe-let:hover{border-color:var(--nima)}
 .spe-let[aria-pressed="true"]{border-color:var(--nima);background:rgba(127,224,206,.16)}
 .spe-let-g svg{width:44px;height:auto;display:block}
+.spe-video .spe-chip{position:absolute;left:8px;bottom:8px;z-index:2;font:600 12px "IBM Plex Mono",monospace;
+  background:rgba(8,24,36,.78);color:var(--testo-2);border-radius:999px;padding:3px 10px}
+.spe-chip.ok{color:var(--ok)}
+.rev-chi select{padding:9px 12px;border-radius:10px;border:1px solid var(--bordo);
+  background:rgba(8,24,36,.6);color:var(--testo);font:400 15px inherit;width:100%}
+.rg-conto{font:800 44px "Baloo 2",inherit;line-height:1.1;min-height:1.1em;color:var(--luce)}
+.rg-cosa{margin:12px 0;line-height:1.6;font-size:12.5px}
+.spe-let{position:relative}
+.rg-n{position:absolute;top:2px;right:4px;font:600 11px "IBM Plex Mono",monospace;color:var(--nima);font-style:normal}
+.spe-let[aria-pressed="false"]{opacity:.38}
+#scr-registra .rev-barra .btn{padding:8px 14px;font-size:14px}
 @media (max-width:640px){.spe-scena{grid-template-columns:1fr}}
 @media (max-width:520px){
   .rev-griglia{grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}
@@ -787,7 +798,7 @@ footer a{color:var(--testo-2)}
         <button class="btn" id="vai">Comincia ▸</button>
         <button class="btn ghost" id="riprendi" hidden>Riprendi</button>
       </div>
-      <p class="hint" style="margin-top:14px"><a href="#provati">Provati</a> · sperimentale: accendi la camera e vedi quanto la tua mano somiglia a una lettera del gioco</p>
+      <p class="hint" style="margin-top:14px"><a href="#provati">Provati</a> · sperimentale: accendi la camera e vedi quanto la tua mano somiglia a una lettera del gioco · <a href="#registra">Registra le lettere</a> (se segni)</p>
     </div>
     <div class="card">
       <h2>Cos'è questa demo</h2>
@@ -1009,6 +1020,101 @@ footer a{color:var(--testo-2)}
     <div class="card">
       <h3>Quale lettera <span class="rev-conta">tocca per scegliere</span></h3>
       <div class="spe-lettere" id="speLettere"></div>
+    </div>
+  </section>
+
+  <!-- ===================== REGISTRA (per chi segna) =====================
+       Le lettere segnate davanti a una camera, per tarare e valutare
+       Provati su mani vere. Si salvano i PUNTI della mano, non il video.
+       Si arriva da index.html#registra. -->
+  <section class="screen" id="scr-registra" hidden>
+    <div class="card rev-testa">
+      <h2>Registra le lettere <span class="spe-sper">per chi segna</span></h2>
+      <p>Se conosci la LIS puoi aiutarci a rendere il riconoscimento di <a href="#provati">Provati</a> meno a occhio: segni le lettere davanti alla camera, e noi misuriamo quanto variano da una persona all'altra. Un giro completo dell’alfabeto dura circa quattro minuti, e cinque giri una ventina; il tuo codice resta lo stesso fra una sessione e l'altra, quindi puoi fermarti e riprendere.</p>
+      <div class="rev-par rg-cosa">
+        <b>Cosa contiene il file.</b> Per ogni registrazione: i 21 punti di ogni mano vista, fotogramma per fotogramma (posizione nell'immagine e in 3D), la lettera, un <b>codice anonimo casuale</b> (<span id="rgCodice"></span>), e quello che scrivi qui sotto — il nome è facoltativo.<br>
+        <b>Cosa non contiene.</b> Il video, i fotogrammi, il volto: la pagina non li salva e non li invia.<br>
+        <b>Dove resta.</b> Su questo dispositivo, finché non mandi tu il file. È testo: puoi aprirlo e controllare. Come verrà usato e conservato lo decide il progetto insieme a chi segna: se non l'hai chiesto, chiedilo prima di mandarlo.<br>
+        <b>Cosa viene scaricato.</b> Come in Provati: un programma da <code>cdn.jsdelivr.net</code> e un modello da <code>storage.googleapis.com</code>. Quei due server vedono il tuo indirizzo, non il video.
+      </div>
+      <div class="rev-chi">
+        <label>Come ti chiami (facoltativo) <input type="text" id="rgNome" placeholder="o lascia vuoto: resti il codice"></label>
+        <label>Dove segni <input type="text" id="rgDove" placeholder="città o zona — la LIS ha varianti regionali"></label>
+        <label>Chi sei
+          <select id="rgRuolo">
+            <option value="">— scegli —</option>
+            <option value="sordo-segnante">Persona sorda che segna</option>
+            <option value="udente-segnante">Persona udente che segna / interprete</option>
+            <option value="coda">CODA o familiare segnante</option>
+            <option value="impara">Sto imparando</option>
+            <option value="altro">Altro</option>
+          </select></label>
+        <label>Con quale mano segni
+          <select id="rgMano"><option value="destra">destra</option><option value="sinistra">sinistra</option></select></label>
+      </div>
+      <label class="spe-inv"><input type="checkbox" id="rgAdulto"> Sono maggiorenne e ho letto cosa contiene il file.</label>
+      <div class="btn-row">
+        <button class="btn" id="rgAccendi" type="button" disabled>📷 Accendi la camera</button>
+        <button class="btn ghost" id="rgSpegni" type="button" hidden>Spegni la camera</button>
+        <a class="btn ghost" href="#" id="rgEsci">Torna al gioco</a>
+      </div>
+      <p class="rev-nota" id="rgStato" role="status" aria-live="polite"></p>
+      <p class="rev-nota" id="rgAvviso" hidden style="color:var(--corallo)"></p>
+    </div>
+
+    <div class="card">
+      <div class="spe-scena">
+        <div class="spe-video">
+          <video id="rgVideo" playsinline muted></video>
+          <canvas id="rgCanvas"></canvas>
+          <span class="spe-chip" id="rgVista"></span>
+        </div>
+        <div class="spe-lato">
+          <div class="spe-modello rev-disegno" id="rgModello"></div>
+          <div class="spe-esito" id="rgEsito">
+            <div class="spe-titolo" id="rgIstr" aria-live="polite"></div>
+            <div class="rg-conto" id="rgConto" aria-hidden="true"></div>
+            <div class="spe-riga" id="rgEsitoRiga"></div>
+          </div>
+          <div class="btn-row">
+            <button class="btn" id="rgComincia" type="button" disabled>Comincia ▸</button>
+            <button class="btn ghost" id="rgPausa" type="button" hidden>Pausa</button>
+            <button class="btn ghost" id="rgRipeti" type="button" hidden>Rifai l'ultima</button>
+            <button class="btn ghost" id="rgSalta" type="button" hidden>Salta</button>
+            <button class="btn ghost" id="rgFerma" type="button" hidden>Ferma</button>
+          </div>
+        </div>
+      </div>
+      <p class="rev-guida" style="margin-top:12px">Per ogni lettera: due secondi per prepararti, un conto alla rovescia di tre, poi la camera guarda per un secondo e mezzo (tre per le lettere con movimento). Luce frontale, mano a 40–60 cm, tutta in vista. Non importa farla identica al disegno: segna <strong>come la segni tu</strong>.</p>
+    </div>
+
+    <div class="card">
+      <h3>Cosa registro</h3>
+      <div class="spe-opz" style="margin-top:0">
+        <label>Cosa <select id="rgTipo"><option value="giuste">Le lettere giuste</option><option value="errori">Errori tipici (di chi impara)</option></select></label>
+        <label id="rgCausaRiga" hidden>Errore <select id="rgCausa">
+          <option value="pollice">pollice nel posto sbagliato</option>
+          <option value="aperte">dita troppo aperte o unite</option>
+          <option value="piegate">dita piegate male</option>
+          <option value="palmo">palmo girato</option>
+          <option value="altro">altro errore tipico</option></select></label>
+        <label>Giri <select id="rgGiri"><option>1</option><option>2</option><option>3</option><option selected>5</option><option>10</option></select></label>
+        <details>
+          <summary>Cosa vede la camera</summary>
+          <label class="spe-inv"><input type="checkbox" id="rgInverti"> Destra e sinistra mi risultano scambiate</label>
+        </details>
+      </div>
+      <p class="rev-guida" style="margin-top:12px">Un giro = tutte le lettere scelte, in ordine sparso. Più giri danno un'idea migliore di come varia la tua mano; cinque bastano per cominciare. Tocca una lettera per escluderla o includerla.</p>
+      <div class="spe-lettere" id="rgLettere"></div>
+    </div>
+
+    <div class="rev-barra">
+      <span id="rgRiepilogo">Nessuna registrazione ancora.</span>
+      <span>
+        <button class="btn ghost" id="rgAnnulla" type="button" disabled>Cancella l'ultima</button>
+        <button class="btn ghost" id="rgPulisci" type="button">Ricomincia da capo</button>
+        <button class="btn" id="rgScarica" type="button" disabled>⬇ Scarica il file</button>
+      </span>
     </div>
   </section>
 
@@ -3599,7 +3705,7 @@ function load(){ try{ const r=localStorage.getItem(KEY); return r?JSON.parse(r):
 const $ = s => document.querySelector(s);
 const el = {
   scrs:{titolo:$('#scr-titolo'),nome:$('#scr-nome'),classe:$('#scr-classe'),
-        gioco:$('#scr-gioco'),finale:$('#scr-finale'),validazione:$('#scr-validazione'),provati:$('#scr-provati')},
+        gioco:$('#scr-gioco'),finale:$('#scr-finale'),validazione:$('#scr-validazione'),provati:$('#scr-provati'),registra:$('#scr-registra')},
   nima:$('#nimaWrap'), testo:$('#testo'), chi:$('#chi'), tap:$('#tapHint'), avanti:$('#avanti'),
   gioco:$('#gioco'), stage:$('#stage'), scenery:$('#scenery'),
   hudNome:$('#hudNome'), hudXp:$('#hudXp'), hudTacc:$('#hudTacc'), hudScena:$('#hudScena'), gloss:$('#gloss')
@@ -4703,10 +4809,14 @@ function boot(hot){
   revAscolta();
   if(location.hash === '#validazione') revApri();
   else if(location.hash === '#provati') speApri();
+  else if(location.hash === '#registra') rgApri();
   window.addEventListener('hashchange', ()=>{
+    /* uscendo da una pagina con la camera, o passando all'altra, le tracce si fermano */
     if(location.hash !== '#provati') speChiudi();
+    if(location.hash !== '#registra') rgChiudi();
     if(location.hash === '#validazione') revApri();
     else if(location.hash === '#provati') speApri();
+    else if(location.hash === '#registra') rgApri();
   });
 }
 /* ================= PROVATI (sperimentale) =================
@@ -5008,9 +5118,80 @@ try{ SPEC = (function(){
     return {m:{v, dita:sum('dita'), palmo:sum('palmo')}, instab};
   }
 
+  /* ---- quale mano, e i suoi punti: UNA funzione, per il vivo e per le
+     registrazioni ----
+     L'etichetta di MediaPipe va presa cosi' com'e' sui fotogrammi NON
+     specchiati: l'ho verificato su una fotografia con due mani (la destra e'
+     "Right", e solo la sinistra, specchiata, ha le dita che si piegano nel
+     verso giusto). La documentazione dice il contrario, e c'e' un interruttore
+     per chi trovasse le etichette scambiate.
+     Un secondo controllo non dipende dall'etichetta: le dita non si piegano
+     all'indietro. Se la flessione media e' molto negativa la mano e' stata
+     presa per quella sbagliata, e si specchia.
+     mani: [{etichetta:'Left'|'Right', w:[{x,y,z} x21]}] */
+  const curl = x => DITA.reduce((a,d)=>
+    a + x.v[IX[d+'.mcp']] + x.v[IX[d+'.pip']] + x.v[IX[d+'.dip']], 0) / 4;
+  function manoDa(mani, preferita, inverti){
+    if(!mani || !mani.length) return null;
+    const reale = m => ((m.etichetta === 'Right') !== !!inverti) ? 'destra' : 'sinistra';
+    let k = mani.findIndex(m => reale(m) === preferita), altra = false;
+    if(k < 0){ k = 0; altra = true; }
+    let sinistra = reale(mani[k]) === 'sinistra';
+    let c = caratteristiche(daMediaPipe(mani[k].w, sinistra));
+    let corretta = false;
+    if(curl(c) < -30){
+      sinistra = !sinistra; corretta = true;
+      c = caratteristiche(daMediaPipe(mani[k].w, sinistra));
+    }
+    return {k, sinistra, altra, corretta, c, reale: reale(mani[k])};
+  }
+
+  /* ---- le registrazioni ----
+     Una presa salva l'USCITA GREZZA di MediaPipe, non grandezze ricavate: le
+     grandezze, le tolleranze e perfino la regola destra/sinistra cambieranno,
+     e quello che e' stato ricavato al momento della ripresa congela le
+     ipotesi di oggi dentro dati che costano il tempo di una persona.
+     Per ogni fotogramma: t (ms dall'inizio) e, per ogni mano vista, etichetta,
+     punteggio, punti 3D (w, in unita' di 0,1 mm, centrati sulla mano) e punti
+     nell'immagine (n, in decimillesimi di immagine). I punti in 3D non hanno
+     traslazione: per il movimento servono quelli nell'immagine. */
+  const DIEC = 1e4;
+  function perPresa(res){
+    const ett = res.handednesses || res.handedness || [];
+    return (res.landmarks || []).map((n,i)=>{
+      const w = res.worldLandmarks[i], f = [], g = [];
+      for(let j=0;j<21;j++){
+        f.push(Math.round(w[j].x*DIEC), Math.round(w[j].y*DIEC), Math.round(w[j].z*DIEC));
+        g.push(Math.round(n[j].x*DIEC), Math.round(n[j].y*DIEC), Math.round(n[j].z*DIEC));
+      }
+      const e = ett[i] && ett[i][0];
+      return {e: e ? e.categoryName : '', s: e ? Math.round(e.score*1000)/1000 : 0, w:f, n:g};
+    });
+  }
+  function dalFormatoPresa(m){
+    const w = []; for(let j=0;j<21;j++) w.push({x:m.w[3*j]/DIEC, y:m.w[3*j+1]/DIEC, z:m.w[3*j+2]/DIEC});
+    return {etichetta:m.e, w};
+  }
+  /* dalle registrazioni alle stesse grandezze del vivo */
+  function daPresa(presa){
+    const pref = (presa.dichiarata && presa.dichiarata.mano) || 'destra';
+    const inv = !!(presa.mp && presa.mp.invertiEtichetta);
+    return presa.fotogrammi.map(f=>{
+      const r = manoDa(f.m.map(dalFormatoPresa), pref, inv);
+      return r ? r.c : null;
+    });
+  }
+  /* cosa direbbe il vivo di questa presa: la mediana sui fotogrammi con la mano */
+  function valutaPresa(presa){
+    const cs = daPresa(presa).filter(Boolean);
+    if(!cs.length) return null;
+    const f = filtra(cs);
+    return {n: cs.length, rank: classifica(f.m), m: f.m, instab: f.instab};
+  }
+
   return {FEAT, IX, STATICHE, BERSAGLIO, puntiModello, caratteristiche, classifica,
           distanza, matrice, vicine, correzione, daMediaPipe, puntiInMondo, filtra,
-          NOME_DITO};
+          manoDa, perPresa, daPresa, valutaPresa, NOME_DITO};
 })(); }catch(err){ console.warn('Lo specchio non è disponibile', err); }
 
 /* ---------- la pagina: camera, riconoscimento, risposta ----------
@@ -5023,8 +5204,115 @@ const SPE_URL = {
   wasm:    'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@' + SPE_VERSIONE + '/wasm',
   modello: 'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task'
 };
-const SPE = {lm:null, flusso:null, raf:0, buf:[], ultimi:[], bersaglio:null, mano:'destra',
-             invertiEtichetta:false, acceso:false, ultimoTesto:0, ultimoVideo:-1};
+/* ---------- la camera: un solo nucleo per tutte le pagine ----------
+   Un riconoscitore, un flusso, un ciclo; ogni pagina (Provati, Registra) gli
+   dà la propria funzione da chiamare a ogni fotogramma. Le pagine non si
+   aprono mai insieme, e uscendo da una (o passando all'altra) le tracce si
+   fermano davvero: una camera rimasta accesa dietro a una pagina chiusa e'
+   il difetto peggiore che questo modulo possa avere. */
+const CAM = {lm:null, delegate:'', flusso:null, raf:0, video:null, canvas:null, onRis:null,
+             onErrore:null, acceso:false, ultimoVideo:-1, token:0, larghezza:0, altezza:0};
+
+async function camAccendi(o){
+  if(CAM.acceso) return;
+  const mio = ++CAM.token;
+  const annullato = ()=> CAM.token !== mio;
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia)
+    throw new Error('Questo browser non permette di usare la camera da qui.');
+  if(o.stato) o.stato('Carico il riconoscimento delle mani (circa 10 MB, una volta)…');
+  if(!CAM.lm){
+    const mod = await import(SPE_URL.bundle);
+    const set = await mod.FilesetResolver.forVisionTasks(SPE_URL.wasm);
+    const crea = delegate => mod.HandLandmarker.createFromOptions(set, {
+      baseOptions:{modelAssetPath:SPE_URL.modello, delegate},
+      runningMode:'VIDEO', numHands:2,
+      minHandDetectionConfidence:.5, minHandPresenceConfidence:.5, minTrackingConfidence:.5});
+    try{ CAM.lm = await crea('GPU'); CAM.delegate = 'GPU'; }
+    catch(e){ CAM.lm = await crea('CPU'); CAM.delegate = 'CPU'; }
+  }
+  if(annullato()) throw Object.assign(new Error('annullato'), {name:'Annullato'});
+  if(o.stato) o.stato('Chiedo la camera: il browser ti domanderà il permesso.');
+  const flusso = await navigator.mediaDevices.getUserMedia(
+    {video:{facingMode:'user', width:{ideal:640}, height:{ideal:480}}, audio:false});
+  /* se nel frattempo si e' lasciata la pagina, la camera appena concessa si
+     ferma subito: non e' di nessuno */
+  if(annullato()){ flusso.getTracks().forEach(t=> t.stop());
+    throw Object.assign(new Error('annullato'), {name:'Annullato'}); }
+  CAM.flusso = flusso; CAM.video = o.video; CAM.canvas = o.canvas;
+  CAM.onRis = o.onRis; CAM.onErrore = o.onErrore || null;
+  o.video.srcObject = flusso; await o.video.play();
+  if(annullato()){ camSpegni(); throw Object.assign(new Error('annullato'), {name:'Annullato'}); }
+  CAM.larghezza = o.video.videoWidth; CAM.altezza = o.video.videoHeight;
+  CAM.acceso = true; CAM.ultimoVideo = -1;
+  CAM.raf = requestAnimationFrame(camCiclo);
+}
+
+/* la camera si spegne davvero: ogni traccia fermata, il video svuotato */
+function camSpegni(){
+  CAM.token++;                                   /* annulla un avvio in corso */
+  CAM.acceso = false;
+  cancelAnimationFrame(CAM.raf);
+  if(CAM.flusso){ CAM.flusso.getTracks().forEach(t=> t.stop()); CAM.flusso = null; }
+  if(CAM.video){ CAM.video.pause(); CAM.video.srcObject = null; }
+  if(CAM.canvas){ const x = CAM.canvas.getContext('2d'); x.clearRect(0,0,CAM.canvas.width,CAM.canvas.height); }
+  CAM.onRis = null;
+}
+
+function camCiclo(){
+  if(!CAM.acceso) return;
+  CAM.raf = requestAnimationFrame(camCiclo);
+  const v = CAM.video;
+  if(v.readyState < 2 || v.currentTime === CAM.ultimoVideo) return;
+  CAM.ultimoVideo = v.currentTime;
+  let res;
+  const ora = performance.now();
+  try{ res = CAM.lm.detectForVideo(v, ora); }
+  catch(e){ const f = CAM.onErrore; camSpegni(); if(f) f(e); return; }
+  if(CAM.onRis) CAM.onRis(res, ora);
+}
+
+/* le mani come le vuole il resto: etichetta, punteggio, punti nell'immagine e in 3D */
+function camMani(res){
+  const ett = res.handednesses || res.handedness || [];
+  return (res.landmarks || []).map((n,i)=>({
+    etichetta: ett[i] && ett[i][0] ? ett[i][0].categoryName : '',
+    punteggio: ett[i] && ett[i][0] ? ett[i][0].score : 0,
+    n, w: res.worldLandmarks[i]}));
+}
+
+const DITA_ID = ['ind','med','anu','mig'];
+const SPE_OSSA = [[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[5,9],[9,10],[10,11],[11,12],
+                  [9,13],[13,14],[14,15],[15,16],[13,17],[17,18],[18,19],[19,20],[0,17]];
+
+/* lo scheletro sopra il video; video e disegno si specchiano insieme (CSS) */
+function camDisegna(mani, evidenzia){
+  const c = CAM.canvas, v = CAM.video;
+  if(!c || !v) return;
+  if(c.width !== v.videoWidth){ c.width = v.videoWidth; c.height = v.videoHeight; }
+  const x = c.getContext('2d'); x.clearRect(0,0,c.width,c.height);
+  (mani || []).forEach((m,i)=>{
+    const punti = m.n, forte = (evidenzia === undefined || evidenzia === i);
+    x.lineWidth = 3; x.strokeStyle = forte ? 'rgba(127,224,206,.9)' : 'rgba(127,224,206,.3)';
+    SPE_OSSA.forEach(([a,b])=>{
+      x.beginPath(); x.moveTo(punti[a].x*c.width, punti[a].y*c.height);
+      x.lineTo(punti[b].x*c.width, punti[b].y*c.height); x.stroke();
+    });
+    x.fillStyle = forte ? '#FFC15E' : 'rgba(255,193,94,.35)';
+    punti.forEach(p=>{ x.beginPath(); x.arc(p.x*c.width, p.y*c.height, 3.5, 0, 6.3); x.fill(); });
+  });
+}
+
+function camErrore(e){
+  const n = e && e.name;
+  return n==='NotAllowedError' ? 'Permesso negato: senza camera non posso guardare la mano.'
+       : n==='NotFoundError' ? 'Non trovo nessuna camera.'
+       : n==='Annullato' ? ''
+       : 'Non è partito: ' + (e && e.message ? e.message : e);
+}
+
+/* ---------- Provati ---------- */
+const SPE = {buf:[], ultimi:[], bersaglio:null, mano:'destra', invertiEtichetta:false,
+             acceso:false, ultimoTesto:0};
 
 function speStato(t){ const e = document.getElementById('speStato'); if(e) e.textContent = t; }
 
@@ -5070,69 +5358,23 @@ async function speAccendi(){
   if(SPE.acceso) return;
   const bt = document.getElementById('speAccendi'); bt.disabled = true;
   try{
-    if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia)
-      throw new Error('Questo browser non permette di usare la camera da qui.');
-    speStato('Carico il riconoscimento delle mani (circa 10 MB, una volta)…');
-    if(!SPE.lm){
-      const mod = await import(SPE_URL.bundle);
-      const set = await mod.FilesetResolver.forVisionTasks(SPE_URL.wasm);
-      const crea = delegate => mod.HandLandmarker.createFromOptions(set, {
-        baseOptions:{modelAssetPath:SPE_URL.modello, delegate},
-        runningMode:'VIDEO', numHands:2,
-        minHandDetectionConfidence:.5, minHandPresenceConfidence:.5, minTrackingConfidence:.5});
-      try{ SPE.lm = await crea('GPU'); }catch(e){ SPE.lm = await crea('CPU'); }
-    }
-    speStato('Chiedo la camera: il browser ti domanderà il permesso.');
-    SPE.flusso = await navigator.mediaDevices.getUserMedia(
-      {video:{facingMode:'user', width:{ideal:640}, height:{ideal:480}}, audio:false});
-    const v = document.getElementById('speVideo');
-    v.srcObject = SPE.flusso; await v.play();
+    await camAccendi({video:document.getElementById('speVideo'), canvas:document.getElementById('speCanvas'),
+                      onRis:speRis, stato:speStato,
+                      onErrore:e=> speSpegni('Il riconoscimento si è fermato: ' + e.message)});
     SPE.acceso = true; SPE.buf = []; SPE.ultimi = [];
-    document.getElementById('speSpegni').hidden = false;
-    bt.hidden = true;
+    document.getElementById('speSpegni').hidden = false; bt.hidden = true;
     speStato('Mostra la mano alla camera.');
-    SPE.raf = requestAnimationFrame(speCiclo);
-  }catch(e){
-    bt.disabled = false; bt.hidden = false;
-    const n = e && e.name;
-    speSpegni(n==='NotAllowedError' ? 'Permesso negato: senza camera non posso guardare la mano.'
-      : n==='NotFoundError' ? 'Non trovo nessuna camera.'
-      : 'Non è partito: ' + (e && e.message ? e.message : e));
-  }
+  }catch(e){ speSpegni(camErrore(e)); }
 }
 
-/* la camera si spegne davvero: ogni traccia fermata, il video svuotato */
 function speSpegni(msg){
-  SPE.acceso = false;
-  cancelAnimationFrame(SPE.raf);
-  if(SPE.flusso){ SPE.flusso.getTracks().forEach(t=> t.stop()); SPE.flusso = null; }
-  const v = document.getElementById('speVideo'); if(v){ v.pause(); v.srcObject = null; }
-  const c = document.getElementById('speCanvas');
-  if(c){ const x = c.getContext('2d'); x.clearRect(0,0,c.width,c.height); }
-  SPE.buf = []; SPE.ultimi = [];
+  camSpegni();
+  SPE.acceso = false; SPE.buf = []; SPE.ultimi = [];
   const bt = document.getElementById('speAccendi');
   if(bt){ bt.hidden = false; bt.disabled = false; }
   const sp = document.getElementById('speSpegni'); if(sp) sp.hidden = true;
-  if(msg) speStato(msg);
+  if(msg !== undefined) speStato(msg);
   speRisposta('', '', '');
-}
-
-const DITA_ID = ['ind','med','anu','mig'];
-const SPE_OSSA = [[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[5,9],[9,10],[10,11],[11,12],
-                  [9,13],[13,14],[14,15],[15,16],[13,17],[17,18],[18,19],[19,20],[0,17]];
-
-function speDisegna(punti){
-  const c = document.getElementById('speCanvas'), v = document.getElementById('speVideo');
-  if(c.width !== v.videoWidth){ c.width = v.videoWidth; c.height = v.videoHeight; }
-  const x = c.getContext('2d'); x.clearRect(0,0,c.width,c.height);
-  if(!punti) return;
-  x.lineWidth = 3; x.strokeStyle = 'rgba(127,224,206,.9)';
-  SPE_OSSA.forEach(([a,b])=>{
-    x.beginPath(); x.moveTo(punti[a].x*c.width, punti[a].y*c.height);
-    x.lineTo(punti[b].x*c.width, punti[b].y*c.height); x.stroke();
-  });
-  x.fillStyle = '#FFC15E';
-  punti.forEach(p=>{ x.beginPath(); x.arc(p.x*c.width, p.y*c.height, 3.5, 0, 6.3); x.fill(); });
 }
 
 function speRisposta(titolo, riga, classe, dettaglio){
@@ -5145,50 +5387,18 @@ function speRisposta(titolo, riga, classe, dettaglio){
   }
 }
 
-function speCiclo(){
-  if(!SPE.acceso) return;
-  SPE.raf = requestAnimationFrame(speCiclo);
-  const v = document.getElementById('speVideo');
-  if(v.readyState < 2 || v.currentTime === SPE.ultimoVideo) return;
-  SPE.ultimoVideo = v.currentTime;
-  let res;
-  try{ res = SPE.lm.detectForVideo(v, performance.now()); }
-  catch(e){ speSpegni('Il riconoscimento si è fermato: ' + e.message); return; }
-
-  const mani = res.landmarks || [];
-  const ett  = res.handednesses || res.handedness || [];
-  if(!mani.length){ speDisegna(null); SPE.buf = []; SPE.ultimi = [];
+function speRis(res, ora){
+  const mani = camMani(res);
+  if(!mani.length){ camDisegna(null); SPE.buf = []; SPE.ultimi = [];
     speRisposta('Non vedo la mano', 'Mostrala alla camera, con buona luce.', 'nulla'); return; }
 
-  /* quale mano. L'etichetta di MediaPipe va presa cosi' com'e' sui
-     fotogrammi NON specchiati: l'ho verificato su una fotografia con due mani
-     (la destra e' "Right", e solo la sinistra, specchiata, ha le dita che si
-     piegano nel verso giusto). La documentazione dice il contrario, e c'e'
-     un interruttore per chi trovasse le etichette scambiate. */
-  const reale = i => {
-    const l = ett[i] && ett[i][0] && ett[i][0].categoryName;
-    const dest = (l === 'Right') !== SPE.invertiEtichetta;
-    return dest ? 'destra' : 'sinistra';
-  };
-  let k = -1;
-  for(let i=0;i<mani.length;i++) if(reale(i) === SPE.mano){ k = i; break; }
-  let nota = '';
-  if(k < 0){ k = 0; nota = 'Vedo la mano ' + reale(0) + ': la confronto con il modello specchiato. '; }
-  let sinistra = reale(k) === 'sinistra';
-  speDisegna(mani[k]);
+  const r = SPEC.manoDa(mani, SPE.mano, SPE.invertiEtichetta);
+  const nota = r.altra ? 'Vedo la mano ' + r.reale + ': la confronto con il modello specchiato. ' : '';
+  camDisegna(mani, r.k);
+  const corretta = r.corretta ? '  (mano corretta dalla flessione)' : '';
+  const sinistra = r.sinistra;
 
-  let c = SPEC.caratteristiche(SPEC.daMediaPipe(res.worldLandmarks[k], sinistra));
-  /* controllo che non dipende dall'etichetta: le dita non si piegano
-     all'indietro. Se la flessione media e' molto negativa la mano e' stata
-     presa per quella sbagliata, e si specchia. */
-  const curl = x => DITA_ID.reduce((a,d)=> a + x.v[SPEC.IX[d+'.mcp']] + x.v[SPEC.IX[d+'.pip']] + x.v[SPEC.IX[d+'.dip']], 0) / 4;
-  let corretta = '';
-  if(curl(c) < -30){
-    sinistra = !sinistra;
-    c = SPEC.caratteristiche(SPEC.daMediaPipe(res.worldLandmarks[k], sinistra));
-    corretta = '  (mano corretta dalla flessione)';
-  }
-  SPE.buf.push(c); if(SPE.buf.length > 12) SPE.buf.shift();
+  SPE.buf.push(r.c); if(SPE.buf.length > 12) SPE.buf.shift();
   if(SPE.buf.length < 6){ speRisposta('Guardo…', 'Tieni la mano ferma un attimo.', 'nulla'); return; }
   const f = SPEC.filtra(SPE.buf);
   const rank = SPEC.classifica(f.m);
@@ -5196,14 +5406,13 @@ function speCiclo(){
   SPE.ultimi.push(top.L); if(SPE.ultimi.length > 12) SPE.ultimi.shift();
   const stabile = SPE.ultimi.length >= 10 && SPE.ultimi.every(x=> x === top.L);
 
-  const ora = performance.now();
   if(ora - SPE.ultimoTesto < 120) return;
   SPE.ultimoTesto = ora;
 
-  const forse = rank.slice(0,3).map(r=> r.L + ' ' + r.score.toFixed(2)).join('  ·  ');
+  const forse = rank.slice(0,3).map(q=> q.L + ' ' + q.score.toFixed(2)).join('  ·  ');
   let titolo, riga, classe;
   if(SPE.bersaglio){
-    const L = SPE.bersaglio, mio = rank.find(r=> r.L === L);
+    const L = SPE.bersaglio, mio = rank.find(q=> q.L === L);
     if(mio.score <= 1.0){
       titolo = 'Ci sei: somiglia alla ' + L; classe = 'ok';
       riga = nota + 'È la lettera del gioco, entro le tolleranze (scelte a occhio).';
@@ -5218,7 +5427,7 @@ function speCiclo(){
       riga = nota + 'Nessuna forma del gioco somiglia abbastanza a questa mano.'; }
     else if(!stabile){ titolo = 'Guardo…'; classe = 'nulla'; riga = nota + 'Tieni ferma la mano.'; }
     else{
-      const v2 = SPEC.vicine(top.L), simili = v2.filter(x=> rank.slice(0,4).some(r=> r.L === x));
+      const v2 = SPEC.vicine(top.L), simili = v2.filter(x=> rank.slice(0,4).some(q=> q.L === x));
       titolo = 'Somiglia alla ' + top.L; classe = 'ok';
       riga = nota + (simili.length ? 'Ma la camera non distingue bene ' + top.L + ' da ' +
         simili.join(', ') + ': guarda il pollice sul modello.' : '');
@@ -5226,7 +5435,7 @@ function speCiclo(){
   }
   const d = f.m;
   const lin = [];
-  ['ind','med','anu','mig'].forEach(dd=>{
+  DITA_ID.forEach(dd=>{
     lin.push(dd + '  mcp ' + d.v[SPEC.IX[dd+'.mcp']].toFixed(0) + '°  pip ' +
       d.v[SPEC.IX[dd+'.pip']].toFixed(0) + '°  dip ' + d.v[SPEC.IX[dd+'.dip']].toFixed(0) +
       '°  abd ' + d.v[SPEC.IX[dd+'.abd']].toFixed(0) + '°');
@@ -5235,19 +5444,383 @@ function speCiclo(){
     '  z ' + d.v[SPEC.IX['pol.z']].toFixed(2));
   lin.push('dita verso ' + d.dita.map(x=>x.toFixed(2)).join(' ') + '   palmo verso ' +
     d.palmo.map(x=>x.toFixed(2)).join(' ') + '   (x destra · y alto · z camera)');
-  const e0 = ett[k] && ett[k][0];
-  lin.push('etichetta ' + (e0 ? e0.categoryName + ' ' + e0.score.toFixed(2) : '?') + ' → ' + (sinistra ? 'sinistra' : 'destra') +
-    '   migliori: ' + forse + corretta);
+  const m = mani[r.k];
+  lin.push('etichetta ' + (m.etichetta ? m.etichetta + ' ' + m.punteggio.toFixed(2) : '?') + ' → ' +
+    (sinistra ? 'sinistra' : 'destra') + '   migliori: ' + forse + corretta);
   speRisposta(titolo, riga, classe, lin.join('\n'));
 }
 
 function speApri(){
   if(!SPEC){ alert('Lo specchio non è disponibile in questo browser.'); location.hash=''; return; }
+  camSpegni(); rgSpegniUI();
   speCostruisci();
+  speSpegni('');
   speScegli(SPE.bersaglio);
   show('provati');
 }
-function speChiudi(){ if(SPE.acceso) speSpegni(''); }
+function speChiudi(){ camSpegni(); if(SPE.acceso) speSpegni(''); }
+
+/* ================= REGISTRA (per chi segna) =================
+   Raccoglie le lettere segnate davanti a una camera, per poter TARARE e
+   VALUTARE il riconoscimento di Provati su mani vere invece che a occhio.
+   Salva i PUNTI della mano, non il video: niente volto, niente fotogrammi.
+
+   Tre scelte che costano poco adesso e molto dopo:
+   - si salva l'uscita GREZZA di MediaPipe (SPEC.perPresa), non grandezze
+     ricavate: le grandezze, le tolleranze e la regola destra/sinistra
+     cambieranno, e un dato ricavato congela le ipotesi di oggi;
+   - ogni file ha un codice anonimo e casuale della persona, anche se non
+     scrive il nome: senza non si puo' tarare su alcune persone e valutare su
+     altre, che e' l'unico modo onesto di misurare;
+   - si registra a GIRI, con le lettere rimescolate a ogni giro: dieci prese
+     uguali di fila sono quasi una presa sola dieci volte. */
+const RG_CONSENSO = 1;
+const RG_LETTERE = Object.keys(ALFA);
+const RG_MOVE = L => !!(ALFA[L].m || ALFA[L].tratto);
+const RG_DURATA = L => RG_MOVE(L) ? 3000 : 1500;
+const RG_CAUSE = {pollice:'il pollice nel posto sbagliato', aperte:'dita troppo aperte o troppo unite',
+                  piegate:'dita piegate male', palmo:'palmo girato dalla parte sbagliata',
+                  altro:'un altro errore tipico'};
+const RG_CHIAVE = 'lisquest-registra-persona-v1';
+const RG = {persona:{id:'', nome:'', dove:'', ruolo:'', mano:'destra', consenso:''},
+            prese:[], db:null, dbOk:true, inverti:false,
+            coda:[], i:0, fase:'ferma', finoA:0, pausa:false, frame:[], t0:0, visti:0, totali:0,
+            tentativi:0, sessione:'', lettere:new Set(RG_LETTERE), giri:5, tipo:'giuste', causa:'pollice',
+            byte:0, costruita:false, acceso:false, ultimoTesto:0,
+            minimo:{fermo:5, moto:15}};
+
+function rgCasuale(n){
+  const a = new Uint8Array(n);
+  try{ crypto.getRandomValues(a); }catch(e){ for(let i=0;i<n;i++) a[i] = Math.floor(Math.random()*256); }
+  return Array.prototype.map.call(a, b=> b.toString(16).padStart(2,'0')).join('');
+}
+function rgPersonaCarica(){
+  try{
+    const r = JSON.parse(localStorage.getItem(RG_CHIAVE) || 'null');
+    if(r && r.id) Object.assign(RG.persona, r);
+  }catch(e){}
+  if(!RG.persona.id) RG.persona.id = 'p-' + rgCasuale(6);
+  rgPersonaSalva();
+}
+function rgPersonaSalva(){ try{ localStorage.setItem(RG_CHIAVE, JSON.stringify(RG.persona)); }catch(e){} }
+
+/* ---- dove restano le prese ----
+   Ognuna va su IndexedDB appena e' accettata: perderne cento per un ricaricamento
+   sarebbe il peggior difetto di questo strumento. Se IndexedDB non c'e' (finestra
+   privata) restano in memoria, e la pagina lo dice. */
+function rgDbApri(){
+  return new Promise(res=>{
+    try{
+      const r = indexedDB.open('lisquest-registra', 1);
+      r.onupgradeneeded = ()=> r.result.createObjectStore('prese', {keyPath:'id'});
+      r.onsuccess = ()=> res(r.result);
+      r.onerror = r.onblocked = ()=> res(null);
+    }catch(e){ res(null); }
+  });
+}
+function rgTx(modo, fn){
+  return new Promise(res=>{
+    if(!RG.db) return res(null);
+    try{
+      const t = RG.db.transaction('prese', modo), r = fn(t.objectStore('prese'));
+      t.oncomplete = ()=> res(r && r.result !== undefined ? r.result : true);
+      t.onerror = t.onabort = ()=> res(null);
+    }catch(e){ res(null); }
+  });
+}
+const rgDimensione = p => JSON.stringify(p).length;
+function rgSalvaPresa(p){
+  RG.prese.push(p); RG.byte += rgDimensione(p);
+  rgTx('readwrite', s=> s.put(p)).then(ok=>{ if(ok === null){ RG.dbOk = false; rgAvviso(); } });
+}
+
+function rgAvviso(){
+  const e = document.getElementById('rgAvviso'); if(!e) return;
+  e.hidden = RG.dbOk;
+  e.textContent = RG.dbOk ? '' :
+    'Questo browser non lascia salvare le registrazioni (finestra privata?): restano solo finché tieni aperta la pagina. Scarica il file spesso.';
+}
+
+/* ---- la pagina ---- */
+const rgEl = id => document.getElementById(id);
+
+function rgCostruisci(){
+  if(RG.costruita) return;
+  RG.costruita = true;
+  const gr = rgEl('rgLettere');
+  const cella = L=>
+    '<button type="button" class="spe-let" data-l="'+L+'" aria-pressed="true" aria-label="lettera '+L+'">'+
+    '<span class="spe-let-g">'+letterGlyph(L)+'</span><b>'+L+'</b><i class="rg-n" data-n="'+L+'"></i></button>';
+  gr.innerHTML = RG_LETTERE.map(cella).join('');
+  gr.addEventListener('click', e=>{
+    const b = e.target.closest('button[data-l]'); if(!b) return;
+    const L = b.dataset.l, on = !RG.lettere.has(L);
+    if(on) RG.lettere.add(L); else RG.lettere.delete(L);
+    b.setAttribute('aria-pressed', String(on));
+  });
+  rgEl('rgNome').addEventListener('input', e=>{ RG.persona.nome = e.target.value; rgPersonaSalva(); });
+  rgEl('rgDove').addEventListener('input', e=>{ RG.persona.dove = e.target.value; rgPersonaSalva(); });
+  rgEl('rgRuolo').addEventListener('change', e=>{ RG.persona.ruolo = e.target.value; rgPersonaSalva(); });
+  rgEl('rgMano').addEventListener('change', e=>{ RG.persona.mano = e.target.value; rgPersonaSalva(); });
+  rgEl('rgAdulto').addEventListener('change', e=>{
+    RG.persona.consenso = e.target.checked ? new Date().toISOString() : '';
+    rgPersonaSalva(); rgAbilita();
+  });
+  rgEl('rgInverti').addEventListener('change', e=>{ RG.inverti = e.target.checked; });
+  rgEl('rgGiri').addEventListener('change', e=>{ RG.giri = +e.target.value; });
+  rgEl('rgTipo').addEventListener('change', e=>{
+    RG.tipo = e.target.value;
+    rgEl('rgCausaRiga').hidden = RG.tipo !== 'errori';
+    rgEl('rgGiri').value = RG.giri = (RG.tipo === 'errori' ? 2 : 5);
+  });
+  rgEl('rgCausa').addEventListener('change', e=>{ RG.causa = e.target.value; });
+  rgEl('rgAccendi').onclick = rgAccendi;
+  rgEl('rgSpegni').onclick = ()=> rgSpegni('Camera spenta.');
+  rgEl('rgEsci').onclick = e=>{ e.preventDefault(); rgChiudi(); location.hash=''; show('titolo'); };
+  rgEl('rgComincia').onclick = rgComincia;
+  rgEl('rgPausa').onclick = rgPausa;
+  rgEl('rgSalta').onclick = rgSalta;
+  rgEl('rgRipeti').onclick = rgRipeti;
+  rgEl('rgFerma').onclick = ()=>{ RG.fase = 'ferma'; rgMostra('Fermo.', '', 'Premi «Comincia» per riprendere da capo.', ''); rgBottoni(); };
+  rgEl('rgScarica').onclick = rgScarica;
+  rgEl('rgAnnulla').onclick = rgCancellaUltima;
+  rgEl('rgPulisci').onclick = rgPulisci;
+}
+
+function rgAbilita(){
+  rgEl('rgAccendi').disabled = !RG.persona.consenso;
+}
+
+function rgConti(){
+  const n = {}; let g = 0, e = 0;
+  RG.prese.forEach(p=>{
+    if(p.tipo === 'giusta'){ n[p.lettera] = (n[p.lettera]||0) + 1; g++; } else e++;
+  });
+  document.querySelectorAll('#rgLettere .rg-n').forEach(i=>{ i.textContent = n[i.dataset.n] ? '×'+n[i.dataset.n] : ''; });
+  rgEl('rgRiepilogo').textContent = RG.prese.length
+    ? RG.prese.length + ' registrazioni (' + g + ' giuste, ' + e + ' errori) · ' +
+      (RG.byte < 1048576 ? Math.round(RG.byte/1024) + ' KB'
+                         : (RG.byte/1048576).toFixed(1).replace('.',',') + ' MB')
+    : 'Nessuna registrazione ancora.';
+  rgEl('rgScarica').disabled = !RG.prese.length;
+  rgEl('rgAnnulla').disabled = !RG.prese.length;
+}
+
+function rgBottoni(){
+  const attiva = RG.fase !== 'ferma' && RG.fase !== 'fine';
+  rgEl('rgComincia').hidden = attiva;
+  rgEl('rgComincia').disabled = !RG.acceso;
+  ['rgPausa','rgSalta','rgRipeti','rgFerma'].forEach(id=> rgEl(id).hidden = !attiva);
+  rgEl('rgPausa').textContent = RG.pausa ? 'Riprendi' : 'Pausa';
+}
+
+function rgMostra(istr, conto, esito, classe, L){
+  rgEl('rgIstr').textContent = istr;
+  rgEl('rgConto').textContent = conto;
+  rgEl('rgEsitoRiga').textContent = esito;
+  rgEl('rgEsito').className = 'spe-esito ' + (classe || '');
+  if(L !== undefined){
+    const g = rgEl('rgModello');
+    g.innerHTML = L ? letterGlyph(L) : '<div class="spe-mod-nota">Il modello della lettera compare qui.</div>';
+  }
+}
+
+async function rgAccendi(){
+  if(RG.acceso || !RG.persona.consenso) return;
+  const bt = rgEl('rgAccendi'); bt.disabled = true;
+  try{
+    await camAccendi({video:rgEl('rgVideo'), canvas:rgEl('rgCanvas'), onRis:rgRis,
+                      stato:t=> rgEl('rgStato').textContent = t,
+                      onErrore:e=> rgSpegni('Il riconoscimento si è fermato: ' + e.message)});
+    RG.acceso = true; bt.hidden = true; rgEl('rgSpegni').hidden = false;
+    rgEl('rgStato').textContent = 'Camera accesa. Mostra la mano e premi «Comincia».';
+    rgBottoni();
+  }catch(e){ rgSpegni(camErrore(e)); }
+}
+
+/* l'interfaccia torna a "spenta" (la camera la ferma camSpegni) */
+function rgSpegniUI(msg){
+  RG.acceso = false; RG.fase = 'ferma'; RG.pausa = false;
+  const a = rgEl('rgAccendi'); if(!a) return;
+  a.hidden = false; rgAbilita();
+  rgEl('rgSpegni').hidden = true;
+  if(msg !== undefined) rgEl('rgStato').textContent = msg;
+  rgEl('rgVista').textContent = '';
+  rgMostra('Accendi la camera, poi premi «Comincia».', '', '', '', null);
+  rgBottoni();
+}
+function rgSpegni(msg){ camSpegni(); rgSpegniUI(msg); }
+function rgChiudi(){ camSpegni(); if(RG.costruita) rgSpegniUI(''); }
+
+/* ---- una sessione ---- */
+function rgComincia(){
+  if(!RG.acceso) return;
+  const ls = RG_LETTERE.filter(L=> RG.lettere.has(L));
+  if(!ls.length){ rgMostra('Scegli almeno una lettera.', '', '', ''); return; }
+  RG.coda = [];
+  for(let g=1; g<=RG.giri; g++){
+    const m = ls.slice();                          /* rimescolate a ogni giro */
+    for(let i=m.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); const t = m[i]; m[i] = m[j]; m[j] = t; }
+    m.forEach(L=> RG.coda.push({L, giro:g}));
+  }
+  RG.sessione = 's-' + rgCasuale(4); RG.i = 0; RG.tentativi = 0; RG.pausa = false;
+  rgProssima(performance.now());
+}
+function rgProssima(ora){
+  if(RG.i >= RG.coda.length){
+    RG.fase = 'fine';
+    rgMostra('Fatto: grazie!', '', 'Scarica il file con il bottone qui sotto e mandacelo. Quando vuoi puoi aggiungere altri giri: il tuo codice resta lo stesso.', 'ok', null);
+    rgBottoni(); return;
+  }
+  const it = RG.coda[RG.i];
+  RG.fase = 'prep'; RG.finoA = ora + 2000; RG.frame = [];
+  const errore = RG.tipo === 'errori';
+  rgMostra((errore ? 'Fai la ' + it.L + ' SBAGLIATA: ' + RG_CAUSE[RG.causa]
+                   : 'Fai la lettera ' + it.L + (RG_MOVE(it.L) ? ' (con il movimento)' : '')),
+           '', 'Giro ' + it.giro + ' di ' + RG.giri + ' · ' + (RG.i+1) + ' di ' + RG.coda.length, '', it.L);
+  rgBottoni();
+}
+function rgPausa(){
+  RG.pausa = !RG.pausa;
+  if(RG.pausa){
+    if(RG.fase === 'rec' || RG.fase === 'conto') RG.fase = 'prep';
+    rgMostra('In pausa.', '', '', '');
+  }else rgProssima(performance.now());
+  rgBottoni();
+}
+function rgSalta(){ RG.i++; RG.tentativi = 0; rgProssima(performance.now()); }
+function rgRipeti(){
+  /* rifare l'ultima: la presa accettata si scarta e si rifa' */
+  if(RG.i > 0 && RG.prese.length){
+    const u = RG.prese[RG.prese.length-1];
+    if(u.sessione === RG.sessione){ rgToglie(u); RG.i--; }
+  }
+  RG.tentativi = 0; rgProssima(performance.now());
+}
+function rgToglie(p){
+  RG.prese = RG.prese.filter(x=> x.id !== p.id); RG.byte -= rgDimensione(p);
+  rgTx('readwrite', s=> s.delete(p.id)); rgConti();
+}
+function rgCancellaUltima(){
+  if(!RG.prese.length) return;
+  rgToglie(RG.prese[RG.prese.length-1]);
+}
+function rgPulisci(){
+  if(!RG.prese.length) return;
+  if(!confirm('Cancello tutte le ' + RG.prese.length + ' registrazioni fatte finora su questo dispositivo?')) return;
+  RG.prese = []; RG.byte = 0;
+  rgTx('readwrite', s=> s.clear()); rgConti();
+}
+
+/* ---- a ogni fotogramma ---- */
+function rgRis(res, ora){
+  const mani = camMani(res);
+  const r = SPEC.manoDa(mani, RG.persona.mano, RG.inverti);
+  camDisegna(mani, r ? r.k : undefined);
+  const v = rgEl('rgVista');
+  v.textContent = !mani.length ? 'non vedo la mano'
+    : 'vedo la mano ' + r.reale + (r.altra ? ' (hai scelto la ' + RG.persona.mano + ')' : '');
+  v.className = 'spe-chip' + (mani.length && !r.altra ? ' ok' : '');
+  if(RG.fase === 'ferma' || RG.fase === 'fine' || RG.pausa) return;
+
+  const it = RG.coda[RG.i];
+  if(RG.fase === 'prep'){
+    if(ora >= RG.finoA){ RG.fase = 'conto'; RG.finoA = ora + 3000; }
+  }else if(RG.fase === 'conto'){
+    rgEl('rgConto').textContent = String(Math.max(1, Math.ceil((RG.finoA - ora) / 1000)));
+    if(ora >= RG.finoA){
+      RG.fase = 'rec'; RG.t0 = ora; RG.frame = []; RG.visti = 0; RG.totali = 0;
+      rgEl('rgConto').textContent = '●';
+      rgEl('rgEsito').className = 'spe-esito quasi';
+    }
+  }else if(RG.fase === 'rec'){
+    RG.totali++; if(mani.length) RG.visti++;
+    RG.frame.push({t: Math.round(ora - RG.t0), m: SPEC.perPresa(res)});
+    if(ora - RG.t0 >= RG_DURATA(it.L)) rgFinePresa(ora, it);
+  }else if(RG.fase === 'pausa'){
+    if(ora >= RG.finoA) rgProssima(ora);
+  }
+}
+
+function rgFinePresa(ora, it){
+  const minimo = RG_MOVE(it.L) ? RG.minimo.moto : RG.minimo.fermo;
+  const quota = RG.totali ? RG.visti / RG.totali : 0;
+  const buona = RG.visti >= minimo && quota >= .8;
+  rgEl('rgConto').textContent = '';
+  if(buona){
+    const errore = RG.tipo === 'errori';
+    const p = {id:'t-' + rgCasuale(6), lettera:it.L, tipo: errore ? 'errore' : 'giusta',
+               causa: errore ? RG.causa : '', sessione:RG.sessione, giro:it.giro, ordine:RG.i,
+               inizio:new Date().toISOString(), durata:Math.round(ora - RG.t0),
+               larghezza:CAM.larghezza, altezza:CAM.altezza,
+               dichiarata:{mano:RG.persona.mano},
+               mp:{versione:SPE_VERSIONE, modello:SPE_URL.modello, delegate:CAM.delegate,
+                   invertiEtichetta:RG.inverti},
+               qualita:{visti:RG.visti, totali:RG.totali},
+               fotogrammi:RG.frame};
+    rgSalvaPresa(p); rgConti();
+    RG.i++; RG.tentativi = 0;
+    rgMostra('✓ ' + it.L + ' registrata', '', RG.frame.length + ' fotogrammi, mano vista nel ' +
+             Math.round(quota*100) + '%.', 'ok');
+  }else{
+    RG.tentativi++;
+    let msg = quota < .8
+      ? 'Ho visto la mano solo nel ' + Math.round(quota*100) + '% del tempo: '
+      : 'Ho avuto solo ' + RG.visti + ' fotogrammi con la mano (ne servono ' + minimo + '): il dispositivo è lento? Chiudi le altre schede. ';
+    if(RG.tentativi >= 3){ msg += 'salto questa lettera.'; RG.i++; RG.tentativi = 0; }
+    else msg += 'la rifaccio.';
+    rgMostra('✗ Non è venuta', '', msg + ' Luce frontale, mano tutta in vista.', 'dubbio');
+  }
+  RG.frame = [];
+  RG.fase = 'pausa'; RG.finoA = ora + 1300;
+}
+
+/* ---- il file ----
+   Testo leggibile: si puo' aprire e controllare cosa contiene prima di mandarlo. */
+function rgScarica(){
+  if(!RG.prese.length) return;
+  const p = RG.persona;
+  const file = {
+    formato:'lis-quest-registrazioni/1',
+    creato:new Date().toISOString(),
+    persona:{id:p.id, nome:p.nome, dove:p.dove, ruolo:p.ruolo, mano:p.mano},
+    consenso:{versione:RG_CONSENSO, data:p.consenso, maggiorenne:true},
+    registrazioni:RG.prese.slice().sort((a,b)=> a.inizio < b.inizio ? -1 : 1)
+  };
+  const blob = new Blob([JSON.stringify(file)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'registrazioni-' + (p.nome || 'anonimo').toLowerCase()
+               .replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') + '-' + p.id.slice(2,8) + '-' +
+               new Date().toISOString().slice(0,10) + '.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 4000);
+}
+
+async function rgApri(){
+  if(!SPEC){ alert('Questo browser non può usare la camera da qui.'); location.hash=''; return; }
+  camSpegni(); speSpegni('');
+  rgCostruisci();
+  rgPersonaCarica();
+  rgEl('rgNome').value = RG.persona.nome; rgEl('rgDove').value = RG.persona.dove;
+  rgEl('rgRuolo').value = RG.persona.ruolo; rgEl('rgMano').value = RG.persona.mano;
+  rgEl('rgAdulto').checked = !!RG.persona.consenso;
+  rgEl('rgCodice').textContent = RG.persona.id;
+  rgSpegniUI('');
+  show('registra');
+  if(!RG.db && RG.dbOk){
+    RG.db = await rgDbApri();
+    if(!RG.db) RG.dbOk = false;
+    else{
+      const tutte = await rgTx('readonly', s=> s.getAll());
+      if(Array.isArray(tutte) && !RG.prese.length){
+        RG.prese = tutte.sort((a,b)=> a.inizio < b.inizio ? -1 : 1);
+        RG.byte = RG.prese.reduce((a,p)=> a + rgDimensione(p), 0);
+      }
+    }
+  }
+  rgAvviso(); rgConti();
+}
 
 /* ================= IL BANCO DI PROVA =================
    Un solo appiglio, deliberato, verso l'esterno: da qui lo strumento di
@@ -5262,6 +5835,7 @@ window.LISQ = {
   segni:  ()=> Object.keys(SIGNS),
   lettere:()=> Object.keys(ALFA),
   provati: ()=> SPEC,
+  registra: ()=> RG,
   configurazioni: ()=> Object.keys(CONFIG),
   segno:  (k, opz) => renderSign(SIGNS[k], opz),
   lettera:k => letterGlyph(k),

@@ -103,6 +103,11 @@ da persone che segnano davanti a una camera. Non fa parte del gioco: non si cari
 clic scarica il riconoscimento da `cdn.jsdelivr.net` e `storage.googleapis.com` (nessun fotogramma lascia la
 pagina). Dettagli e limiti in [`CONTRIBUTING.md`](./CONTRIBUTING.md).
 
+Per **chi segna** c'è anche [`index.html#registra`](./index.html#registra): si segnano le lettere davanti alla
+camera e si scarica un file con i **punti della mano** (niente video, niente volto, un codice anonimo) da
+mandare al progetto. Serve a tarare il riconoscimento su mani vere. Cosa contiene il file e cosa no sta nella
+pagina e in [`CONTRIBUTING.md`](./CONTRIBUTING.md).
+
 ## 📁 Struttura
 
 ```
